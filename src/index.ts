@@ -3,7 +3,7 @@ import { CogSpeedGame, buttonPositions } from "./game";
 import "./style.css";
 
 declare const VERSION: string;
-console.log(`Welcome from pixi-typescript-boilerplate ${VERSION}`);
+console.log(`Welcome from cogspeed ${VERSION}`);
 
 const gameWidth = window.innerWidth;
 const gameHeight = window.innerHeight;

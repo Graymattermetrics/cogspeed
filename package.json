@@ -1,5 +1,5 @@
 {
-    "name": "pixi-typescript-boilerplate",
+    "name": "cogspeed",
     "version": "1.0.0",
     "description": "pixi.js typescript boilerplate webpack",
     "browserslist": "> 0.25%, not dead",
