@@ -83,7 +83,10 @@ export class CogSpeedGame {
      * @return {void}
      */
     private clearStage(): void {
-        for (const sprite of Object.values(this.numbers).concat(Object.values(this.dots))) {
+        for (const sprite of 
+            Object.values(this.numbers).concat(Object.values(this.dots))
+            .concat(Object.values(this.numbersInverted)).concat(Object.values(this.dotsInverted))
+        ) {
             // TODO: Find a better way to remove sprites
             this.app.stage.removeChild(sprite);
             this.leftContainer?.removeChild(sprite);
@@ -263,6 +266,7 @@ export class CogSpeedGame {
             roundType: this.currentRoundType,
         });
 
+        console.log(this.previousAnswers);
         this.nextRound();
     }
 
