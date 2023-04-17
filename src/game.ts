@@ -92,24 +92,38 @@ export class CogSpeedGame {
     }
 
     /**
-     * Sets up the test screen
+     * Gets a random sprite that is either inverted or not
+     * @return {Sprite}
+     */
+    private getSprite(spriteType: "numbers" | "dots", spriteNumber: number, randomInverted: boolean = true): Sprite {
+        const spriteInverted = randomInverted ? Math.random() > 0.5 : false;
+
+        if (spriteType === "numbers") {
+            if (spriteInverted) return this.numbersInverted[spriteNumber];
+            else return this.numbers[spriteNumber];
+        } else {
+            if (spriteInverted) return this.dotsInverted[spriteNumber];
+            else return this.dots[spriteNumber];
+        }
+    }
+
+    /**
+     * Sets up the next round
      * @return {void}
      */
-    private nextTestScreen(): void {
+    private nextRound(): void {
         // Clear stage
         this.clearStage();
 
         // Create and set query sprite
         const queryNumber = Math.floor(Math.random() * 9) + 1;
-        const numberOrDot = Math.random() > 0.5 ? "number" : "dot";
-        const queryNumberSprite = numberOrDot === "number" ? this.numbers[queryNumber] : this.dots[queryNumber];
+        const numberOrDot = Math.random() > 0.5 ? "numbers" : "dots";
+        const queryNumberSprite = this.getSprite(numberOrDot, queryNumber, false);
         this.setSpritePosition(queryNumberSprite, 0.5, 0.75);
 
-        let answerSprite;
-        if (numberOrDot === "number") answerSprite = this.dots[queryNumber];
-        else answerSprite = this.numbers[queryNumber];
-
+        const answerSprite = this.getSprite(numberOrDot !== "numbers" ? "numbers" : "dots", queryNumber, true);
         const answerLocation = Math.floor(Math.random() * 6) + 1; // 1-6
+
         this.setSpritePosition(
             answerSprite,
             buttonPositions[answerLocation][0],
@@ -129,9 +143,11 @@ export class CogSpeedGame {
             const number = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
             delete numbers[number];
 
-            let randomIncorrectSprite;
-            if (number > 9) randomIncorrectSprite = this.dots[number - 9];
-            else randomIncorrectSprite = this.numbers[number];
+            const randomIncorrectSprite = this.getSprite(
+                number > 9 ? "dots" : "numbers",
+                number > 9 ? number - 9 : number,
+                true,
+            );
 
             this.setSpritePosition(
                 randomIncorrectSprite,
@@ -169,7 +185,7 @@ export class CogSpeedGame {
         // If percentage correct is greater than threshold, speed up
         if (percentageCorrect > this.constants.machine_paced.rolls.threshold) {
             this.currentDuration -= this.constants.machine_paced.speedup.base_duration;
-        } 
+        }
         // If percentage correct is less than threshold, slow down if answer was incorrect
         else if (lastAnswers[lastAnswers.length - 1].status === "incorrect")
             this.currentDuration += this.constants.machine_paced.slowdown.base_duration;
@@ -247,7 +263,7 @@ export class CogSpeedGame {
             roundType: this.currentRoundType,
         });
 
-        this.nextTestScreen();
+        this.nextRound();
     }
 
     /**
@@ -264,7 +280,7 @@ export class CogSpeedGame {
         await this.loadConfig();
         this.startTime = performance.now();
         this.maxTestDuration = setTimeout(this.stop.bind(this), this.constants.max_test_duration);
-        this.nextTestScreen();
+        this.nextRound();
     }
 
     private stop(): void {
