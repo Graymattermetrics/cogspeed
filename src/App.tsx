@@ -1,35 +1,45 @@
-import { Application, Loader, Sprite, Container, Texture, Point, Rectangle } from "pixi.js";
-import { CogSpeedGame, buttonPositions } from "./game";
-import "./style.css";
+import { withAuthenticator } from '@aws-amplify/ui-react';
+import './App.css';
 
-declare const VERSION: string;
-console.log(`Welcome from cogspeed ${VERSION}`);
+import { Application, Container, Point, Rectangle, Sprite, Texture } from "pixi.js";
+import { CogSpeedGame, buttonPositions } from "./Game";
+
+import buttonTextureImage from "./assets/button.png";
+import buttonWellTextureImage from "./assets/button_well.png";
+import gearTextureImage from "./assets/gear.png";
+import gearWellTextureImage from "./assets/gear_well.png";
+import numbersAndDotsTextureImage from "./assets/numbers_and_dots.png";
+import numbersAndDotsInvertedTextureImage from "./assets/numbers_and_dots_inverted.png";
+
+import bgSteelImage from "./assets/bg_steel.jpg";
+
 
 const gameWidth = window.innerWidth;
 const gameHeight = window.innerHeight;
 
-const app = new Application({
+const app = new Application<HTMLCanvasElement>({
     width: gameWidth,
     height: gameHeight,
 });
 app.stage.interactive = true;
 
-const gearWellTexture = Texture.from("./assets/gear_well.png");
-const gearTexture = Texture.from("./assets/gear.png");
-const buttonWellTexture = Texture.from("./assets/button_well.png");
-const buttonTexture = Texture.from("./assets/button.png");
-const numbersAndDotsTexture = Texture.from("./assets/numbers_and_dots.png");
-const numbersAndDotsInvertedTexture = Texture.from("./assets/numbers_and_dots_inverted.png");
+
+const gearWellTexture = Texture.from(gearWellTextureImage);
+const gearTexture = Texture.from(gearTextureImage);
+const buttonWellTexture = Texture.from(buttonWellTextureImage);
+const buttonTexture = Texture.from(buttonTextureImage);
+const numbersAndDotsTexture = Texture.from(numbersAndDotsTextureImage);
+const numbersAndDotsInvertedTexture = Texture.from(numbersAndDotsInvertedTextureImage);
 
 window.onload = async (): Promise<void> => {
-    // await loadGameAssets();
-
-    document.body.appendChild(app.view);
+    const appDiv = document.querySelector(".App")
+    if (!appDiv) throw new Error("No app div found");
+    appDiv.appendChild(app.view);
 
     resizeCanvas();
 
     // Add background
-    const bg = Sprite.from("./assets/bg_steel.jpg");
+    const bg = Sprite.from(bgSteelImage);
     app.stage.addChild(bg);
 
     const { numbers, dots } = loadNumbersAndDots(false);
@@ -44,28 +54,6 @@ window.onload = async (): Promise<void> => {
 
     game.start(leftContainer, rightContainer);
 };
-
-/**
- * Load game assets
- * @return {Promise<void>}
- */
-async function loadGameAssets(): Promise<void> {
-    return new Promise((res, rej) => {
-        const loader = Loader.shared;
-        loader.add("rabbit", "./assets/simpleSpriteSheet.json");
-        loader.add("pixie", "./assets/spine-assets/pixie.json");
-
-        loader.onComplete.once(() => {
-            res();
-        });
-
-        loader.onError.once(() => {
-            rej();
-        });
-
-        loader.load();
-    });
-}
 
 /**
  * Resize canvas
@@ -180,3 +168,13 @@ function loadNumbersAndDots(inverted: boolean): { [key: string]: { [key: number]
     }
     return { numbers: numbers, dots: dots };
 }
+
+
+function App() {
+  return (
+    <div className="App">
+    </div>
+  );
+}
+
+export default withAuthenticator(App);
