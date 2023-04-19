@@ -249,6 +249,12 @@ export class CogSpeedGame {
         const correctAnswers = this.getCorrectAnswers();
         const percentageCorrect = correctAnswers / this.constants.machine_paced.rolling_average.mean_size;
 
+        const incorrectAnswers = lastAnswers.filter((a) => a.status === "incorrect").length;
+        if (incorrectAnswers > this.constants.machine_paced.rolling_average.max_wrong_count) {
+            this.currentRoundType = "endmode";
+            return;
+        }
+
         let isCorrect = lastAnswers[lastAnswers.length - 1].status === "correct";
 
         // If percentage correct is greater than threshold, speed up if answer was correct
@@ -271,7 +277,12 @@ export class CogSpeedGame {
         clearTimeout(this.currentScreenTimeout); // Clear previous timeout
         clearTimeout(this.noResponseTimeout); // Clear no response timeout
         // Set no response timeout
-        this.noResponseTimeout = setTimeout(this.stop.bind(this), this.constants.no_response_timeout);
+        this.noResponseTimeout = setTimeout(
+            this.stop.bind(this),
+            this.previousAnswers.length === 0
+                ? this.constants.timeouts.max_initial_no_response
+                : this.constants.timeouts.max_no_response,
+        );
 
         const correctAnswers = this.previousAnswers
             .slice(this.constants.self_paced.number_of_training_rounds)
@@ -378,7 +389,7 @@ export class CogSpeedGame {
 
         await this.loadConfig();
         this.startTime = performance.now();
-        this.maxTestDuration = setTimeout(this.stop.bind(this), this.constants.max_test_duration);
+        this.maxTestDuration = setTimeout(this.stop.bind(this), this.constants.timeouts.max_test_duration);
         this.nextRound();
     }
 
