@@ -56,7 +56,7 @@ export class CogSpeedGame {
      */
     private async loadConfig(): Promise<void> {
         const response = await axios.get(
-            "https://83kt1j5boh.execute-api.us-east-1.amazonaws.com/default/cogspeedConfig",
+            "https://t6pedjjwcb.execute-api.us-east-2.amazonaws.com/default/getCogspeedConfig",
         );
         this.constants = response.data;
     }
