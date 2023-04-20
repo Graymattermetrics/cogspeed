@@ -137,7 +137,7 @@ export class CogSpeedGame {
             answerLocation > 3 ? this.leftContainer : this.rightContainer,
         );
 
-        const numbers = [...Array(19).keys()];
+        const numbers = Array.from({length: 19}, (x, i) => i);
         delete numbers[queryNumber];
         delete numbers[queryNumber + 9];
         delete numbers[0];
