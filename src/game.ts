@@ -416,7 +416,7 @@ export class CogSpeedGame {
         console.log("Blocking round duration", blockingRoundDuration);
 
         // CPImax - CPImin/BRDmin - BRDmax
-        const M = (this.constants.cpi_calculation.cpi_max - this.constants.cpi_calculation.cpi_min) / (this.constants.cpi_calculation.brd_min / this.constants.cpi_calculation.brd_max);
+        const M = (this.constants.cpi_calculation.cpi_max - this.constants.cpi_calculation.cpi_min) / (this.constants.cpi_calculation.brd_min - this.constants.cpi_calculation.brd_max);
         // M(BRD - CPImin) + 100
         const cognitiveProcessingIndex = M * (blockingRoundDuration - this.constants.cpi_calculation.brd_min) + 100;
         console.log("Cognitive processing index", cognitiveProcessingIndex);
