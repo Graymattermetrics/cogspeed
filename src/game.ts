@@ -1,4 +1,4 @@
-import { Application, Container, Sprite } from "pixi.js";
+import { Application, Container, Sprite, Text } from "pixi.js";
 import axios from "axios";
 
 export const buttonPositions: { [key: number]: number[] } = {
@@ -405,15 +405,21 @@ export class CogSpeedGame {
         clearTimeout(this.noResponseTimeout);
 
         this.currentRoundType = null;
-        this.clearStage();
+        for (var i = this.app.stage.children.length - 1; i >= 0; i--) {	
+            this.app.stage.removeChild(this.app.stage.children[i]);
+        };
+        
 
         const lastTwoBlocks = this.previousBlockDurations.slice(-2);
         const sumOfLastTwoBlocks = lastTwoBlocks.reduce((a, b) => a + b, 0);
         const blockingRoundDuration = sumOfLastTwoBlocks / 2;
         console.log("Blocking round duration", blockingRoundDuration);
 
-        const informationProcessingRate = blockingRoundDuration / 1000;
-        console.log("Information processing rate", informationProcessingRate);
+        // CPImax - CPImin/BRDmin - BRDmax
+        const M = (this.constants.cpi_calculation.cpi_max - this.constants.cpi_calculation.cpi_min) / (this.constants.cpi_calculation.brd_min / this.constants.cpi_calculation.brd_max);
+        // M(BRD - CPImin) + 100
+        const cognitiveProcessingIndex = M * (blockingRoundDuration - this.constants.cpi_calculation.brd_min) + 100;
+        console.log("Cognitive processing index", cognitiveProcessingIndex);
 
         // @ts-ignore
         const testDuration = performance.now() - this.startTime;
@@ -421,6 +427,21 @@ export class CogSpeedGame {
 
         const numberOfRounds = this.previousAnswers.length;
         console.log("Number of rounds", numberOfRounds);
+
+        const text = new Text(`
+        Test finished [temp text]
+
+        Test duration: ${testDuration}
+        Number of rounds: ${numberOfRounds}
+        Blocking round duration: ${blockingRoundDuration}
+        Cognitive processing index: ${cognitiveProcessingIndex}
+        `, {
+            fontFamily: "Arial",
+            fontSize: 18,
+            fill: 0xff1010,
+            align: "left",
+        })
+        this.app.stage.addChild(text);
     }
 
     // private reset(): void {
