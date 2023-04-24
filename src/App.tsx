@@ -2,7 +2,7 @@ import { withAuthenticator } from '@aws-amplify/ui-react';
 import './App.css';
 
 import { Application, Container, Point, Rectangle, Sprite, Texture } from "pixi.js";
-import { CogSpeedGame, buttonPositions } from "./Game";
+import { CogSpeedGame, buttonPositions } from "./game";
 
 import buttonTextureImage from "./assets/button.png";
 import buttonWellTextureImage from "./assets/button_well.png";
