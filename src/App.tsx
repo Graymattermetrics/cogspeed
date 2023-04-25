@@ -70,6 +70,34 @@ function resizeCanvas(): void {
     window.addEventListener("resize", resize);
 }
 
+
+/**
+ * Ripple animation
+ */
+async function rippleAnimation(sprite: Sprite): Promise<void> {
+    const timer = (ms: number) => new Promise(res => setTimeout(res, ms))
+
+    const animationSprite = new Sprite(buttonTexture);
+    animationSprite.x = sprite.x;
+    animationSprite.y = sprite.y;
+    animationSprite.anchor.set(0.5);
+    animationSprite.scale = new Point(0.8, 0.8);
+    animationSprite.alpha = 0.7;
+    animationSprite.eventMode = "none";
+
+    sprite.parent.addChild(animationSprite);
+
+    // 100 iterations to reach scale.x of 5
+    for (let i = 0; i < 100; i++) {
+        await timer(0.2);
+
+        animationSprite.scale.x += 0.05;
+        animationSprite.scale.y += 0.05;
+        animationSprite.alpha -= 0.001;
+    }
+    sprite.parent.removeChild(animationSprite);
+}
+
 /**
  * Create gear
  * @param {number} posX
@@ -121,6 +149,8 @@ function createGear(posX: number, posY: number, gearLocation: string, game: CogS
             button.interactive = true;
             button.on("pointerdown", () => {
                 game.buttonClicked(7 - i);
+                rippleAnimation(button);
+                
             });
         }
     }
