@@ -175,9 +175,15 @@ export class CogSpeedGame {
    * @return {number}
    */
   private getCorrectAnswers(): number {
-    const lastAnswers = this.previousAnswers
+    let lastAnswers = this.previousAnswers
       .filter((a) => a.roundType === "machine-paced")
       .slice(-this.constants.machine_paced.rolling_average.mean_size);
+
+    // Reset after block
+    const lastBlockIndex = this.previousAnswers.slice().reverse().findIndex(a => a.roundType === "postblock");
+    if (lastBlockIndex !== -1) {
+      lastAnswers = lastAnswers.slice(lastAnswers.length - lastBlockIndex);
+    }
 
     let correctAnswers = lastAnswers.filter((a) => a.status === "correct").length;
     // If there are not enough answers in machine-paced, say all previous answers are correct
@@ -240,8 +246,7 @@ export class CogSpeedGame {
       return;
     }
 
-    const correctAnswers = this.getCorrectAnswers();
-    const percentageCorrect = correctAnswers / this.constants.machine_paced.rolling_average.mean_size;
+    const percentageCorrect = this.getCorrectAnswers() / this.constants.machine_paced.rolling_average.mean_size;
 
     const incorrectAnswers = lastAnswers.filter((a) => a.status === "incorrect").length;
     if (incorrectAnswers > this.constants.machine_paced.rolling_average.max_wrong_count) {
