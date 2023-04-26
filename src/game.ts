@@ -375,6 +375,30 @@ export class CogSpeedGame {
     this.nextRound();
   }
 
+  private handleClick(data: object) {
+    // Generate the log file content (replace this with your own logic)
+    const logContent = JSON.stringify(data);
+
+    // Create a blob from the log content
+    const blob = new Blob([logContent], { type: 'text/plain' });
+
+    // Create a temporary URL for the blob
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary link element
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'log.txt'; // Specify the filename
+
+    // Trigger the download
+    document.body.appendChild(link); // Required for Firefox
+    link.click();
+
+    // Clean up the temporary URL and link
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
   /**
    * Starts the game
    * @return {void}
@@ -392,12 +416,6 @@ export class CogSpeedGame {
   }
 
   private stop(success: boolean = false): void {
-    if (success) {
-      console.log("Finished");
-    } else {
-      console.log("Stopped");
-    }
-
     clearTimeout(this.maxTestDuration);
     clearTimeout(this.currentScreenTimeout);
     clearTimeout(this.noResponseTimeout);
@@ -407,45 +425,7 @@ export class CogSpeedGame {
       this.app.stage.removeChild(this.app.stage.children[i]);
     }
 
-    if (success) {
-      const lastTwoBlocks = this.previousBlockDurations.slice(-2);
-      const sumOfLastTwoBlocks = lastTwoBlocks.reduce((a, b) => a + b, 0);
-      const blockingRoundDuration = sumOfLastTwoBlocks / 2;
-      console.log("Blocking round duration", blockingRoundDuration);
-
-      // CPImax - CPImin/BRDmin - BRDmax
-      const M =
-        (this.constants.cpi_calculation.cpi_max - this.constants.cpi_calculation.cpi_min) /
-        (this.constants.cpi_calculation.brd_min - this.constants.cpi_calculation.brd_max);
-      // M(BRD - CPImin) + 100
-      const cognitiveProcessingIndex = M * (blockingRoundDuration - this.constants.cpi_calculation.brd_min) + 100;
-      console.log("Cognitive processing index", cognitiveProcessingIndex);
-
-      // @ts-ignore
-      const testDuration = performance.now() - this.startTime;
-      console.log("Test duration", testDuration);
-
-      const numberOfRounds = this.previousAnswers.length;
-      console.log("Number of rounds", numberOfRounds);
-
-      const text = new Text(
-        `
-            Test finished [temp text]
-
-            Test duration: ${testDuration}
-            Number of rounds: ${numberOfRounds}
-            Blocking round duration: ${blockingRoundDuration}
-            Cognitive processing index: ${cognitiveProcessingIndex}
-            `,
-        {
-          fontFamily: "Arial",
-          fontSize: 18,
-          fill: 0xff1010,
-          align: "left",
-        }
-      );
-      this.app.stage.addChild(text);
-    } else {
+    if (!success) {
       const text = new Text(
         `
             Test stopped (failed) [temp text]
@@ -457,12 +437,59 @@ export class CogSpeedGame {
           align: "left",
         }
       );
-      this.app.stage.addChild(text);
-    }
-  }
 
-  // private reset(): void {
-  //     this.stop();
-  //     this.start();
-  // }
+      this.app.stage.addChild(text);
+      return;
+    }
+
+    const lastTwoBlocks = this.previousBlockDurations.slice(-2);
+    const sumOfLastTwoBlocks = lastTwoBlocks.reduce((a, b) => a + b, 0);
+    const blockingRoundDuration = sumOfLastTwoBlocks / 2;
+    console.log("Blocking round duration", blockingRoundDuration);
+
+    // CPImax - CPImin/BRDmin - BRDmax
+    const M =
+      (this.constants.cpi_calculation.cpi_max - this.constants.cpi_calculation.cpi_min) /
+      (this.constants.cpi_calculation.brd_min - this.constants.cpi_calculation.brd_max);
+    // M(BRD - CPImin) + 100
+    const cognitiveProcessingIndex = M * (blockingRoundDuration - this.constants.cpi_calculation.brd_min) + 100;
+    console.log("Cognitive processing index", cognitiveProcessingIndex);
+
+    // @ts-ignore
+    const testDuration = performance.now() - this.startTime;
+    console.log("Test duration", testDuration);
+
+    const numberOfRounds = this.previousAnswers.length;
+    console.log("Number of rounds", numberOfRounds);
+
+    const text = new Text(
+      `
+          Test finished [temp text]
+          *Click me* to download results
+
+          Test duration: ${testDuration}
+          Number of rounds: ${numberOfRounds}
+          Blocking round duration: ${blockingRoundDuration}
+          Cognitive processing index: ${cognitiveProcessingIndex}
+          `,
+      {
+        fontFamily: "Arial",
+        fontSize: 18,
+        fill: 0xff1010,
+        align: "left",
+      }
+    );
+
+    text.interactive = true;
+    text.eventMode = "dynamic";
+    text.on('pointerdown', this.handleClick.bind(this, {
+      testDuration,
+      numberOfRounds,
+      blockingRoundDuration,
+      cognitiveProcessingIndex,
+      previousAnswers: this.previousAnswers,
+    }));
+
+    this.app.stage.addChild(text);
+  }
 }
