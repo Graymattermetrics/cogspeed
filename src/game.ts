@@ -1,6 +1,8 @@
 import { Application, Container, Sprite, Text } from "pixi.js";
 import axios from "axios";
 
+import { v4 } from "uuid";
+
 export const buttonPositions: { [key: number]: number[] } = {
   1: [-58, -102],
   2: [-120, 0],
@@ -205,6 +207,7 @@ export class CogSpeedGame {
     if (["fail", "success"].includes(this.currentRoundType)) {
       const lastEndmodeAnswers = this.previousAnswers.filter((a) => ["fail", "success"].includes(a.roundType));
       if (lastEndmodeAnswers.length === this.constants.number_of_endmode_rounds) {
+        console.log("updateDuration: stop");
         this.stop(this.currentRoundType === "success" ? true : false);
       }
       return;
@@ -281,7 +284,11 @@ export class CogSpeedGame {
     clearTimeout(this.noResponseTimeout); // Clear no response timeout
     // Set no response timeout
     this.noResponseTimeout = setTimeout(
-      this.stop.bind(this),
+      () => {
+        if (this.currentRoundType !== "null") {
+          this.stop();
+        }
+      },
       this.previousAnswers.length === 0
         ? this.constants.timeouts.max_initial_no_response
         : this.constants.timeouts.max_no_response
@@ -415,7 +422,10 @@ export class CogSpeedGame {
     this.rightContainer = rightContainer;
 
     this.startTime = performance.now();
-    this.maxTestDuration = setTimeout(this.stop.bind(this), this.constants.timeouts.max_test_duration);
+    this.maxTestDuration = setTimeout(() => {
+      console.log("maxTestDuration: stop");
+      this.stop();
+    }, this.constants.timeouts.max_test_duration);
     this.nextRound();
   }
 
@@ -423,6 +433,7 @@ export class CogSpeedGame {
     clearTimeout(this.maxTestDuration);
     clearTimeout(this.currentScreenTimeout);
     clearTimeout(this.noResponseTimeout);
+    console.log("No response timeout", this.noResponseTimeout);
 
     this.currentRoundType = "null";
     for (var i = this.app.stage.children.length - 1; i >= 0; i--) {
@@ -466,6 +477,16 @@ export class CogSpeedGame {
     const numberOfRounds = this.previousAnswers.length;
     console.log("Number of rounds", numberOfRounds);
 
+    const data = {
+      testDuration,
+      numberOfRounds,
+      blockingRoundDuration,
+      cognitiveProcessingIndex,
+      id: v4(),
+      date: new Date().toISOString(),
+      previousAnswers: this.previousAnswers,
+    };
+
     const text = new Text(
       `
           Test finished [temp text]
@@ -486,16 +507,7 @@ export class CogSpeedGame {
 
     text.interactive = true;
     text.eventMode = "dynamic";
-    text.on(
-      "pointerdown",
-      this.handleClick.bind(this, {
-        testDuration,
-        numberOfRounds,
-        blockingRoundDuration,
-        cognitiveProcessingIndex,
-        previousAnswers: this.previousAnswers,
-      })
-    );
+    text.on("pointerdown", this.handleClick.bind(this, data));
 
     this.app.stage.addChild(text);
   }
