@@ -23,7 +23,8 @@ export class CogSpeedGame {
   // Time
   private startTime: number | undefined;
   private currentDuration: number = -1;
-  private currentRoundType: "training" | "self-paced" | "machine-paced" | "postblock" | "endmode" | null = "training";
+  private currentRoundType: "training" | "self-paced" | "machine-paced" | "postblock" | "fail" | "success" | "null" =
+    "training";
   private previousBlockDurations: number[] = [-1];
 
   // Answers
@@ -162,7 +163,7 @@ export class CogSpeedGame {
     this.answer = answerLocation;
 
     // Update duration
-    if (this.currentRoundType !== null && ["machine-paced", "postblock", "endmode"].includes(this.currentRoundType)) {
+    if (["machine-paced", "postblock", "fail", "success"].includes(this.currentRoundType)) {
       this.updateDuration();
     }
 
@@ -180,7 +181,10 @@ export class CogSpeedGame {
       .slice(-this.constants.machine_paced.rolling_average.mean_size);
 
     // Reset after block
-    const lastBlockIndex = this.previousAnswers.slice().reverse().findIndex(a => a.roundType === "postblock");
+    const lastBlockIndex = this.previousAnswers
+      .slice()
+      .reverse()
+      .findIndex((a) => a.roundType === "postblock");
     if (lastBlockIndex !== -1) {
       lastAnswers = lastAnswers.slice(lastAnswers.length - lastBlockIndex);
     }
@@ -198,10 +202,10 @@ export class CogSpeedGame {
    * @return {void}
    */
   private updateDuration(): void {
-    if (this.currentRoundType === "endmode") {
-      const lastEndmodeAnswers = this.previousAnswers.filter((a) => a.roundType === "endmode");
+    if (["fail", "success"].includes(this.currentRoundType)) {
+      const lastEndmodeAnswers = this.previousAnswers.filter((a) => ["fail", "success"].includes(a.roundType));
       if (lastEndmodeAnswers.length === this.constants.number_of_endmode_rounds) {
-        this.stop(true);
+        this.stop(this.currentRoundType === "success" ? true : false);
       }
       return;
     }
@@ -238,7 +242,7 @@ export class CogSpeedGame {
       const lastBlockDuration = this.previousBlockDurations[this.previousBlockDurations.length - 1];
 
       if (Math.abs(blockDuration - lastBlockDuration) < this.constants.machine_paced.blocking.duration_delta) {
-        this.currentRoundType = "endmode";
+        this.currentRoundType = "success";
       } else {
         this.currentRoundType = "postblock";
       }
@@ -250,7 +254,7 @@ export class CogSpeedGame {
 
     const incorrectAnswers = lastAnswers.filter((a) => a.status === "incorrect").length;
     if (incorrectAnswers > this.constants.machine_paced.rolling_average.max_wrong_count) {
-      this.currentRoundType = "endmode";
+      this.currentRoundType = "fail";
       return;
     }
 
@@ -319,7 +323,7 @@ export class CogSpeedGame {
     }
 
     // Currently in machine paced, set timeout before next screen
-    if (this.currentRoundType !== null && ["machine-paced", "endmode"].includes(this.currentRoundType)) {
+    if (["machine-paced", "fail", "success"].includes(this.currentRoundType)) {
       this.currentScreenTimeout = setTimeout(() => {
         this.buttonClicked(false);
       }, this.currentDuration);
@@ -380,15 +384,15 @@ export class CogSpeedGame {
     const logContent = JSON.stringify(data);
 
     // Create a blob from the log content
-    const blob = new Blob([logContent], { type: 'text/plain' });
+    const blob = new Blob([logContent], { type: "text/plain" });
 
     // Create a temporary URL for the blob
     const url = URL.createObjectURL(blob);
 
     // Create a temporary link element
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = 'log.txt'; // Specify the filename
+    link.download = "log.txt"; // Specify the filename
 
     // Trigger the download
     document.body.appendChild(link); // Required for Firefox
@@ -420,7 +424,7 @@ export class CogSpeedGame {
     clearTimeout(this.currentScreenTimeout);
     clearTimeout(this.noResponseTimeout);
 
-    this.currentRoundType = null;
+    this.currentRoundType = "null";
     for (var i = this.app.stage.children.length - 1; i >= 0; i--) {
       this.app.stage.removeChild(this.app.stage.children[i]);
     }
@@ -482,13 +486,16 @@ export class CogSpeedGame {
 
     text.interactive = true;
     text.eventMode = "dynamic";
-    text.on('pointerdown', this.handleClick.bind(this, {
-      testDuration,
-      numberOfRounds,
-      blockingRoundDuration,
-      cognitiveProcessingIndex,
-      previousAnswers: this.previousAnswers,
-    }));
+    text.on(
+      "pointerdown",
+      this.handleClick.bind(this, {
+        testDuration,
+        numberOfRounds,
+        blockingRoundDuration,
+        cognitiveProcessingIndex,
+        previousAnswers: this.previousAnswers,
+      })
+    );
 
     this.app.stage.addChild(text);
   }
