@@ -43,10 +43,10 @@ async function main(): Promise<void> {
   const graphicsManager = new CogSpeedGraphicsHandler(app);
   graphicsManager.setBackground("carbon");
   
-  const startPage = new StartPage(app);
+  const startPage = new StartPage(app, graphicsManager);
   // Initiate before displaying to load config
   // Display start page
-  await startPage.display();
+  await startPage.start();
   
   // Game phase - called after start button is clicked
   const game = new CogSpeedGame(app, config, graphicsManager);

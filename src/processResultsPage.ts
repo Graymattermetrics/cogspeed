@@ -59,17 +59,8 @@ export class ProcessResultsPage {
     this.app.stage.addChild(container);
     const loadingGearTexture = Texture.from(loadingGearImage);
 
-    const graphics = new Graphics();
-    graphics.zIndex = -1;
-    graphics.lineStyle(1, 0x457bda, 1);
-
     const dynamicScreenWidth = this.app.screen.width * 0.1;
     const dynamicScreenHeight = this.app.screen.height * 0.1;
-
-    graphics.moveTo(dynamicScreenWidth * 2, dynamicScreenHeight * 4);
-    graphics.lineTo(dynamicScreenWidth * 8, dynamicScreenHeight * 4);
-    graphics.lineTo(dynamicScreenWidth * 8, dynamicScreenHeight * 6);
-    graphics.lineTo(dynamicScreenWidth * 2, dynamicScreenHeight * 6);
 
     for (let y = 0; y < 2; y++) {
       for (let x = 0; x < 2; x++) {
@@ -85,6 +76,15 @@ export class ProcessResultsPage {
         container.addChild(loadingGearSprite);
       }
     }
+
+    const graphics = new Graphics();
+    graphics.lineStyle(1, 0x457bda, 1);
+
+    graphics.moveTo(dynamicScreenWidth * 2, dynamicScreenHeight * 4);
+    graphics.lineTo(dynamicScreenWidth * 8, dynamicScreenHeight * 4);
+    graphics.lineTo(dynamicScreenWidth * 8, dynamicScreenHeight * 6);
+    graphics.lineTo(dynamicScreenWidth * 2, dynamicScreenHeight * 6);
+
     graphics.closePath();
     container.addChild(graphics);
 

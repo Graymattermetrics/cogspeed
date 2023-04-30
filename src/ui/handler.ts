@@ -6,6 +6,8 @@ import gearTextureImage from "../assets/gear.png";
 import gearWellTextureImage from "../assets/gear_well.png";
 import numbersAndDotsTextureImage from "../assets/numbers_and_dots.png";
 import numbersAndDotsInvertedTextureImage from "../assets/numbers_and_dots_inverted.png";
+import smallButtonTextureImage from "../assets/small_button.png";
+import largeButtonTextureImage from "../assets/large_button.png";
 
 import { CogSpeedGame } from "../game";
 import bgCarbonImage from "../assets/bg_carbon.jpg";
@@ -31,6 +33,8 @@ export class CogSpeedGraphicsHandler {
   public numbersInverted: { [key: number]: Sprite } = {};
   public dotsInverted: { [key: number]: Sprite } = {};
 
+  public smallButtons: Texture[] = [];
+
   public gearWellTexture: Texture;
   public gearTexture: Texture;
   public buttonWellTexture: Texture;
@@ -39,6 +43,8 @@ export class CogSpeedGraphicsHandler {
   public numbersAndDotsInvertedTexture: Texture;
   public bgCarbonTexture: Texture;
   public bgSteelTexture: Texture;
+  public smallButtonTextures: Texture;
+  public largeButtonTexture: Texture;
 
   constructor(public app: Application) {
     this.gearWellTexture = Texture.from(gearWellTextureImage);
@@ -49,6 +55,8 @@ export class CogSpeedGraphicsHandler {
     this.numbersAndDotsInvertedTexture = Texture.from(numbersAndDotsInvertedTextureImage);
     this.bgCarbonTexture = Texture.from(bgCarbonImage);
     this.bgSteelTexture = Texture.from(bgSteelImage);
+    this.smallButtonTextures = Texture.from(smallButtonTextureImage);
+    this.largeButtonTexture = Texture.from(largeButtonTextureImage);
 
     // Load number and dot assets
     const { numbers, dots } = this.loadNumbersAndDots(false);
@@ -58,6 +66,23 @@ export class CogSpeedGraphicsHandler {
     this.dots = dots;
     this.numbersInverted = numbersInverted;
     this.dotsInverted = dotsInverted;
+
+    // Load button assets
+    this.smallButtons = this.loadButtons();
+  }
+
+  private loadButtons(): Texture[] {
+    const buttons = [];
+    const spaceBetween = 128;
+
+    for (let i = 0; i < 2; i++) {
+      const smallButtonTexture = new Texture(
+        this.smallButtonTextures.baseTexture,
+        new Rectangle(i * spaceBetween, 0, 128, 96)
+      );
+      buttons.push(smallButtonTexture);
+    }
+    return buttons;
   }
 
   private loadNumbersAndDots(inverted: boolean): {
