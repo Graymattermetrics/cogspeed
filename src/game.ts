@@ -2,7 +2,7 @@ import { Application, Container, Text } from "pixi.js";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 
 import { v4 } from "uuid";
-import axios from "axios";
+import { ProcessResultsPage } from "./processResultsPage";
 
 /**
  * Cogspeed game
@@ -262,52 +262,6 @@ export class CogSpeedGame {
     this.nextRound();
   }
 
-  private downloadHandler(data: object) {
-    // Generate the log file content (replace this with your own logic)
-    const logContent = JSON.stringify(data);
-
-    // Create a blob from the log content
-    const blob = new Blob([logContent], { type: "text/plain" });
-
-    // Create a temporary URL for the blob
-    const url = URL.createObjectURL(blob);
-
-    // Create a temporary link element
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "log.txt"; // Specify the filename
-
-    // Trigger the download
-    document.body.appendChild(link); // Required for Firefox
-    link.click();
-
-    // Clean up the temporary URL and link
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }
-
-  private getCurrentPosition(): Promise<GeolocationCoordinates | null> {
-    return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          resolve(position.coords);
-        },
-        (error) => {
-          if (error.code === error.PERMISSION_DENIED) {
-            console.log("User denied the request for Geolocation.");
-          } else if (error.code === error.POSITION_UNAVAILABLE) {
-            console.log("Location information is unavailable.");
-          } else if (error.code === error.TIMEOUT) {
-            console.log("The request to get user location timed out.");
-          } else {
-            console.log("An unknown error occurred.");
-          }
-          resolve(null);
-        }
-      );
-    });
-  }
-
   /**
    * Starts the game
    * @return {void}
@@ -319,7 +273,7 @@ export class CogSpeedGame {
     this.nextRound();
   }
 
-  private async stop(success: boolean = false): Promise<void> {
+  public async stop(success: boolean = false): Promise<void> {
     clearTimeout(this.maxTestDuration);
     clearTimeout(this.currentScreenTimeout);
     clearTimeout(this.noResponseTimeout);
@@ -329,47 +283,12 @@ export class CogSpeedGame {
       this.app.stage.removeChild(this.app.stage.children[i]);
     }
 
-    const coords = await this.getCurrentPosition();
-    const geolocation = coords ? `${coords.latitude},${coords.longitude}` : null;
-
-    let normalizedLocation;
-    if (coords) {
-      const request = await axios.get(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${coords.latitude},${coords.longitude}`
-      );
-      normalizedLocation = request.data[0].display_name;
-    }
-
-    const textContainer = new Container();
-    textContainer.height = this.app.screen.height;
-    textContainer.width = this.app.screen.width;
-    this.app.stage.addChild(textContainer);
-
-    if (!success) {
-      const text = new Text(
-        `
-            Test stopped (failed) [temp text]
-            `,
-        {
-          fontFamily: "Arial",
-          fontSize: 18,
-          fill: 0xff1010,
-          align: "left",
-        }
-      );
-
-      this.app.stage.addChild(text);
-      return;
-    }
-
     const round = (num: number, sf: number = 3) => {
       return Math.round((num * 10 ** sf) / 10 ** sf);
     };
 
-    const lastTwoBlocks = this.previousBlockDurations.slice(-2);
-    const sumOfLastTwoBlocks = lastTwoBlocks.reduce((a, b) => a + b, 0);
+    const sumOfLastTwoBlocks = this.previousBlockDurations.slice(-2).reduce((a, b) => a + b, 0);
     const blockingRoundDuration = round(sumOfLastTwoBlocks / 2);
-    console.log("Blocking round duration", blockingRoundDuration);
 
     // CPImax - CPImin/BRDmin - BRDmax
     const M =
@@ -377,52 +296,20 @@ export class CogSpeedGame {
       (this.config.cpi_calculation.brd_min - this.config.cpi_calculation.brd_max);
     // M(BRD - CPImin) + 100
     const cognitiveProcessingIndex = round(M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100);
-    console.log("Cognitive processing index", cognitiveProcessingIndex);
-
-    // @ts-ignore
-    const testDuration = round(performance.now() - this.startTime);
-    console.log("Test duration (ms)", testDuration);
-
-    const numberOfRounds = this.previousAnswers.length;
-    console.log("Number of rounds", numberOfRounds);
 
     const data: { [key: string]: any } = {
-      testDuration,
-      numberOfRounds,
+      success,
+      // @ts-ignore
+      testDuration: round(performance.now() - this.startTime),
+      numberOfRounds: this.previousAnswers.length,
       blockingRoundDuration,
       cognitiveProcessingIndex,
       id: v4(),
       date: new Date().toISOString(),
       previousAnswers: this.previousAnswers,
-      geolocation,
-      normalizedLocation,
     };
 
-    const text = new Text(
-      `
-Test finished [temp text]
-*Click me* to download results
-
-${Object.keys(data)
-  .filter((k) => !["previousAnswers", "id", "geolocation"].includes(k))
-  .map((k) => `${k}: ${data[k].toString().slice(0, 100)}`)
-  .join("\n")}
-          `,
-      {
-        fontFamily: "Arial",
-        fontSize: 15,
-        fill: 0xff1010,
-        align: "left",
-      }
-    );
-    text.style.wordWrap = true;
-    text.style.wordWrapWidth = this.app.screen.width - 30;
-    text.x = 5;
-    text.y = 5;
-    text.interactive = true;
-    text.eventMode = "dynamic";
-    text.on("pointerdown", this.downloadHandler.bind(this, data));
-
-    textContainer.addChild(text);
+    const resultsPage = new ProcessResultsPage(this.app);
+    await resultsPage.show(data);
   }
 }

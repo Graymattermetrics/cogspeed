@@ -261,7 +261,7 @@ export class CogSpeedGraphicsHandler {
 
     for (let i = 0; i < 6; i++) {
       const button = buttons[i];
-      button.interactive = true;
+      button.eventMode = "dynamic";
       button.on("pointerdown", () => {
         game.buttonClicked(7 - i);
         this.rippleAnimation(button);

@@ -51,6 +51,7 @@ async function main(): Promise<void> {
   // Game phase - called after start button is clicked
   const game = new CogSpeedGame(app, config, graphicsManager);
   game.start();
+  // game.stop();
 }
 
 /**
