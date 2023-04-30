@@ -41,14 +41,14 @@ export class CogSpeedGraphicsHandler {
   public bgSteelTexture: Texture;
 
   constructor(public app: Application) {
-    this.gearWellTexture  = Texture.from(gearWellTextureImage);
-    this.gearTexture  = Texture.from(gearTextureImage);
-    this.buttonWellTexture  = Texture.from(buttonWellTextureImage);
-    this.buttonTexture  = Texture.from(buttonTextureImage);
-    this.numbersAndDotsTexture  = Texture.from(numbersAndDotsTextureImage);
-    this.numbersAndDotsInvertedTexture  = Texture.from(numbersAndDotsInvertedTextureImage);
-    this.bgCarbonTexture  = Texture.from(bgCarbonImage);
-    this.bgSteelTexture  = Texture.from(bgSteelImage);
+    this.gearWellTexture = Texture.from(gearWellTextureImage);
+    this.gearTexture = Texture.from(gearTextureImage);
+    this.buttonWellTexture = Texture.from(buttonWellTextureImage);
+    this.buttonTexture = Texture.from(buttonTextureImage);
+    this.numbersAndDotsTexture = Texture.from(numbersAndDotsTextureImage);
+    this.numbersAndDotsInvertedTexture = Texture.from(numbersAndDotsInvertedTextureImage);
+    this.bgCarbonTexture = Texture.from(bgCarbonImage);
+    this.bgSteelTexture = Texture.from(bgSteelImage);
 
     // Load number and dot assets
     const { numbers, dots } = this.loadNumbersAndDots(false);
@@ -59,7 +59,7 @@ export class CogSpeedGraphicsHandler {
     this.numbersInverted = numbersInverted;
     this.dotsInverted = dotsInverted;
   }
-  
+
   private loadNumbersAndDots(inverted: boolean): {
     [key: string]: { [key: number]: Sprite };
   } {

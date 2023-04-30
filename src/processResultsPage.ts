@@ -50,19 +50,19 @@ export class ProcessResultsPage {
     return [geolocation, normalizedLocation];
   }
 
-/**
- * Displays a loading screen in order to 
- * process data such as current position
- */
+  /**
+   * Displays a loading screen in order to
+   * process data such as current position
+   */
   public loadingScreen(): Container {
     const container = new Container();
     this.app.stage.addChild(container);
     const loadingGearTexture = Texture.from(loadingGearImage);
-    
+
     const graphics = new Graphics();
     graphics.zIndex = -1;
     graphics.lineStyle(1, 0x457bda, 1);
-    
+
     const dynamicScreenWidth = this.app.screen.width * 0.1;
     const dynamicScreenHeight = this.app.screen.height * 0.1;
 
@@ -72,22 +72,22 @@ export class ProcessResultsPage {
     graphics.lineTo(dynamicScreenWidth * 2, dynamicScreenHeight * 6);
 
     for (let y = 0; y < 2; y++) {
-        for (let x = 0; x < 2; x++ ) {
-            const loadingGearSprite = new Sprite(loadingGearTexture);
-            loadingGearSprite.scale = new Point(0.4, 0.4);
-            loadingGearSprite.x = dynamicScreenWidth * (x === 0 ? 2 : 8);
-            loadingGearSprite.y = dynamicScreenHeight * (y === 0 ? 4 : 6);
-            loadingGearSprite.anchor.set(0.5);
-            
-            this.app.ticker.add((delta: number) => {
-              loadingGearSprite.rotation += 0.1 * delta;
-            });
-            container.addChild(loadingGearSprite);
-        }
+      for (let x = 0; x < 2; x++) {
+        const loadingGearSprite = new Sprite(loadingGearTexture);
+        loadingGearSprite.scale = new Point(0.4, 0.4);
+        loadingGearSprite.x = dynamicScreenWidth * (x === 0 ? 2 : 8);
+        loadingGearSprite.y = dynamicScreenHeight * (y === 0 ? 4 : 6);
+        loadingGearSprite.anchor.set(0.5);
+
+        this.app.ticker.add((delta: number) => {
+          loadingGearSprite.rotation += 0.1 * delta;
+        });
+        container.addChild(loadingGearSprite);
+      }
     }
     graphics.closePath();
     container.addChild(graphics);
-    
+
     return container;
   }
 

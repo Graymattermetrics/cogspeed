@@ -26,9 +26,7 @@ export class CogSpeedGame {
   private currentScreenTimeout: NodeJS.Timeout | undefined;
   private maxTestDuration: NodeJS.Timeout | undefined;
 
-  constructor(private app: Application, private config: { [key: string]: any }, private ui: CogSpeedGraphicsHandler) {
-    this.ui.setupGame(this);
-  }
+  constructor(private app: Application, private config: { [key: string]: any }, private ui: CogSpeedGraphicsHandler) {}
 
   /**
    * Sets up the next round
@@ -229,10 +227,7 @@ export class CogSpeedGame {
     let answer = this.answer;
     let status = location === false ? "no response" : location === this.answer ? "correct" : "incorrect";
     if (this.config.machine_paced.minimum_response_time > timeTaken) {
-      if (
-        this.previousAnswers[this.previousAnswers.length - 1].status === "no response" &&
-        location === this.previousAnswers[this.previousAnswers.length - 1].answerLocation
-      ) {
+      if (previousAnswer && previousAnswer.status === "no response" && location === previousAnswer.answerLocation) {
         status = "correct";
         answer = this.previousAnswers[this.previousAnswers.length - 1].answerLocation;
       }
@@ -268,6 +263,8 @@ export class CogSpeedGame {
    * @return {Promise<void>}
    */
   public async start(): Promise<void> {
+    this.ui.setupGame(this);
+
     this.startTime = performance.now();
     this.maxTestDuration = setTimeout(this.stop.bind(this), this.config.timeouts.max_test_duration);
     this.nextRound();
