@@ -11,13 +11,6 @@ import { CogSpeedGame } from "../game";
 import bgCarbonImage from "../assets/bg_carbon.jpg";
 import bgSteelImage from "../assets/bg_steel.jpg";
 
-const gearWellTexture = Texture.from(gearWellTextureImage);
-const gearTexture = Texture.from(gearTextureImage);
-const buttonWellTexture = Texture.from(buttonWellTextureImage);
-const buttonTexture = Texture.from(buttonTextureImage);
-const numbersAndDotsTexture = Texture.from(numbersAndDotsTextureImage);
-const numbersAndDotsInvertedTexture = Texture.from(numbersAndDotsInvertedTextureImage);
-
 export const buttonPositions: { [key: number]: number[] } = {
   1: [-58, -102],
   2: [-120, 0],
@@ -38,7 +31,25 @@ export class CogSpeedGraphicsHandler {
   public numbersInverted: { [key: number]: Sprite } = {};
   public dotsInverted: { [key: number]: Sprite } = {};
 
+  public gearWellTexture: Texture;
+  public gearTexture: Texture;
+  public buttonWellTexture: Texture;
+  public buttonTexture: Texture;
+  public numbersAndDotsTexture: Texture;
+  public numbersAndDotsInvertedTexture: Texture;
+  public bgCarbonTexture: Texture;
+  public bgSteelTexture: Texture;
+
   constructor(public app: Application) {
+    this.gearWellTexture  = Texture.from(gearWellTextureImage);
+    this.gearTexture  = Texture.from(gearTextureImage);
+    this.buttonWellTexture  = Texture.from(buttonWellTextureImage);
+    this.buttonTexture  = Texture.from(buttonTextureImage);
+    this.numbersAndDotsTexture  = Texture.from(numbersAndDotsTextureImage);
+    this.numbersAndDotsInvertedTexture  = Texture.from(numbersAndDotsInvertedTextureImage);
+    this.bgCarbonTexture  = Texture.from(bgCarbonImage);
+    this.bgSteelTexture  = Texture.from(bgSteelImage);
+
     // Load number and dot assets
     const { numbers, dots } = this.loadNumbersAndDots(false);
     const { numbers: numbersInverted, dots: dotsInverted } = this.loadNumbersAndDots(true);
@@ -48,12 +59,12 @@ export class CogSpeedGraphicsHandler {
     this.numbersInverted = numbersInverted;
     this.dotsInverted = dotsInverted;
   }
-
+  
   private loadNumbersAndDots(inverted: boolean): {
     [key: string]: { [key: number]: Sprite };
   } {
     const spaceBetween = 96;
-    const texture = inverted ? numbersAndDotsInvertedTexture : numbersAndDotsTexture;
+    const texture = inverted ? this.numbersAndDotsInvertedTexture : this.numbersAndDotsTexture;
 
     const numbers: { [key: number]: Sprite } = {};
     const dots: { [key: number]: Sprite } = {};
@@ -184,13 +195,13 @@ export class CogSpeedGraphicsHandler {
     this.app.stage.addChild(container);
 
     // Add gear well
-    const gearWell = new Sprite(gearWellTexture);
+    const gearWell = new Sprite(this.gearWellTexture);
     gearWell.anchor.set(0.5);
     gearWell.scale = new Point(0.7, 0.7); // TODO: scale with screen size
     container.addChild(gearWell);
 
     // Add gears
-    const gear = new Sprite(gearTexture);
+    const gear = new Sprite(this.gearTexture);
     gear.anchor.set(0.5);
     gear.scale = new Point(0.7, 0.7); // TODO: scale with screen size
     container.addChild(gear);
@@ -201,7 +212,7 @@ export class CogSpeedGraphicsHandler {
       if (gearLocation === "left" && i <= 3) continue;
       if (gearLocation === "right" && i > 3) continue;
 
-      const button = new Sprite(buttonTexture);
+      const button = new Sprite(this.buttonTexture);
       button.anchor.set(0.5);
       button.scale = new Point(0.7, 0.7); // TODO: scale with screen size
 
@@ -220,7 +231,7 @@ export class CogSpeedGraphicsHandler {
   public async rippleAnimation(sprite: Sprite): Promise<void> {
     const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-    const animationSprite = new Sprite(buttonTexture);
+    const animationSprite = new Sprite(this.buttonTexture);
     animationSprite.x = sprite.x;
     animationSprite.y = sprite.y;
     animationSprite.anchor.set(0.5);
@@ -245,7 +256,7 @@ export class CogSpeedGraphicsHandler {
     // Remove old background
     this.app.stage.removeChild(this.app.stage.getChildByName("background") as Sprite);
 
-    const background = Sprite.from(texture === "carbon" ? bgCarbonImage : bgSteelImage);
+    const background = Sprite.from(texture === "carbon" ? this.bgCarbonTexture : this.bgSteelTexture);
     background.name = "background";
 
     this.app.stage.addChild(background);
@@ -269,12 +280,12 @@ export class CogSpeedGraphicsHandler {
     }
 
     // Create centre button to display query number
-    const buttonWell = new Sprite(buttonWellTexture);
+    const buttonWell = new Sprite(this.buttonWellTexture);
     buttonWell.anchor.set(0.5);
     buttonWell.scale = new Point(0.7, 0.7); // TODO: scale with screen size
     container.addChild(buttonWell);
 
-    const button = new Sprite(buttonTexture);
+    const button = new Sprite(this.buttonTexture);
     button.anchor.set(0.5);
     button.scale = new Point(0.7, 0.7); // TODO: scale with screen size
     container.addChild(button);

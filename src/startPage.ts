@@ -16,7 +16,7 @@ export class StartPage {
 
     // Block until the start page is removed
     while (sprite.destroyed === false) {
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
 
