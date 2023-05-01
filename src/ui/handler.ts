@@ -283,6 +283,8 @@ export class CogSpeedGraphicsHandler {
 
     const background = Sprite.from(texture === "carbon" ? this.bgCarbonTexture : this.bgSteelTexture);
     background.name = "background";
+    background.width = this.app.screen.width;
+    background.height = this.app.screen.height;
 
     this.app.stage.addChild(background);
   }

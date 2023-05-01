@@ -1,4 +1,4 @@
-import { Application, Container, NineSlicePlane, Point, SimplePlane, Sprite, Text } from "pixi.js";
+import { Application, Container, Point, Sprite, Text } from "pixi.js";
 
 import logoWithGears from "./assets/logo_with_gears.png";
 import readyDemoImage from "./assets/ready_demmo.png";
@@ -13,42 +13,47 @@ export class StartPage {
   }
 
   private async confirm(confirmText: string, denyText: string = ""): Promise<boolean> {
-    const yesBorderPane = new SimplePlane(this.ui.smallButtons[1], 50, 50);
-    yesBorderPane.scale = new Point(1.2, 1.2);
-    yesBorderPane.x = this.app.screen.width * 0.5;
-    yesBorderPane.y = this.app.screen.height * 0.7;
-    this.container.addChild(yesBorderPane);
+    const yesBorder = new Sprite(this.ui.smallButtons[1]);
+    yesBorder.scale = new Point(1.2, 1.2);
+    yesBorder.width = this.app.screen.width * 0.4;
+    yesBorder.height = this.app.screen.height * 0.2;
+    yesBorder.x = this.app.screen.width * 0.5;
+    yesBorder.y = this.app.screen.height * 0.7;
+    this.container.addChild(yesBorder);
 
     const yesText = new Text(confirmText, {
       fontFamily: "Trebuchet",
       fontSize: 30,
       fill: 0xffffff,
     });
-    yesText.x = yesBorderPane.width * 0.55 - yesText.width;
-    yesText.y = yesBorderPane.height * 0.55 - yesText.height;
-    yesBorderPane.addChild(yesText);
+    yesText.x = yesBorder.x + (yesBorder.width - yesText.width) * 0.5;
+    yesText.y = yesBorder.y + (yesBorder.height - yesText.height) * 0.5;
+    this.container.addChild(yesText);
 
     if (denyText === "") {
-      await this.waitForKeyPress(yesBorderPane);
+      await this.waitForKeyPress([yesBorder, yesText]);
       return true;
     }
 
-    const noBorderPane = new SimplePlane(this.ui.smallButtons[1], 50, 50);
-    noBorderPane.scale = new Point(1.2, 1.2);
-    noBorderPane.x = this.app.screen.width * 0.1;
-    noBorderPane.y = this.app.screen.height * 0.7;
-    this.container.addChild(noBorderPane);
+    const noBorder = new Sprite(this.ui.smallButtons[1]);
+    noBorder.scale = new Point(1.2, 1.2);
+    noBorder.width = this.app.screen.width * 0.4;
+    noBorder.height = this.app.screen.height * 0.2;
+    noBorder.x = this.app.screen.width * 0.1;
+    noBorder.y = this.app.screen.height * 0.7;
+    this.container.addChild(noBorder);
 
     const noText = new Text(denyText, {
       fontFamily: "Trebuchet",
       fontSize: 30,
       fill: 0xffffff,
     });
-    noText.x = noBorderPane.width * 0.55 - noText.width;
-    noText.y = noBorderPane.height * 0.55 - noText.height;
-    noBorderPane.addChild(noText);
-
-    return (await this.waitForKeyPress([yesBorderPane, noBorderPane])) === yesBorderPane;
+    noText.x = noBorder.x + (noBorder.width - noText.width) * 0.5;
+    noText.y = noBorder.y + (noBorder.height - noText.height) * 0.5;
+    this.container.addChild(noText);
+    
+    const keypress = await this.waitForKeyPress([yesBorder, yesText], [noBorder, noText])
+    return keypress === yesBorder || keypress === yesText;
   }
 
   private createText(
@@ -80,22 +85,16 @@ export class StartPage {
    * Wait for a click on a sprite
    */
   private async waitForKeyPress(
-    sprite: Sprite | Container | Sprite[] | SimplePlane[] = this.container
-  ): Promise<Sprite | null | SimplePlane> {
-    if (Array.isArray(sprite)) {
-      for (const sprite_ of sprite) {
-        sprite_.eventMode = "dynamic";
-        sprite_.on("pointerdown", () => {
-          sprite_.destroy();
-          this.container.destroy();
-        });
-      }
-    } else {
-      sprite.eventMode = "dynamic";
-      sprite.on("pointerdown", () => {
+    sprite: (Sprite | Container | Text)[] = [this.container],
+    secondSprites: (Sprite | Container | Text)[] = [],
+  ): Promise<Sprite | Container | null> {
+    [...sprite, ...secondSprites].forEach((sprite_) => {
+      sprite_.eventMode = "dynamic";
+      sprite_.on("pointerdown", () => {
+        sprite_.destroy();
         this.container.destroy();
       });
-    }
+    });
 
     // Block until the start page is removed
     while (this.container.destroyed === false) {
@@ -104,11 +103,9 @@ export class StartPage {
     this.container = new Container();
     this.app.stage.addChild(this.container);
 
-    if (Array.isArray(sprite)) {
-      for (const sprite_ of sprite) {
-        if (sprite_.destroyed === true) {
-          return sprite_;
-        }
+    for (const sprite_ of sprite) {
+      if (sprite_.destroyed === true) {
+        return sprite_;
       }
     }
     return null;
@@ -134,30 +131,32 @@ export class StartPage {
    * Display the home page
    */
   private async displayHomePage() {
+    // Create the logo
     const logoSprite = Sprite.from(logoWithGears);
-    logoSprite.scale = new Point(0.7, 0.7);
-    logoSprite.y = this.app.screen.height * 0.05;
+    logoSprite.width = this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
+    logoSprite.height = this.app.screen.height * 0.6 > 400 ? 400 : this.app.screen.height * 0.6;
+    logoSprite.x = this.app.screen.width * 0.5 - logoSprite.width * 0.5;
     this.container.addChild(logoSprite);
 
-    const buttonPane = new SimplePlane(this.ui.largeButtonTexture, 10, 10);
-    buttonPane.scale = new Point(0.6, 0.6);
-    buttonPane.x = 0;
-    buttonPane.y = this.app.screen.height * 0.65;
-    this.container.addChild(buttonPane);
+    const buttonBorder = new Sprite(this.ui.largeButtonTexture);
+    buttonBorder.width = this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
+    buttonBorder.height = this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25;
+    buttonBorder.x = this.app.screen.width * 0.5 - buttonBorder.width * 0.5;
+    buttonBorder.y = this.app.screen.height * 0.70;
+    this.container.addChild(buttonBorder);
 
     // Display the start page
     const startNowButton = new Text("Test now!", {
       fontFamily: "Trebuchet",
-      fontSize: 64,
+      fontSize: 36,
       fill: 0xffffff,
     });
-    // Center the start now button in the button pane
-    startNowButton.x = buttonPane.width * 300;
-    startNowButton.y = buttonPane.height * 200;
+    // Center the start now button
+    startNowButton.x = buttonBorder.x + (buttonBorder.width - startNowButton.width) * 0.5;
+    startNowButton.y = buttonBorder.y + (buttonBorder.height - startNowButton.height) * 0.5;
+    this.container.addChild(startNowButton);
 
-    buttonPane.addChild(startNowButton);
-
-    await this.waitForKeyPress(buttonPane);
+    await this.waitForKeyPress([buttonBorder, startNowButton]);
   }
 
   /**
@@ -226,27 +225,28 @@ export class StartPage {
    */
   public async start(): Promise<{ [key: string]: any } | false> {
     // Display the home page
-    await this.displayHomePage();
+    // await this.displayHomePage();
 
-    // Display the test disclaimer
-    const ready = await this.displayTestDisclaimer();
-    if (!ready) return false;
+    // // Display the test disclaimer
+    // const ready = await this.displayTestDisclaimer();
+    // if (!ready) return false;
 
-    // Get sleep data
-    const sleepData = await this.displaySleepForm();
+    // // Get sleep data
+    // const sleepData = await this.displaySleepForm();
 
-    // Confirm sleep data
-    if (!(await this.confirmSleepData(sleepData))) return false; // TODO: Go back to sleep form
+    // // Confirm sleep data
+    // if (!(await this.confirmSleepData(sleepData))) return false; // TODO: Go back to sleep form
 
-    // Display the Samn Perelli checklist
-    const fatigueLevel = await this.displaySamnPerelliChecklist();
+    // // Display the Samn Perelli checklist
+    // const fatigueLevel = await this.displaySamnPerelliChecklist();
 
-    // Display the ready demo screen
-    await this.displayReadyDemo();
+    // // Display the ready demo screen
+    // await this.displayReadyDemo();
 
-    return {
-      fatigueLevel,
-      ...sleepData,
-    };
+    // return {
+    //   fatigueLevel,
+    //   ...sleepData,
+    // };
+    return {}
   }
 }
