@@ -1,4 +1,4 @@
-import { Application, Container, Text } from "pixi.js";
+import { Application } from "pixi.js";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 
 import { v4 } from "uuid";
@@ -201,7 +201,9 @@ export class CogSpeedGame {
         this.currentRoundType = "machine-paced";
       }
       // Exit if too many incorrect answers in self paced
+      console.log(incorrectAnswers.length, this.config.self_paced.max_wrong_count, incorrectAnswers);
       if (incorrectAnswers.length === this.config.self_paced.max_wrong_count) {
+        console.log("e");
         this.stop();
         return;
       }

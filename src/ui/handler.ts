@@ -281,7 +281,7 @@ export class CogSpeedGraphicsHandler {
     // Remove old background
     this.app.stage.removeChild(this.app.stage.getChildByName("background") as Sprite);
 
-    const background = Sprite.from(texture === "carbon" ? this.bgCarbonTexture : this.bgSteelTexture);
+    const background = new Sprite(texture === "carbon" ? this.bgCarbonTexture : this.bgSteelTexture);
     background.name = "background";
     background.width = this.app.screen.width;
     background.height = this.app.screen.height;
@@ -297,8 +297,8 @@ export class CogSpeedGraphicsHandler {
   public createInputGear(posX: number, posY: number, game: CogSpeedGame): void {
     const [container, buttons] = this.createGear(posX, posY);
 
-    for (let i = 0; i < 6; i++) {
-      const button = buttons[i];
+    for (let i = 1; i <= 6; i++) {
+      const button = buttons[i - 1];
       button.eventMode = "dynamic";
       button.on("pointerdown", () => {
         game.buttonClicked(7 - i);

@@ -1,15 +1,25 @@
+<<<<<<< HEAD
 import { Application, Container, Point, Sprite, Text } from "pixi.js";
+=======
+import { Application, Container, Point, SimplePlane, Sprite, Text, Texture } from "pixi.js";
+>>>>>>> 810235b4c76c60f173338a862ebdbd53275a62cb
 
-import logoWithGears from "./assets/logo_with_gears.png";
+import logoWithGearsImage from "./assets/logo_with_gears.png";
 import readyDemoImage from "./assets/ready_demmo.png";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 
 export class StartPage {
   private container: Container;
 
+  private readyDemoTexture: Texture;
+  private logoTexture: Texture;
+
   constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {
     this.container = new Container();
     this.app.stage.addChild(this.container);
+
+    this.readyDemoTexture = Texture.from(readyDemoImage);
+    this.logoTexture = Texture.from(logoWithGearsImage);
   }
 
   private async confirm(confirmText: string, denyText: string = ""): Promise<boolean> {
@@ -116,7 +126,7 @@ export class StartPage {
    */
   private async displayReadyDemo() {
     // Display the ready demo screen
-    const readyDemo = Sprite.from(readyDemoImage);
+    const readyDemo = new Sprite(this.readyDemoTexture);
     readyDemo.x = 0;
     readyDemo.y = 0;
     readyDemo.width = this.app.screen.width;
@@ -131,11 +141,17 @@ export class StartPage {
    * Display the home page
    */
   private async displayHomePage() {
+<<<<<<< HEAD
     // Create the logo
     const logoSprite = Sprite.from(logoWithGears);
     logoSprite.width = this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
     logoSprite.height = this.app.screen.height * 0.6 > 400 ? 400 : this.app.screen.height * 0.6;
     logoSprite.x = this.app.screen.width * 0.5 - logoSprite.width * 0.5;
+=======
+    const logoSprite = new Sprite(this.logoTexture);
+    logoSprite.scale = new Point(0.7, 0.7);
+    logoSprite.y = this.app.screen.height * 0.05;
+>>>>>>> 810235b4c76c60f173338a862ebdbd53275a62cb
     this.container.addChild(logoSprite);
 
     const buttonBorder = new Sprite(this.ui.largeButtonTexture);
