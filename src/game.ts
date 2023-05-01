@@ -201,9 +201,7 @@ export class CogSpeedGame {
         this.currentRoundType = "machine-paced";
       }
       // Exit if too many incorrect answers in self paced
-      console.log(incorrectAnswers.length, this.config.self_paced.max_wrong_count, incorrectAnswers);
       if (incorrectAnswers.length === this.config.self_paced.max_wrong_count) {
-        console.log("e");
         this.stop();
         return;
       }
@@ -254,8 +252,8 @@ export class CogSpeedGame {
     }
 
     this.previousAnswers.push(data);
-
     console.log(this.previousAnswers);
+
     this.nextRound();
   }
 

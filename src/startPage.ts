@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { Application, Container, Point, Sprite, Text } from "pixi.js";
-=======
-import { Application, Container, Point, SimplePlane, Sprite, Text, Texture } from "pixi.js";
->>>>>>> 810235b4c76c60f173338a862ebdbd53275a62cb
+import { Application, Container, Point, Sprite, Text, Texture } from "pixi.js";
 
 import logoWithGearsImage from "./assets/logo_with_gears.png";
 import readyDemoImage from "./assets/ready_demmo.png";
@@ -141,17 +137,11 @@ export class StartPage {
    * Display the home page
    */
   private async displayHomePage() {
-<<<<<<< HEAD
     // Create the logo
-    const logoSprite = Sprite.from(logoWithGears);
+    const logoSprite = new Sprite(this.logoTexture);
     logoSprite.width = this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
     logoSprite.height = this.app.screen.height * 0.6 > 400 ? 400 : this.app.screen.height * 0.6;
     logoSprite.x = this.app.screen.width * 0.5 - logoSprite.width * 0.5;
-=======
-    const logoSprite = new Sprite(this.logoTexture);
-    logoSprite.scale = new Point(0.7, 0.7);
-    logoSprite.y = this.app.screen.height * 0.05;
->>>>>>> 810235b4c76c60f173338a862ebdbd53275a62cb
     this.container.addChild(logoSprite);
 
     const buttonBorder = new Sprite(this.ui.largeButtonTexture);
@@ -241,28 +231,28 @@ export class StartPage {
    */
   public async start(): Promise<{ [key: string]: any } | false> {
     // Display the home page
-    // await this.displayHomePage();
+    await this.displayHomePage();
 
-    // // Display the test disclaimer
-    // const ready = await this.displayTestDisclaimer();
-    // if (!ready) return false;
+    // Display the test disclaimer
+    const ready = await this.displayTestDisclaimer();
+    if (!ready) return false;
 
-    // // Get sleep data
-    // const sleepData = await this.displaySleepForm();
+    // Get sleep data
+    const sleepData = await this.displaySleepForm();
 
-    // // Confirm sleep data
-    // if (!(await this.confirmSleepData(sleepData))) return false; // TODO: Go back to sleep form
+    // Confirm sleep data
+    if (!(await this.confirmSleepData(sleepData))) return false; // TODO: Go back to sleep form
 
-    // // Display the Samn Perelli checklist
-    // const fatigueLevel = await this.displaySamnPerelliChecklist();
+    // Display the Samn Perelli checklist
+    const fatigueLevel = await this.displaySamnPerelliChecklist();
 
-    // // Display the ready demo screen
-    // await this.displayReadyDemo();
+    // Display the ready demo screen
+    await this.displayReadyDemo();
 
-    // return {
-    //   fatigueLevel,
-    //   ...sleepData,
-    // };
+    return {
+      fatigueLevel,
+      ...sleepData,
+    };
     return {}
   }
 }
