@@ -32,13 +32,17 @@ export const buttonPositions_: { [key: number]: any } = {
 // Width, height of gear
 export const buttonPositions: { [key: number]: any } = {
   1: (width: number, height: number) => {
-    return [-58, -102];
+    const k = 2 / 3;
+    return [-(width / 2 - (k * width) / 2), -102];
   },
   2: (width: number, height: number) => {
-    const k = 0.33;
+    const k = 1 / 3;
     return [-(width / 2 - (k * width) / 2), 0];
   },
-  3: (width: number, height: number) => [-58, 102],
+  3: (width: number, height: number) => {
+    const k = 2 / 3;
+    return [-(width / 2 - (k * width) / 2), 102];
+  },
   4: (width: number, height: number) => [58, 102],
   5: (width: number, height: number) => {
     const k = 0.33;
