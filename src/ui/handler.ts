@@ -1,4 +1,11 @@
-import { Application, Container, Point, Rectangle, Sprite, Texture } from "pixi.js";
+import {
+  Application,
+  Container,
+  Point,
+  Rectangle,
+  Sprite,
+  Texture,
+} from "pixi.js";
 
 import buttonTextureImage from "../assets/button.png";
 import buttonWellTextureImage from "../assets/button_well.png";
@@ -13,13 +20,31 @@ import { CogSpeedGame } from "../game";
 import bgCarbonImage from "../assets/bg_carbon.jpg";
 import bgSteelImage from "../assets/bg_steel.jpg";
 
-export const buttonPositions: { [key: number]: number[] } = {
-  1: [-58, -102],
-  2: [-120, 0],
-  3: [-58, 102],
-  4: [58, 102],
-  5: [119, 0],
-  6: [58, -102],
+export const buttonPositions_: { [key: number]: any } = {
+  1: (width: number, height: number) => {},
+  2: (width: number, height: number) => {},
+  3: (width: number, height: number) => {},
+  4: (width: number, height: number) => {},
+  5: (width: number, height: number) => {},
+  6: (width: number, height: number) => {},
+};
+
+// Width, height of gear
+export const buttonPositions: { [key: number]: any } = {
+  1: (width: number, height: number) => {
+    return [-58, -102];
+  },
+  2: (width: number, height: number) => {
+    const k = 0.33;
+    return [-(width / 2 - (k * width) / 2), 0];
+  },
+  3: (width: number, height: number) => [-58, 102],
+  4: (width: number, height: number) => [58, 102],
+  5: (width: number, height: number) => {
+    const k = 0.33;
+    return [+(width / 2 - (k * width) / 2), 0];
+  },
+  6: (width: number, height: number) => [58, -102],
 };
 
 export class CogSpeedGraphicsHandler {
@@ -52,7 +77,9 @@ export class CogSpeedGraphicsHandler {
     this.buttonWellTexture = Texture.from(buttonWellTextureImage);
     this.buttonTexture = Texture.from(buttonTextureImage);
     this.numbersAndDotsTexture = Texture.from(numbersAndDotsTextureImage);
-    this.numbersAndDotsInvertedTexture = Texture.from(numbersAndDotsInvertedTextureImage);
+    this.numbersAndDotsInvertedTexture = Texture.from(
+      numbersAndDotsInvertedTextureImage
+    );
     this.bgCarbonTexture = Texture.from(bgCarbonImage);
     this.bgSteelTexture = Texture.from(bgSteelImage);
     this.smallButtonTextures = Texture.from(smallButtonTextureImage);
@@ -60,7 +87,8 @@ export class CogSpeedGraphicsHandler {
 
     // Load number and dot assets
     const { numbers, dots } = this.loadNumbersAndDots(false);
-    const { numbers: numbersInverted, dots: dotsInverted } = this.loadNumbersAndDots(true);
+    const { numbers: numbersInverted, dots: dotsInverted } =
+      this.loadNumbersAndDots(true);
 
     this.numbers = numbers;
     this.dots = dots;
@@ -89,7 +117,9 @@ export class CogSpeedGraphicsHandler {
     [key: string]: { [key: number]: Sprite };
   } {
     const spaceBetween = 96;
-    const texture = inverted ? this.numbersAndDotsInvertedTexture : this.numbersAndDotsTexture;
+    const texture = inverted
+      ? this.numbersAndDotsInvertedTexture
+      : this.numbersAndDotsTexture;
 
     const numbers: { [key: number]: Sprite } = {};
     const dots: { [key: number]: Sprite } = {};
@@ -121,7 +151,12 @@ export class CogSpeedGraphicsHandler {
    * @param {number} y The y position
    * @param {Container | undefined} container The container to add the sprite to (if undefined, adds to stage)
    */
-  public setSpritePosition(sprite: Sprite, x: number, y: number, container: Container | undefined = undefined): void {
+  public setSpritePosition(
+    sprite: Sprite,
+    x: number,
+    y: number,
+    container: Container | undefined = undefined
+  ): void {
     sprite.x = container ? x : this.app.screen.width * x;
     sprite.y = container ? y : this.app.screen.height * y;
 
@@ -149,7 +184,11 @@ export class CogSpeedGraphicsHandler {
    * Gets a random sprite that is either inverted or not
    * @return {Sprite}
    */
-  public getSprite(spriteType: "numbers" | "dots", spriteNumber: number, randomInverted: boolean = true): Sprite {
+  public getSprite(
+    spriteType: "numbers" | "dots",
+    spriteNumber: number,
+    randomInverted: boolean = true
+  ): Sprite {
     const spriteInverted = randomInverted ? Math.random() > 0.5 : false;
 
     if (spriteType === "numbers") {
@@ -166,16 +205,20 @@ export class CogSpeedGraphicsHandler {
     const queryNumber = Math.floor(Math.random() * 9) + 1;
     const numberOrDot = Math.random() > 0.5 ? "numbers" : "dots";
     const queryNumberSprite = this.getSprite(numberOrDot, queryNumber, false);
-    this.setSpritePosition(queryNumberSprite, 0.5, 0.75);
+    // this.setSpritePosition(queryNumberSprite, 0.5, 0.75);
 
-    const answerSprite = this.getSprite(numberOrDot !== "numbers" ? "numbers" : "dots", queryNumber, true);
-
-    this.setSpritePosition(
-      answerSprite,
-      buttonPositions[answerLocation][0],
-      buttonPositions[answerLocation][1],
-      answerLocation > 3 ? this.leftGearContainer : this.rightGearContainer
+    const answerSprite = this.getSprite(
+      numberOrDot !== "numbers" ? "numbers" : "dots",
+      queryNumber,
+      true
     );
+
+    // this.setSpritePosition(
+    //   answerSprite,
+    //   buttonPositions[answerLocation][0],
+    //   buttonPositions[answerLocation][1],
+    //   answerLocation > 3 ? this.leftGearContainer : this.rightGearContainer
+    // );
 
     const numbers = Array.from({ length: 19 }, (x, i) => i);
     delete numbers[queryNumber];
@@ -186,7 +229,8 @@ export class CogSpeedGraphicsHandler {
       if (i === answerLocation - 1) continue;
 
       const possibleNumbers = numbers.filter((number) => number !== null);
-      const number = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
+      const number =
+        possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
       delete numbers[number];
 
       const randomIncorrectSprite = this.getSprite(
@@ -195,12 +239,12 @@ export class CogSpeedGraphicsHandler {
         true
       );
 
-      this.setSpritePosition(
-        randomIncorrectSprite,
-        buttonPositions[i + 1][0],
-        buttonPositions[i + 1][1],
-        i > 2 ? this.leftGearContainer : this.rightGearContainer
-      );
+      // this.setSpritePosition(
+      //   randomIncorrectSprite,
+      //   buttonPositions[i + 1][0],
+      //   buttonPositions[i + 1][1],
+      //   i > 2 ? this.leftGearContainer : this.rightGearContainer
+      // );
     }
   }
 
@@ -212,7 +256,11 @@ export class CogSpeedGraphicsHandler {
    * TODO: scale with screen size
    * TODO: add gear rotation
    */
-  public createGear(posX: number, posY: number, gearLocation: string = ""): [Container, Sprite[]] {
+  public createGear(
+    posX: number,
+    posY: number,
+    gearLocation: string = ""
+  ): [Container, Sprite[]] {
     // Add container
     const container = new Container();
     container.x = this.app.screen.width * posX; // Centre
@@ -221,14 +269,18 @@ export class CogSpeedGraphicsHandler {
 
     // Add gear well
     const gearWell = new Sprite(this.gearWellTexture);
+    gearWell.width = 374;
+    gearWell.height = 374;
     gearWell.anchor.set(0.5);
     gearWell.scale = new Point(0.7, 0.7); // TODO: scale with screen size
     container.addChild(gearWell);
 
     // Add gears
     const gear = new Sprite(this.gearTexture);
+    gear.width = 350;
+    gear.height = 350;
+    console.log("e", gear.width, gear.height);
     gear.anchor.set(0.5);
-    gear.scale = new Point(0.7, 0.7); // TODO: scale with screen size
     container.addChild(gear);
 
     const buttons = [];
@@ -241,8 +293,9 @@ export class CogSpeedGraphicsHandler {
       button.anchor.set(0.5);
       button.scale = new Point(0.7, 0.7); // TODO: scale with screen size
 
-      button.x = buttonPositions[i][0];
-      button.y = buttonPositions[i][1];
+      const [x, y] = buttonPositions[i](gear.height, gear.width);
+      button.x = x;
+      button.y = y;
       container.addChild(button);
       buttons.push(button);
     }
@@ -279,9 +332,13 @@ export class CogSpeedGraphicsHandler {
 
   public setBackground(texture: string) {
     // Remove old background
-    this.app.stage.removeChild(this.app.stage.getChildByName("background") as Sprite);
+    this.app.stage.removeChild(
+      this.app.stage.getChildByName("background") as Sprite
+    );
 
-    const background = new Sprite(texture === "carbon" ? this.bgCarbonTexture : this.bgSteelTexture);
+    const background = new Sprite(
+      texture === "carbon" ? this.bgCarbonTexture : this.bgSteelTexture
+    );
     background.name = "background";
     background.width = this.app.screen.width;
     background.height = this.app.screen.height;
@@ -289,7 +346,11 @@ export class CogSpeedGraphicsHandler {
     this.app.stage.addChild(background);
   }
 
-  public createDisplayGear(posX: number, posY: number, gearLocation: string): Container {
+  public createDisplayGear(
+    posX: number,
+    posY: number,
+    gearLocation: string
+  ): Container {
     const [container] = this.createGear(posX, posY, gearLocation);
     return container;
   }

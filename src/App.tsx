@@ -70,6 +70,9 @@ function resizeCanvas(): void {
 }
 
 window.onload = main;
-export default withAuthenticator(function App() {
+// export default withAuthenticator(function App() {
+//   return <div className="App"></div>;
+// });
+export default function App() {
   return <div className="App"></div>;
-});
+}

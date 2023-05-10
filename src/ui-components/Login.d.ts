@@ -5,7 +5,11 @@
  **************************************************************************/
 
 import * as React from "react";
-import { GridProps, PasswordFieldProps, TextFieldProps } from "@aws-amplify/ui-react";
+import {
+  GridProps,
+  PasswordFieldProps,
+  TextFieldProps,
+} from "@aws-amplify/ui-react";
 import { EscapeHatchProps } from "@aws-amplify/ui-react/internal";
 export declare type ValidationResponse = {
   hasError: boolean;
@@ -23,7 +27,8 @@ export declare type LoginValidationValues = {
   email?: ValidationFunction<string>;
   password?: ValidationFunction<string>;
 };
-export declare type PrimitiveOverrideProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
+export declare type PrimitiveOverrideProps<T> = Partial<T> &
+  React.DOMAttributes<HTMLDivElement>;
 export declare type LoginOverridesProps = {
   LoginGrid?: PrimitiveOverrideProps<GridProps>;
   email?: PrimitiveOverrideProps<TextFieldProps>;
