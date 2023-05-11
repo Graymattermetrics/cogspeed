@@ -20,35 +20,36 @@ import { CogSpeedGame } from "../game";
 import bgCarbonImage from "../assets/bg_carbon.jpg";
 import bgSteelImage from "../assets/bg_steel.jpg";
 
-export const buttonPositions_: { [key: number]: any } = {
-  1: (width: number, height: number) => {},
-  2: (width: number, height: number) => {},
-  3: (width: number, height: number) => {},
-  4: (width: number, height: number) => {},
-  5: (width: number, height: number) => {},
-  6: (width: number, height: number) => {},
-};
-
 // Width, height of gear
 export const buttonPositions: { [key: number]: any } = {
   1: (width: number, height: number) => {
-    const k = 2 / 3;
-    return [-(width / 2 - (k * width) / 2), -102];
+    const kx = 2 / 3;
+    const ky = 0.43;
+    return [-(width / 2 - kx * (width / 2)), -(height / 2 - ky * (height / 2))];
   },
   2: (width: number, height: number) => {
-    const k = 1 / 3;
-    return [-(width / 2 - (k * width) / 2), 0];
+    const kx = 1 / 3;
+    return [-(width / 2 - kx * (width / 2)), 0];
   },
   3: (width: number, height: number) => {
-    const k = 2 / 3;
-    return [-(width / 2 - (k * width) / 2), 102];
+    const kx = 2 / 3;
+    const ky = 0.43;
+    return [-(width / 2 - kx * (width / 2)), (height / 2 - ky * (height / 2))];
   },
-  4: (width: number, height: number) => [58, 102],
+  4: (width: number, height: number) => {
+    const kx = 0.675;
+    const ky = 0.43;
+    return [(width / 2 - kx * (width / 2)), (height / 2 - ky * (height / 2))]
+  },
   5: (width: number, height: number) => {
-    const k = 0.33;
-    return [+(width / 2 - (k * width) / 2), 0];
+    const kx = 1 / 3;
+    return [+(width / 2 - kx * (width / 2)), 0];
   },
-  6: (width: number, height: number) => [58, -102],
+  6: (width: number, height: number) => {
+    const kx = 0.675;
+    const ky = 0.43;
+    return [(width / 2 - kx * (width / 2)), -(height / 2 - ky * (height / 2))]
+  },
 };
 
 export class CogSpeedGraphicsHandler {
@@ -283,7 +284,6 @@ export class CogSpeedGraphicsHandler {
     const gear = new Sprite(this.gearTexture);
     gear.width = 350;
     gear.height = 350;
-    console.log("e", gear.width, gear.height);
     gear.anchor.set(0.5);
     container.addChild(gear);
 
@@ -295,7 +295,9 @@ export class CogSpeedGraphicsHandler {
 
       const button = new Sprite(this.buttonTexture);
       button.anchor.set(0.5);
-      button.scale = new Point(0.7, 0.7); // TODO: scale with screen size
+      const gearK = 2.592592;
+      button.width = gear.width / gearK;
+      button.height = gear.height / gearK;
 
       const [x, y] = buttonPositions[i](gear.height, gear.width);
       button.x = x;
@@ -374,12 +376,15 @@ export class CogSpeedGraphicsHandler {
     // Create centre button to display query number
     const buttonWell = new Sprite(this.buttonWellTexture);
     buttonWell.anchor.set(0.5);
-    buttonWell.scale = new Point(0.7, 0.7); // TODO: scale with screen size
+    buttonWell.width = buttons[0].width;
+    buttonWell.height = buttons[0].height;
+    
     container.addChild(buttonWell);
 
     const button = new Sprite(this.buttonTexture);
     button.anchor.set(0.5);
-    button.scale = new Point(0.7, 0.7); // TODO: scale with screen size
+    button.width = buttons[0].width;
+    button.height = buttons[0].height;
     container.addChild(button);
   }
 
