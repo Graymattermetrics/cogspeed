@@ -18,10 +18,7 @@ export class StartPage {
     this.logoTexture = Texture.from(logoWithGearsImage);
   }
 
-  private async confirm(
-    confirmText: string,
-    denyText: string = ""
-  ): Promise<boolean> {
+  private async confirm(confirmText: string, denyText: string = ""): Promise<boolean> {
     const yesBorder = new Sprite(this.ui.smallButtons[1]);
     yesBorder.scale = new Point(1.2, 1.2);
     yesBorder.width = this.app.screen.width * 0.4;
@@ -61,10 +58,7 @@ export class StartPage {
     noText.y = noBorder.y + (noBorder.height - noText.height) * 0.5;
     this.container.addChild(noText);
 
-    const keypress = await this.waitForKeyPress(
-      [yesBorder, yesText],
-      [noBorder, noText]
-    );
+    const keypress = await this.waitForKeyPress([yesBorder, yesText], [noBorder, noText]);
     return keypress === yesBorder || keypress === yesText;
   }
 
@@ -145,18 +139,14 @@ export class StartPage {
   private async displayHomePage() {
     // Create the logo
     const logoSprite = new Sprite(this.logoTexture);
-    logoSprite.width =
-      this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
-    logoSprite.height =
-      this.app.screen.height * 0.6 > 400 ? 400 : this.app.screen.height * 0.6;
+    logoSprite.width = this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
+    logoSprite.height = this.app.screen.height * 0.6 > 400 ? 400 : this.app.screen.height * 0.6;
     logoSprite.x = this.app.screen.width * 0.5 - logoSprite.width * 0.5;
     this.container.addChild(logoSprite);
 
     const buttonBorder = new Sprite(this.ui.largeButtonTexture);
-    buttonBorder.width =
-      this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
-    buttonBorder.height =
-      this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25;
+    buttonBorder.width = this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
+    buttonBorder.height = this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25;
     buttonBorder.x = this.app.screen.width * 0.5 - buttonBorder.width * 0.5;
     buttonBorder.y = this.app.screen.height * 0.7;
     this.container.addChild(buttonBorder);
@@ -168,10 +158,8 @@ export class StartPage {
       fill: 0xffffff,
     });
     // Center the start now button
-    startNowButton.x =
-      buttonBorder.x + (buttonBorder.width - startNowButton.width) * 0.5;
-    startNowButton.y =
-      buttonBorder.y + (buttonBorder.height - startNowButton.height) * 0.5;
+    startNowButton.x = buttonBorder.x + (buttonBorder.width - startNowButton.width) * 0.5;
+    startNowButton.y = buttonBorder.y + (buttonBorder.height - startNowButton.height) * 0.5;
     this.container.addChild(startNowButton);
 
     await this.waitForKeyPress([buttonBorder, startNowButton]);
@@ -193,16 +181,10 @@ export class StartPage {
       { wordWrap: true }
     );
 
-    this.createText(
-      "Ready?",
-      this.app.screen.width * 0.5,
-      this.app.screen.height * 0.5,
-      48,
-      {
-        centre: true,
-        fill: 0xc4e4ff,
-      }
-    );
+    this.createText("Ready?", this.app.screen.width * 0.5, this.app.screen.height * 0.5, 48, {
+      centre: true,
+      fill: 0xc4e4ff,
+    });
 
     return await this.confirm("Yes", "No");
   }
@@ -226,9 +208,7 @@ export class StartPage {
    * Must click yes to continue
    * @returns {Promise<boolean>} Whether the data is correct
    */
-  private async confirmSleepData(sleepData: {
-    [key: string]: string;
-  }): Promise<boolean> {
+  private async confirmSleepData(sleepData: { [key: string]: string }): Promise<boolean> {
     return await this.confirm("Confirm", "Back");
   }
 

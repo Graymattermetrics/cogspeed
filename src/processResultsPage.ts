@@ -1,13 +1,5 @@
 import axios from "axios";
-import {
-  Application,
-  Container,
-  Graphics,
-  Point,
-  Sprite,
-  Text,
-  Texture,
-} from "pixi.js";
+import { Application, Container, Graphics, Point, Sprite, Text, Texture } from "pixi.js";
 
 import loadingGearImage from "./assets/loading_gear.png";
 
@@ -39,21 +31,17 @@ export class ProcessResultsPage {
   }
 
   private async getCurrentPosition(): Promise<(string | null)[]> {
-    const coords: GeolocationCoordinates | null = await new Promise(
-      (resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            resolve(position.coords);
-          },
-          (error) => {
-            resolve(null);
-          }
-        );
-      }
-    );
-    const geolocation = coords
-      ? `${coords.latitude},${coords.longitude}`
-      : null;
+    const coords: GeolocationCoordinates | null = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve(position.coords);
+        },
+        (error) => {
+          resolve(null);
+        }
+      );
+    });
+    const geolocation = coords ? `${coords.latitude},${coords.longitude}` : null;
     // prettier-ignore
     const normalizedLocation = coords ? (await axios.get(
         `https://nominatim.openstreetmap.org/search?format=json&q=${coords.latitude},${coords.longitude}`
@@ -115,9 +103,7 @@ export class ProcessResultsPage {
       .map((k) => `${k}: ${data[k].toString().slice(0, 100)}`)
       .join("\n");
 
-    let textContent = data.success
-      ? `Test finished [temp text] \n${testSummary}`
-      : "Test stopped (failed) [temp text]";
+    let textContent = data.success ? `Test finished [temp text] \n${testSummary}` : "Test stopped (failed) [temp text]";
     textContent += "\n**Click me to download results**";
 
     const text = new Text(textContent, {
