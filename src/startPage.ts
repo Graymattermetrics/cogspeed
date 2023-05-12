@@ -57,8 +57,8 @@ export class StartPage {
     noText.x = noBorder.x + (noBorder.width - noText.width) * 0.5;
     noText.y = noBorder.y + (noBorder.height - noText.height) * 0.5;
     this.container.addChild(noText);
-    
-    const keypress = await this.waitForKeyPress([yesBorder, yesText], [noBorder, noText])
+
+    const keypress = await this.waitForKeyPress([yesBorder, yesText], [noBorder, noText]);
     return keypress === yesBorder || keypress === yesText;
   }
 
@@ -92,7 +92,7 @@ export class StartPage {
    */
   private async waitForKeyPress(
     sprite: (Sprite | Container | Text)[] = [this.container],
-    secondSprites: (Sprite | Container | Text)[] = [],
+    secondSprites: (Sprite | Container | Text)[] = []
   ): Promise<Sprite | Container | null> {
     [...sprite, ...secondSprites].forEach((sprite_) => {
       sprite_.eventMode = "dynamic";
@@ -148,7 +148,7 @@ export class StartPage {
     buttonBorder.width = this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
     buttonBorder.height = this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25;
     buttonBorder.x = this.app.screen.width * 0.5 - buttonBorder.width * 0.5;
-    buttonBorder.y = this.app.screen.height * 0.70;
+    buttonBorder.y = this.app.screen.height * 0.7;
     this.container.addChild(buttonBorder);
 
     // Display the start page
@@ -230,29 +230,29 @@ export class StartPage {
    * @returns {Promise<{ [key: string]: any }>} The test data
    */
   public async start(): Promise<{ [key: string]: any } | false> {
-    // Display the home page
-    await this.displayHomePage();
+    // // Display the home page
+    // await this.displayHomePage();
 
-    // Display the test disclaimer
-    const ready = await this.displayTestDisclaimer();
-    if (!ready) return false;
+    // // Display the test disclaimer
+    // const ready = await this.displayTestDisclaimer();
+    // if (!ready) return false;
 
-    // Get sleep data
-    const sleepData = await this.displaySleepForm();
+    // // Get sleep data
+    // const sleepData = await this.displaySleepForm();
 
-    // Confirm sleep data
-    if (!(await this.confirmSleepData(sleepData))) return false; // TODO: Go back to sleep form
+    // // Confirm sleep data
+    // if (!(await this.confirmSleepData(sleepData))) return false; // TODO: Go back to sleep form
 
-    // Display the Samn Perelli checklist
-    const fatigueLevel = await this.displaySamnPerelliChecklist();
+    // // Display the Samn Perelli checklist
+    // const fatigueLevel = await this.displaySamnPerelliChecklist();
 
-    // Display the ready demo screen
-    await this.displayReadyDemo();
+    // // Display the ready demo screen
+    // await this.displayReadyDemo();
 
-    return {
-      fatigueLevel,
-      ...sleepData,
-    };
-    return {}
+    // return {
+    //   fatigueLevel,
+    //   ...sleepData,
+    // };
+    return {};
   }
 }

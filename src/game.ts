@@ -49,7 +49,7 @@ export class CogSpeedGame {
     }
 
     // Set timers
-    this.setTimer();
+    // this.setTimer();
   }
 
   /**
@@ -266,7 +266,7 @@ export class CogSpeedGame {
     this.ui.setupGame(this);
 
     this.startTime = performance.now();
-    this.maxTestDuration = setTimeout(this.stop.bind(this), this.config.timeouts.max_test_duration);
+    // this.maxTestDuration = setTimeout(this.stop.bind(this), this.config.timeouts.max_test_duration);
     this.nextRound();
   }
 

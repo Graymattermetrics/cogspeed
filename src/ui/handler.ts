@@ -13,19 +13,45 @@ import { CogSpeedGame } from "../game";
 import bgCarbonImage from "../assets/bg_carbon.jpg";
 import bgSteelImage from "../assets/bg_steel.jpg";
 
-export const buttonPositions: { [key: number]: number[] } = {
-  1: [-58, -102],
-  2: [-120, 0],
-  3: [-58, 102],
-  4: [58, 102],
-  5: [119, 0],
-  6: [58, -102],
+// Width, height of gear
+export const buttonPositions: { [key: number]: any } = {
+  1: (width: number, height: number) => {
+    const kx = 2 / 3;
+    const ky = 0.43;
+    return [-(width / 2 - kx * (width / 2)), -(height / 2 - ky * (height / 2))];
+  },
+  2: (width: number, height: number) => {
+    const kx = 1 / 3;
+    return [-(width / 2 - kx * (width / 2)), 0];
+  },
+  3: (width: number, height: number) => {
+    const kx = 2 / 3;
+    const ky = 0.43;
+    return [-(width / 2 - kx * (width / 2)), height / 2 - ky * (height / 2)];
+  },
+  4: (width: number, height: number) => {
+    const kx = 0.675;
+    const ky = 0.43;
+    return [width / 2 - kx * (width / 2), height / 2 - ky * (height / 2)];
+  },
+  5: (width: number, height: number) => {
+    const kx = 0.34;
+    return [+(width / 2 - kx * (width / 2)), 0];
+  },
+  6: (width: number, height: number) => {
+    const kx = 0.675;
+    const ky = 0.43;
+    return [width / 2 - kx * (width / 2), -(height / 2 - ky * (height / 2))];
+  },
 };
 
 export class CogSpeedGraphicsHandler {
   // Containers
   public leftGearContainer: Container | undefined;
   public rightGearContainer: Container | undefined;
+
+  // Scalable
+  public gearWellSize: number = 0.5;
 
   // Sprites
   public numbers: { [key: number]: Sprite } = {};
@@ -106,7 +132,20 @@ export class CogSpeedGraphicsHandler {
       const numberOrDot = new Sprite(numberOrDotTexture);
 
       numberOrDot.anchor.set(0.5);
-      numberOrDot.scale = new Point(0.7, 0.7); // TODO: scale with screen size
+
+      // const numberOrDotScale = 0.5;
+      const screenWidth = this.app.screen.width;
+      const scaleMinWidth = 200; // Minimum screen width for the smallest scale
+      const scaleMaxWidth = 400; // Maximum screen width for the largest scale
+      const minScale = 0.35; // Smallest scale value
+      const maxScale = 0.7; // Largest scale value
+
+      const scaleRange = maxScale - minScale;
+      const scaleRatio = (screenWidth - scaleMinWidth) / (scaleMaxWidth - scaleMinWidth);
+      const scaledValue = Math.min(maxScale, minScale + scaleRange * scaleRatio);
+
+      const scale = new Point(scaledValue, scaledValue);
+      numberOrDot.scale = scale;
 
       if (i <= 8) numbers[i + 1] = numberOrDot;
       else dots[i - 8] = numberOrDot;
@@ -169,11 +208,10 @@ export class CogSpeedGraphicsHandler {
     this.setSpritePosition(queryNumberSprite, 0.5, 0.75);
 
     const answerSprite = this.getSprite(numberOrDot !== "numbers" ? "numbers" : "dots", queryNumber, true);
-
     this.setSpritePosition(
       answerSprite,
-      buttonPositions[answerLocation][0],
-      buttonPositions[answerLocation][1],
+      buttonPositions[answerLocation](this.gearWellSize, this.gearWellSize)[0],
+      buttonPositions[answerLocation](this.gearWellSize, this.gearWellSize)[1],
       answerLocation > 3 ? this.leftGearContainer : this.rightGearContainer
     );
 
@@ -197,8 +235,8 @@ export class CogSpeedGraphicsHandler {
 
       this.setSpritePosition(
         randomIncorrectSprite,
-        buttonPositions[i + 1][0],
-        buttonPositions[i + 1][1],
+        buttonPositions[i + 1](this.gearWellSize, this.gearWellSize)[0],
+        buttonPositions[i + 1](this.gearWellSize, this.gearWellSize)[1],
         i > 2 ? this.leftGearContainer : this.rightGearContainer
       );
     }
@@ -219,16 +257,23 @@ export class CogSpeedGraphicsHandler {
     container.y = this.app.screen.height * posY; // Top
     this.app.stage.addChild(container);
 
-    // Add gear well
+    // Add gear well below gear
+    const gearScale = 0.95;
+    let size = Math.min(400, this.app.screen.width * gearScale);
+
     const gearWell = new Sprite(this.gearWellTexture);
+    gearWell.width = size;
+    gearWell.height = size;
     gearWell.anchor.set(0.5);
-    gearWell.scale = new Point(0.7, 0.7); // TODO: scale with screen size
     container.addChild(gearWell);
 
+    const gearRelativeToWell = 0.935;
     // Add gears
     const gear = new Sprite(this.gearTexture);
+    this.gearWellSize = gearWell.width * gearRelativeToWell;
+    gear.width = gearWell.width * gearRelativeToWell;
+    gear.height = gearWell.height * gearRelativeToWell;
     gear.anchor.set(0.5);
-    gear.scale = new Point(0.7, 0.7); // TODO: scale with screen size
     container.addChild(gear);
 
     const buttons = [];
@@ -239,10 +284,13 @@ export class CogSpeedGraphicsHandler {
 
       const button = new Sprite(this.buttonTexture);
       button.anchor.set(0.5);
-      button.scale = new Point(0.7, 0.7); // TODO: scale with screen size
+      const gearK = 2.592592;
+      button.width = gear.width / gearK;
+      button.height = gear.height / gearK;
 
-      button.x = buttonPositions[i][0];
-      button.y = buttonPositions[i][1];
+      const [x, y] = buttonPositions[i](gear.height, gear.width);
+      button.x = x;
+      button.y = y;
       container.addChild(button);
       buttons.push(button);
     }
@@ -309,12 +357,15 @@ export class CogSpeedGraphicsHandler {
     // Create centre button to display query number
     const buttonWell = new Sprite(this.buttonWellTexture);
     buttonWell.anchor.set(0.5);
-    buttonWell.scale = new Point(0.7, 0.7); // TODO: scale with screen size
+    buttonWell.width = buttons[0].width;
+    buttonWell.height = buttons[0].height;
+
     container.addChild(buttonWell);
 
     const button = new Sprite(this.buttonTexture);
     button.anchor.set(0.5);
-    button.scale = new Point(0.7, 0.7); // TODO: scale with screen size
+    button.width = buttons[0].width;
+    button.height = buttons[0].height;
     container.addChild(button);
   }
 
