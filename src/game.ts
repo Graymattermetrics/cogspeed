@@ -49,7 +49,7 @@ export class CogSpeedGame {
     }
 
     // Set timers
-    // this.setTimer();
+    this.setTimer();
   }
 
   /**
