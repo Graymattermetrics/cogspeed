@@ -247,7 +247,6 @@ export class CogSpeedGraphicsHandler {
    * @param {number} posX
    * @param {number} posY
    * @return {Container} The container that the buttons are in
-   * TODO: scale with screen size
    * TODO: add gear rotation
    */
   public createGear(posX: number, posY: number, gearLocation: string = ""): [Container, Sprite[]] {
@@ -279,9 +278,6 @@ export class CogSpeedGraphicsHandler {
     const buttons = [];
     // Add buttons
     for (let i = 1; i <= 6; i++) {
-      if (gearLocation === "left" && i <= 3) continue;
-      if (gearLocation === "right" && i > 3) continue;
-
       const button = new Sprite(this.buttonTexture);
       button.anchor.set(0.5);
       const gearK = 2.592592;
@@ -377,8 +373,9 @@ export class CogSpeedGraphicsHandler {
     this.setBackground("steel");
 
     // Create left and right display gears
-    this.leftGearContainer = this.createDisplayGear(0.001, 0.25, "left"); // TODO: scale with screen size
-    this.rightGearContainer = this.createDisplayGear(1.01, 0.25, "right"); // TODO: scale with screen size
+    // TODO: Make location scalable
+    this.leftGearContainer = this.createDisplayGear(0.001, 0.25, "left");
+    this.rightGearContainer = this.createDisplayGear(1.01, 0.25, "right");
 
     // Create input gear
     this.createInputGear(0.5, 0.75, game);

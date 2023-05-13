@@ -60,12 +60,8 @@ async function main(): Promise<void> {
  */
 function resizeCanvas(): void {
   const resize = () => {
-    app.renderer.resize(window.innerWidth, window.innerHeight);
-    app.stage.scale.x = window.innerWidth / gameWidth;
-    app.stage.scale.y = window.innerHeight / gameHeight;
+    window.location.reload();  // TODO: Implement auto resize
   };
-  resize();
-
   window.addEventListener("resize", resize);
 }
 
