@@ -1,4 +1,3 @@
-import { withAuthenticator } from "@aws-amplify/ui-react";
 import "./App.css";
 
 import { Application } from "pixi.js";
