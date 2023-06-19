@@ -1,8 +1,11 @@
-import { Application, Container, Point, Sprite, Text, Texture } from "pixi.js";
+import { Application, Container, Graphics, Point, Rectangle, Sprite, Text, Texture } from "pixi.js";
 
 import logoWithGearsImage from "./assets/logo_with_gears.png";
 import readyDemoImage from "./assets/ready_demmo.png";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
+
+
+type GraphicList = [Graphics, number, number, number, number];
 
 export class StartPage {
   private container: Container;
@@ -24,7 +27,7 @@ export class StartPage {
     yesBorder.width = this.app.screen.width * 0.4;
     yesBorder.height = this.app.screen.height * 0.2;
     yesBorder.x = this.app.screen.width * 0.5;
-    yesBorder.y = this.app.screen.height * 0.7;
+    yesBorder.y = this.app.screen.height * 0.78;
     this.container.addChild(yesBorder);
 
     const yesText = new Text(confirmText, {
@@ -46,7 +49,7 @@ export class StartPage {
     noBorder.width = this.app.screen.width * 0.4;
     noBorder.height = this.app.screen.height * 0.2;
     noBorder.x = this.app.screen.width * 0.1;
-    noBorder.y = this.app.screen.height * 0.7;
+    noBorder.y = this.app.screen.height * 0.78;
     this.container.addChild(noBorder);
 
     const noText = new Text(denyText, {
@@ -88,11 +91,32 @@ export class StartPage {
   }
 
   /**
+   * Wait for a click on a sprite but don't destroy the sprite
+   */
+  private async waitForKeyPressNoDestroy(
+    sprite: (Sprite | Container | Text)[] = [this.container],
+  ): Promise<void> {
+    // Block until a sprite is clicked but don't destroy the sprite
+    var block = true;
+
+    sprite.forEach((sprite_) => {
+      sprite_.eventMode = "dynamic";
+      sprite_.on("pointerdown", () => {
+        block = false;
+      });
+    });
+
+    while (block) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+  }
+    
+  /**
    * Wait for a click on a sprite
    */
   private async waitForKeyPress(
     sprite: (Sprite | Container | Text)[] = [this.container],
-    secondSprites: (Sprite | Container | Text)[] = []
+    secondSprites: (Sprite | Container | Text)[] = [],
   ): Promise<Sprite | Container | null> {
     [...sprite, ...secondSprites].forEach((sprite_) => {
       sprite_.eventMode = "dynamic";
@@ -213,14 +237,74 @@ export class StartPage {
   }
 
   /**
+   * Recolour a graphic
+   * @param {GraphicList} graphic_ List of graphic to recolour (Graphic, x, y, width, height)
+   * @param colour The colour to recolour the graphic
+   * @param prevGraphic The previous graphic to colour (used to remove the previous colour)
+   */
+  private recolour(graphic_: GraphicList, colour: number, prevGraphic: GraphicList | null = null) {
+    if (prevGraphic !== null) {
+      this.recolour(prevGraphic, 0x00000);
+    }
+    const [graphic, x, y, width, height] = graphic_;
+    graphic.clear();
+    graphic.beginFill(colour);
+    graphic.lineStyle(2, 0x628fc2);
+    graphic.drawRect(x, y, width, height); 
+  }
+
+  /**
    * Display the Samn Perelli checklist
    * Asks the user about the quality of their sleep
    * @returns {number} The level on the samn perelli fatigue scale
    * @see https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5803055/
    */
   private async displaySamnPerelliChecklist(): Promise<number> {
+    var level = 0;
+
+    const levels = [
+      "Full alert, wide awake",
+      "Very lively, responsive, but not at peak",
+      "Okay, about normal",
+      "Less than sharp, let down",
+      "Feeling dull, losing focus",
+      "Very difficult to concentrate, groggy",
+      "Unable to function, ready to drop",
+    ]
+    const graphics: Array<GraphicList> = [];
+    for (let index = levels.length - 1; index >= 0; index--) {
+      const y = this.app.screen.height * 0.1 + (index * this.app.screen.height * 0.1);
+      const x = this.app.screen.width * 0.1;
+      const width = this.app.screen.width * 0.8
+      const height = this.app.screen.height * 0.1;
+      
+      const graphic = new Graphics();
+      graphic.beginFill(0x0000);
+      graphic.lineStyle(2, 0x628fc2);
+      graphic.drawRect(x, y, width, height);
+      graphics.push([graphic, x, y, width, height]);
+      
+      graphic.eventMode = "dynamic";
+      graphic.on("pointerdown", () => {
+        this.recolour(graphics[6 - index], 0x808080, (level !== 0 ? graphics[7 - level] : null));
+        level = index + 1;
+      });
+      this.container.addChild(graphic);
+
+      const text = new Text(`${7 - index}. ${levels[index]}`, {
+        fontFamily: "Trebuchet",
+        fontSize: 20,
+        fill: 0xffffff,
+      });
+      text.x = x + 10;
+      text.y = y + (this.app.screen.height * 0.1 - text.height) * 0.45;
+      text.eventMode = "none";
+      this.container.addChild(text);
+    }
+
+    await this.waitForKeyPressNoDestroy(graphics.map((graphic) => graphic[0]));
     await this.confirm("Ok");
-    return 0; // TODO: Implement
+    return level;
   }
 
   /**
@@ -238,10 +322,12 @@ export class StartPage {
     if (!ready) return false;
 
     // Get sleep data
-    const sleepData = await this.displaySleepForm();
-
-    // Confirm sleep data
-    if (!(await this.confirmSleepData(sleepData))) return false; // TODO: Go back to sleep form
+    let sleepData;
+    while (true) {
+      sleepData = await this.displaySleepForm();
+      // Confirm sleep data
+      if (await this.confirmSleepData(sleepData)) break;
+    }
 
     // Display the Samn Perelli checklist
     const fatigueLevel = await this.displaySamnPerelliChecklist();
