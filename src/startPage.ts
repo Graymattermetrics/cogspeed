@@ -1,9 +1,8 @@
-import { Application, Container, Graphics, Point, Rectangle, Sprite, Text, Texture } from "pixi.js";
+import { Application, Container, Graphics, Point, Sprite, Text, Texture } from "pixi.js";
 
 import logoWithGearsImage from "./assets/logo_with_gears.png";
 import readyDemoImage from "./assets/ready_demmo.png";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
-
 
 type GraphicList = [Graphics, number, number, number, number];
 
@@ -65,13 +64,7 @@ export class StartPage {
     return keypress === yesBorder || keypress === yesText;
   }
 
-  private createText(
-    text: string,
-    x: number,
-    y: number,
-    fontSize: number,
-    { wordWrap = true, centre = false, fill = 0xffffff }
-  ) {
+  private createText(text: string, x: number, y: number, fontSize: number, { wordWrap = true, centre = false, fill = 0xffffff }) {
     const textObject = new Text(text, {
       fontFamily: "Trebuchet",
       fontSize: fontSize,
@@ -93,9 +86,7 @@ export class StartPage {
   /**
    * Wait for a click on a sprite but don't destroy the sprite
    */
-  private async waitForKeyPressNoDestroy(
-    sprite: (Sprite | Container | Text)[] = [this.container],
-  ): Promise<void> {
+  private async waitForKeyPressNoDestroy(sprite: (Sprite | Container | Text)[] = [this.container]): Promise<void> {
     // Block until a sprite is clicked but don't destroy the sprite
     var block = true;
 
@@ -110,13 +101,13 @@ export class StartPage {
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
-    
+
   /**
    * Wait for a click on a sprite
    */
   private async waitForKeyPress(
     sprite: (Sprite | Container | Text)[] = [this.container],
-    secondSprites: (Sprite | Container | Text)[] = [],
+    secondSprites: (Sprite | Container | Text)[] = []
   ): Promise<Sprite | Container | null> {
     [...sprite, ...secondSprites].forEach((sprite_) => {
       sprite_.eventMode = "dynamic";
@@ -219,11 +210,8 @@ export class StartPage {
    * @returns {Promise<{ [key: string]: any }>} The sleep data
    */
   private async displaySleepForm(): Promise<{ [key: string]: any }> {
-    const confirm = await this.confirm("Ok", "Skip");
-    if (confirm === false) {
-      return {}; // TODO: Implement Skip button
-    }
-    return {};
+    await this.confirm("Ok");
+    return {}; // TODO: Implement
   }
 
   /**
@@ -250,7 +238,7 @@ export class StartPage {
     graphic.clear();
     graphic.beginFill(colour);
     graphic.lineStyle(2, 0x628fc2);
-    graphic.drawRect(x, y, width, height); 
+    graphic.drawRect(x, y, width, height);
   }
 
   /**
@@ -270,23 +258,23 @@ export class StartPage {
       "Feeling dull, losing focus",
       "Very difficult to concentrate, groggy",
       "Unable to function, ready to drop",
-    ]
+    ];
     const graphics: Array<GraphicList> = [];
     for (let index = levels.length - 1; index >= 0; index--) {
-      const y = this.app.screen.height * 0.1 + (index * this.app.screen.height * 0.1);
+      const y = this.app.screen.height * 0.1 + index * this.app.screen.height * 0.1;
       const x = this.app.screen.width * 0.1;
-      const width = this.app.screen.width * 0.8
+      const width = this.app.screen.width * 0.8;
       const height = this.app.screen.height * 0.1;
-      
+
       const graphic = new Graphics();
       graphic.beginFill(0x0000);
       graphic.lineStyle(2, 0x628fc2);
       graphic.drawRect(x, y, width, height);
       graphics.push([graphic, x, y, width, height]);
-      
+
       graphic.eventMode = "dynamic";
       graphic.on("pointerdown", () => {
-        this.recolour(graphics[6 - index], 0x808080, (level !== 0 ? graphics[7 - level] : null));
+        this.recolour(graphics[6 - index], 0x808080, level !== 0 ? graphics[7 - level] : null);
         level = index + 1;
       });
       this.container.addChild(graphic);
@@ -314,30 +302,31 @@ export class StartPage {
    * @returns {Promise<{ [key: string]: any }>} The test data
    */
   public async start(): Promise<{ [key: string]: any } | false> {
-    // // Display the home page
-    await this.displayHomePage();
+    //   // // Display the home page
+    //   await this.displayHomePage();
 
-    // Display the test disclaimer
-    const ready = await this.displayTestDisclaimer();
-    if (!ready) return false;
+    //   // Display the test disclaimer
+    //   const ready = await this.displayTestDisclaimer();
+    //   if (!ready) return false;
 
-    // Get sleep data
-    let sleepData;
-    while (true) {
-      sleepData = await this.displaySleepForm();
-      // Confirm sleep data
-      if (await this.confirmSleepData(sleepData)) break;
-    }
+    //   // Get sleep data
+    //   let sleepData;
+    //   while (true) {
+    //     sleepData = await this.displaySleepForm();
+    //     // Confirm sleep data
+    //     if (await this.confirmSleepData(sleepData)) break;
+    //   }
 
-    // Display the Samn Perelli checklist
-    const fatigueLevel = await this.displaySamnPerelliChecklist();
+    //   // Display the Samn Perelli checklist
+    //   const fatigueLevel = await this.displaySamnPerelliChecklist();
 
-    // Display the ready demo screen
-    await this.displayReadyDemo();
+    //   // Display the ready demo screen
+    //   await this.displayReadyDemo();
 
-    return {
-      fatigueLevel,
-      ...sleepData,
-    };
+    //   return {
+    //     fatigueLevel,
+    //     ...sleepData,
+    //   };
+    return {};
   }
 }

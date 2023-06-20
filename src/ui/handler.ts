@@ -102,10 +102,7 @@ export class CogSpeedGraphicsHandler {
     const spaceBetween = 128;
 
     for (let i = 0; i < 2; i++) {
-      const smallButtonTexture = new Texture(
-        this.smallButtonTextures.baseTexture,
-        new Rectangle(i * spaceBetween, 0, 128, 96)
-      );
+      const smallButtonTexture = new Texture(this.smallButtonTextures.baseTexture, new Rectangle(i * spaceBetween, 0, 128, 96));
       buttons.push(smallButtonTexture);
     }
     return buttons;
@@ -125,10 +122,7 @@ export class CogSpeedGraphicsHandler {
 
       // Split up numbers and dots png into separate sprites
 
-      const numberOrDotTexture = new Texture(
-        texture.baseTexture,
-        new Rectangle(posX, posY, spaceBetween, spaceBetween)
-      );
+      const numberOrDotTexture = new Texture(texture.baseTexture, new Rectangle(posX, posY, spaceBetween, spaceBetween));
       const numberOrDot = new Sprite(numberOrDotTexture);
 
       numberOrDot.anchor.set(0.5);
@@ -227,11 +221,7 @@ export class CogSpeedGraphicsHandler {
       const number = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
       delete numbers[number];
 
-      const randomIncorrectSprite = this.getSprite(
-        number > 9 ? "dots" : "numbers",
-        number > 9 ? number - 9 : number,
-        true
-      );
+      const randomIncorrectSprite = this.getSprite(number > 9 ? "dots" : "numbers", number > 9 ? number - 9 : number, true);
 
       this.setSpritePosition(
         randomIncorrectSprite,
