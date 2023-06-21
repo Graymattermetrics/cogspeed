@@ -31,7 +31,7 @@ export class CogSpeedGame {
 
   // Round types
   previousRound: 0 | 1 | 2 | 3 = 0;
-  currentRound: 0 | 1 | 2 | 3 = 0;
+  currentRound: 0 | 1 | 2 | 3 = 1;
 
   // Hold the timeout of the last two blocks
   previousBlockTimeouts: number[] = [-1];
@@ -54,6 +54,7 @@ export class CogSpeedGame {
 
     // Create random answer location
     const answerLocation = Math.floor(Math.random() * 6) + 1; // 1-6
+    // const answerLocation = 1;
     this.answer = answerLocation;
 
     // Set display sprites
@@ -96,18 +97,12 @@ export class CogSpeedGame {
 
     // 2) Max wrong limit (roughly 5)
     const lastSelfPacedAnswers = this.previousAnswers.filter((answer) => answer.roundType === 1);
-    if (lastSelfPacedAnswers.length >= this.config.self_paced.max_wrong) {
-      console.log("Found more than 5 wrong answers");
-      return this.stop();
-    }
+    if (lastSelfPacedAnswers.length >= this.config.self_paced.max_wrong) return this.stop();
 
     // 3) More than (roughly 12) correct answers that are less than (roughly 3000ms)
     // But not (roughly 4) correct answers in a row
     const lastCorrectAnswers = lastSelfPacedAnswers.filter((answer) => answer.status === "correct");
-    if (lastCorrectAnswers.length >= this.config.self_paced.min_correct) {
-      console.log("Found more than 12 correct answers without 4 in a row");
-      return this.stop();
-    }
+    if (lastCorrectAnswers.length >= this.config.self_paced.min_correct) return this.stop();
 
     // 4) If (roughly 4) correct answers in a row
     // We move to the next round
@@ -116,79 +111,143 @@ export class CogSpeedGame {
       this.currentRound = 2;
       // Set machine paced timeout
       this.currentTimeout =
-        Math.min(lastNAnswers.map((answer) => answer.timedelta).reduce((a, b) => a + b, 0) / 4, this.config.machine_paced.max_start_duration) -
+        Math.min(lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) / 4, this.config.machine_paced.max_start_duration) -
         this.config.machine_paced.slowdown.initial_duration; // Minimim response time (roughly 100ms)
-
-      console.log(`Found ${this.config.self_paced.max_right_count} correct answers in a row`, {
-        currentTimeout: this.currentTimeout,
-        lastNAnswers,
-      });
       // Call next round
-      return this.machinePacedRound();
+      return this.machinePacedRound(true);
     }
     this.previousRound = 1;
   }
 
   /**
    * Round type 2
-   * @return {void}
+   * @return {void | Promise<void>}
    */
-  machinePacedRound(): void {
+  machinePacedRound(called: boolean = false): void | Promise<void> {
     console.log("Machine paced round");
 
-    // 1) Set no response timeout from the average of the last 4 answers (roughly 1500ms)
+    // 1) Determine speedup and slowdown amount based on the ratio last answer
+    const lastAnswer = this.previousAnswers.filter((answer) => answer.roundType === 2).slice(-1)[0];
+    // If there is a last answer, change the timeout
+    if (lastAnswer) {
+      if (lastAnswer.status === "correct") {
+        // If the answer is correct, speed up the timeout
+        console.log("Speeding up", {
+          ratio: lastAnswer.ratio,
+          timeout: this.currentTimeout,
+          newTimeout: this.currentTimeout + (lastAnswer.ratio - 1.0) * this.config.machine_paced.speedup.speedup_with_ratio_amount,
+        });
+        this.currentTimeout += (lastAnswer.ratio - 1.0) * this.config.machine_paced.speedup.speedup_with_ratio_amount;
+      } else if (lastAnswer.status === "incorrect") {
+        // If the answer is incorrect, slow down the timeout
+        console.log("Slowing down", {
+          ratio: lastAnswer.ratio,
+          timeout: this.currentTimeout,
+          newTimeout: this.currentTimeout + this.config.machine_paced.slowdown.base_duration,
+        });
+        this.currentTimeout += this.config.machine_paced.slowdown.base_duration;
+      }
+    }
+
+    // 2) Determine if the last (roughly 2) answers were no response
+    // Indicating that the user has blocked
+    const lastNAnswers = this.previousAnswers.slice(-this.config.machine_paced.blocking.no_input_count).filter((answer) => answer.roundType === 2);
+    if (lastNAnswers.filter((answer) => answer.status === "no response").length === this.config.machine_paced.blocking.no_input_count) {
+      this.currentRound = 3;
+      // Add the block time to the previousBlockTimeouts
+      this.previousBlockTimeouts.push(this.currentTimeout);
+      // Slow down the timeout (roughly 275ms)
+      this.currentTimeout += this.config.machine_paced.blocking.slow_down_duration;
+      return this.postBlockRound(true);
+    }
+
+    // Set no response timeout from the average of the last 4 answers (roughly 1500ms)
     clearTimeout(this.currentRoundTimeout);
-    this.currentRoundTimeout = setTimeout(this.nextRound.bind(this), this.currentTimeout);
-
-    // 2) Determine speedup and slowdown amount based on the ratio last answer
-    if (this.previousRound === 1) return;
-
-    const lastAnswer = this.previousAnswers[this.previousAnswers.length - 1];
-    if (lastAnswer.status === "correct") this.currentRound -= (lastAnswer.ratio - 1.0) * this.config.machine_paced.speedup.speedup_with_ratio_amount;
-    else if (lastAnswer.status === "incorrect") this.currentRound += this.config.machine_paced.slowdown.base_duration;
-
+    this.currentRoundTimeout = setTimeout(this.buttonClicked.bind(this), this.currentTimeout);
+    // Set the previousRound as machine paced
     this.previousRound = 2;
   }
 
   /**
    * Round type 3
-   * @return {void}
+   * Simulates a mini self paced environment after a block
+   * In order to act as a cooldown period
+   * @return {void | Promise<void>}
    */
-  postBlockRound(): void {}
+  postBlockRound(called: boolean = false): void | Promise<void> {
+    if (called) console.log("Block!");
+    else console.log("Post block round");
+
+    const lastTwoBlocks = this.previousBlockTimeouts.slice(-2);
+    // 1) If the last two blocks are within (roughly 135ms) of each other then the test is a success
+    if (lastTwoBlocks.length === 2 && Math.abs(lastTwoBlocks[0] - lastTwoBlocks[1]) < this.config.machine_paced.blocking.duration_delta)
+      return this.stop(true);
+
+    // 2) We can exit post-block successfully with (roughly 2) correct answers in a row
+    // If the last (roughly 2) answers were correct, continue to machine paced
+    const lastNAnswers = this.previousAnswers
+      .slice(-this.config.machine_paced.blocking.min_correct_answers)
+      .filter((answer) => answer.roundType === 3);
+    console.log(lastNAnswers);
+    if (lastNAnswers.filter((answer) => answer.status === "correct").length === this.config.machine_paced.blocking.min_correct_answers) {
+      this.currentRound = 2;
+      return this.machinePacedRound(true);
+    }
+
+    // 3) If there are (roughly 3) answers wrong before (roughly 2) correct answers in a row
+    // So end test unsuccessfully
+    const lastPostBlockAnswers = this.previousAnswers.filter((answer) => answer.roundType === 3);
+    if (lastPostBlockAnswers.filter((answer) => answer.status === "incorrect").length === this.config.machine_paced.blocking.max_wrong_answers)
+      return this.stop(false);
+
+    clearTimeout(this.currentRoundTimeout);
+    this.previousRound = 3;
+  }
 
   /**
    * Button clicked
    * @param {number | boolean} location The location of the button clicked or false if no response
    * @return {void}
    */
-  public buttonClicked(location: number | boolean): void {
+  public buttonClicked(location: number | boolean = false): void {
     const previousAnswer = this.previousAnswers[this.previousAnswers.length - 1];
-    const previousTime = previousAnswer ? previousAnswer.time : this.startTime;
+    const previousTime = previousAnswer ? previousAnswer._time_epoch : this.startTime;
 
     let timeTaken = performance.now() - previousTime;
     let answer = this.answer;
     let status = location === false ? "no response" : location === this.answer ? "correct" : "incorrect";
+    let isCorrectFromPrevious = false;
+    let ratio = this.currentTimeout === -1 ? 0 : (performance.now() - previousTime) / this.currentTimeout;
 
-    if (this.config.machine_paced.minimum_response_time > timeTaken) {
-      if (previousAnswer && previousAnswer.status === "no response" && location === previousAnswer.answerLocation) {
-        status = "correct";
-        answer = this.previousAnswers[this.previousAnswers.length - 1].answerLocation;
-        timeTaken = timeTaken + previousAnswer.timedelta;
-      }
+    if (
+      previousAnswer &&
+      previousAnswer.status === "no response" &&
+      this.config.machine_paced.minimum_response_time > timeTaken &&
+      location === previousAnswer.answerLocation
+    ) {
+      // The answer is correct for the previous answer
+      status = "correct";
+      answer = this.previousAnswers[this.previousAnswers.length - 1].answerLocation;
+      timeTaken = timeTaken + previousAnswer.timeTaken;
+      isCorrectFromPrevious = true;
+
+      // Update ratio (> 1)
+      ratio = timeTaken / this.currentTimeout;
     }
 
     // Log answer
-    const data: { [key: string]: number | string | undefined | null } = {
+    const data: { [key: string]: number | string | undefined | null | boolean } = {
       status, // correct, incorrect, no response
       answerLocation: answer, // Location of answer
       // Current duration (timeout)
-      // duration: this.currentRoundType !== "postblock" ? this.currentDuration : -1,
-      round: this.previousAnswers.length + 1, // Round number
+      duration: this.currentTimeout,
+      roundNumber: this.previousAnswers.length + 1, // Round number
       roundType: this.previousRound, // Round type
-      timedelta: timeTaken, // Time delta between previous answer
+      timeTaken, // Time delta between previous answer
       // Ratio of time taken to respond to time given
-      ratio: this.currentTimeout === -1 ? 0 : (performance.now() - previousTime) / this.currentTimeout,
-      time: performance.now(), // Time of answer
+      isCorrectFromPrevious, // If the answer was correct from the previous answer
+      ratio,
+      _time_epoch: performance.now(), // Time of answer
     };
 
     // if (this.currentRoundType === "machine-paced") {
@@ -196,6 +255,7 @@ export class CogSpeedGame {
     // }
 
     this.previousAnswers.push(data);
+    console.log(this.previousAnswers, this.previousBlockTimeouts);
     this.nextRound();
   }
 
