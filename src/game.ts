@@ -13,10 +13,11 @@ import { ProcessResultsPage } from "./processResultsPage";
  * 1: self-paced startup
  * 2: machine-paced
  * 3: postblock
- *
+ * 4: self-paced restart
+ * 
  * The way in which each round is handled is as follows:
  * buttonClicked -> nextRound -> round -> stop | nextRound
- * First the round function is called to create timers for the round
+ * The round function is called to create timers for the round
  *
  *
  * @param {Application} app The pixi application
@@ -30,8 +31,7 @@ export class CogSpeedGame {
   currentTimeout: number = -1;
 
   // Round types
-  previousRound: 0 | 1 | 2 | 3 = 0;
-  currentRound: 0 | 1 | 2 | 3 = 1;
+  currentRound: 0 | 1 | 2 | 3 | 4 | 5 = 0;
 
   // Hold the timeout of the last two blocks
   previousBlockTimeouts: number[] = [-1];
@@ -45,6 +45,21 @@ export class CogSpeedGame {
   currentRoundTimeout: NodeJS.Timeout | undefined;
 
   constructor(private app: Application, private config: { [key: string]: any }, private ui: CogSpeedGraphicsHandler) {}
+
+  /**
+   * Returns the ratio of correct to incorrect
+   * answers in the rolling mean
+   */
+  getCorrectRollingMean(): number {
+    // Create rolling mean answers of last machine paced answers up to the last post-block round
+    const lastNonMachinePacedRound = this.previousAnswers.slice().reverse().findIndex((answer: { [key: string]: any }) => answer.roundType !== 2);
+    const lastRollingMeanAnswers = this.previousAnswers.slice(-lastNonMachinePacedRound);
+    // Get the correct answers (count answers as correct if the rolling mean is not large enough)
+    const correctAnswers = lastRollingMeanAnswers.filter((answer) => answer.status === "correct").length
+     + this.config.machine_paced.rolling_average.mean_size - lastRollingMeanAnswers.length;
+    console.log({ correctAnswers, lastRollingMeanAnswers, lastNonMachinePacedRound });
+    return correctAnswers / this.config.machine_paced.rolling_average.mean_size;
+  }
 
   /**
    * Simply runs the next round
@@ -65,6 +80,8 @@ export class CogSpeedGame {
       1: this.selfPacedStartupRound,
       2: this.machinePacedRound,
       3: this.postBlockRound,
+      4: this.selfPacedRestartRound,
+      5: this.finalRounds,
     };
     rounds[this.currentRound].bind(this)();
   }
@@ -78,7 +95,6 @@ export class CogSpeedGame {
     console.log("Training round");
 
     this.currentRound = 1;
-    this.previousRound = 0;
 
     // Note: No need to call the next round as there is
     // only one training round
@@ -114,16 +130,15 @@ export class CogSpeedGame {
         Math.min(lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) / 4, this.config.machine_paced.max_start_duration) -
         this.config.machine_paced.slowdown.initial_duration; // Minimim response time (roughly 100ms)
       // Call next round
-      return this.machinePacedRound(true);
+      return this.machinePacedRound();
     }
-    this.previousRound = 1;
   }
 
   /**
    * Round type 2
    * @return {void | Promise<void>}
    */
-  machinePacedRound(called: boolean = false): void | Promise<void> {
+  machinePacedRound(): void | Promise<void> {
     console.log("Machine paced round");
 
     // 1) Determine speedup and slowdown amount based on the ratio last answer
@@ -158,14 +173,20 @@ export class CogSpeedGame {
       this.previousBlockTimeouts.push(this.currentTimeout);
       // Slow down the timeout (roughly 275ms)
       this.currentTimeout += this.config.machine_paced.blocking.slow_down_duration;
-      return this.postBlockRound(true);
+      return this.postBlockRound();
+    }
+
+    // 3) Roll mean limit exceeded
+    // So we place the user in an SP Restart Phase
+    const correctRatio = this.getCorrectRollingMean();
+    if (correctRatio < this.config.machine_paced.rolling_average.threshold) {
+      this.currentRound = 4;
+      return this.selfPacedRestartRound();
     }
 
     // Set no response timeout from the average of the last 4 answers (roughly 1500ms)
     clearTimeout(this.currentRoundTimeout);
     this.currentRoundTimeout = setTimeout(this.buttonClicked.bind(this), this.currentTimeout);
-    // Set the previousRound as machine paced
-    this.previousRound = 2;
   }
 
   /**
@@ -174,24 +195,22 @@ export class CogSpeedGame {
    * In order to act as a cooldown period
    * @return {void | Promise<void>}
    */
-  postBlockRound(called: boolean = false): void | Promise<void> {
-    if (called) console.log("Block!");
-    else console.log("Post block round");
-
+  postBlockRound(): void | Promise<void> {
     const lastTwoBlocks = this.previousBlockTimeouts.slice(-2);
     // 1) If the last two blocks are within (roughly 135ms) of each other then the test is a success
-    if (lastTwoBlocks.length === 2 && Math.abs(lastTwoBlocks[0] - lastTwoBlocks[1]) < this.config.machine_paced.blocking.duration_delta)
-      return this.stop(true);
+    if (lastTwoBlocks.length === 2 && Math.abs(lastTwoBlocks[0] - lastTwoBlocks[1]) < this.config.machine_paced.blocking.duration_delta) {
+      this.currentRound = 5;
+      return this.finalRounds();
+    }
 
     // 2) We can exit post-block successfully with (roughly 2) correct answers in a row
     // If the last (roughly 2) answers were correct, continue to machine paced
     const lastNAnswers = this.previousAnswers
       .slice(-this.config.machine_paced.blocking.min_correct_answers)
       .filter((answer) => answer.roundType === 3);
-    console.log(lastNAnswers);
     if (lastNAnswers.filter((answer) => answer.status === "correct").length === this.config.machine_paced.blocking.min_correct_answers) {
       this.currentRound = 2;
-      return this.machinePacedRound(true);
+      return this.machinePacedRound();
     }
 
     // 3) If there are (roughly 3) answers wrong before (roughly 2) correct answers in a row
@@ -201,8 +220,53 @@ export class CogSpeedGame {
       return this.stop(false);
 
     clearTimeout(this.currentRoundTimeout);
-    this.previousRound = 3;
   }
+
+  /**
+   * Round type 4
+   * 
+   * While this function is similar to postBlockRound, there are subtle differences
+   * which would make it difficult to merge the two functions
+   * @return {void | Promise<void>}
+   */
+  selfPacedRestartRound(): void | Promise<void> {
+    console.log("Self paced restart round");
+
+    // 1) We can exit post-block successfully with (roughly 2) correct answers in a row
+    // If the last (roughly 2) answers were correct, continue to machine paced
+    const lastNAnswers = this.previousAnswers
+      .slice(-this.config.machine_paced.blocking.min_correct_answers)
+      .filter((answer) => answer.roundType === 3);
+    if (lastNAnswers.filter((answer) => answer.status === "correct").length === this.config.machine_paced.blocking.min_correct_answers) {
+      this.currentRound = 2;
+      this.currentTimeout -= this.config.machine_paced.slowdown.base_duration;
+      return this.machinePacedRound();
+    }
+
+    // 2) If there are (roughly 3) answers wrong before (roughly 2) correct answers in a row
+    // So end test unsuccessfully
+    const lastPostBlockAnswers = this.previousAnswers.filter((answer) => answer.roundType === 3);
+    if (lastPostBlockAnswers.filter((answer) => answer.status === "incorrect").length === this.config.machine_paced.blocking.max_wrong_answers)
+      return this.stop(false);
+
+    clearTimeout(this.currentRoundTimeout);
+  }
+
+  /**
+   * Round type 5
+   * 
+   * The final unscored rounds
+   */
+  finalRounds(): void | Promise<void> {
+    console.log("Final rounds");
+
+    const lastNRounds = this.previousAnswers.slice(-this.config.number_of_endmode_rounds).filter((answer) => answer.roundType === 5);
+    if (lastNRounds.length === this.config.number_of_endmode_rounds) {
+      return this.stop(true);
+    }
+    clearTimeout(this.currentRoundTimeout);
+  }
+
 
   /**
    * Button clicked
@@ -242,7 +306,7 @@ export class CogSpeedGame {
       // Current duration (timeout)
       duration: this.currentTimeout,
       roundNumber: this.previousAnswers.length + 1, // Round number
-      roundType: this.previousRound, // Round type
+      roundType: this.currentRound, // Round type
       timeTaken, // Time delta between previous answer
       // Ratio of time taken to respond to time given
       isCorrectFromPrevious, // If the answer was correct from the previous answer

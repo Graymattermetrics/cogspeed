@@ -302,31 +302,31 @@ export class StartPage {
    * @returns {Promise<{ [key: string]: any }>} The test data
    */
   public async start(): Promise<{ [key: string]: any } | false> {
-    //   // // Display the home page
-    //   await this.displayHomePage();
+    // // Display the home page
+    // await this.displayHomePage();
 
-    //   // Display the test disclaimer
-    //   const ready = await this.displayTestDisclaimer();
-    //   if (!ready) return false;
+    // // Display the test disclaimer
+    // const ready = await this.displayTestDisclaimer();
+    // if (!ready) return false;
 
-    //   // Get sleep data
-    //   let sleepData;
-    //   while (true) {
-    //     sleepData = await this.displaySleepForm();
-    //     // Confirm sleep data
-    //     if (await this.confirmSleepData(sleepData)) break;
-    //   }
+    // // Get sleep data
+    // let sleepData;
+    // while (true) {
+    //   sleepData = await this.displaySleepForm();
+    //   // Confirm sleep data
+    //   if (await this.confirmSleepData(sleepData)) break;
+    // }
 
-    //   // Display the Samn Perelli checklist
-    //   const fatigueLevel = await this.displaySamnPerelliChecklist();
+    // // Display the Samn Perelli checklist
+    const fatigueLevel = await this.displaySamnPerelliChecklist();
 
-    //   // Display the ready demo screen
-    //   await this.displayReadyDemo();
+    // // Display the ready demo screen
+    // await this.displayReadyDemo();
 
-    //   return {
-    //     fatigueLevel,
-    //     ...sleepData,
-    //   };
+    // return {
+    //   fatigueLevel,
+    //   ...sleepData,
+    // };
     return {};
   }
 }
