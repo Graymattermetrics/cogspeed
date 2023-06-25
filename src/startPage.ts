@@ -318,7 +318,7 @@ export class StartPage {
     // }
 
     // // Display the Samn Perelli checklist
-    const fatigueLevel = await this.displaySamnPerelliChecklist();
+    // const fatigueLevel = await this.displaySamnPerelliChecklist();
 
     // // Display the ready demo screen
     // await this.displayReadyDemo();

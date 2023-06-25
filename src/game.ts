@@ -14,6 +14,7 @@ import { ProcessResultsPage } from "./processResultsPage";
  * 2: machine-paced
  * 3: postblock
  * 4: self-paced restart
+ * 5: final rounds
  * 
  * The way in which each round is handled is as follows:
  * buttonClicked -> nextRound -> round -> stop | nextRound
@@ -27,7 +28,7 @@ import { ProcessResultsPage } from "./processResultsPage";
  */
 export class CogSpeedGame {
   // Time
-  startTime: number | undefined;
+  startTime: number = -1;
   currentTimeout: number = -1;
 
   // Round types
@@ -91,38 +92,37 @@ export class CogSpeedGame {
    * Round type 0
    * @return {void}
    */
-  trainingRound(): void {
-    console.log("Training round");
-
-    this.currentRound = 1;
-
-    // Note: No need to call the next round as there is
-    // only one training round
+  async trainingRound(): Promise<void> {
+    // Check how many training rounds have been completed
+    const lastTrainingAnswers = this.previousAnswers.filter((answer) => answer.roundType === 0);
+    if (lastTrainingAnswers.length === this.config.self_paced.number_of_training_rounds) {
+      this.currentRound = 1;
+      return this.selfPacedStartupRound();
+    }
   }
 
   /**
    * Round type 1
-   * @return {void | Promise<void>}
+   * @return {Promise <void>}
    */
-  selfPacedStartupRound(): void | Promise<void> {
-    console.log("Self paced startup round");
-
+  async selfPacedStartupRound(): Promise<void> {
     // 1) Set no response timeout (roughly 6000ms)
     clearTimeout(this.currentRoundTimeout);
     this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.self_paced.no_response_duration);
 
     // 2) Max wrong limit (roughly 5)
-    const lastSelfPacedAnswers = this.previousAnswers.filter((answer) => answer.roundType === 1);
-    if (lastSelfPacedAnswers.length >= this.config.self_paced.max_wrong) return this.stop();
+    const selfPacedAnswers = this.previousAnswers.filter((answer) => answer.roundType === 1);
+    const wrongAnswers = selfPacedAnswers.filter((answer) => answer.status === "incorrect");
+    if (wrongAnswers.length >= this.config.self_paced.max_wrong_count) return this.stop();
 
     // 3) More than (roughly 12) correct answers that are less than (roughly 3000ms)
     // But not (roughly 4) correct answers in a row
-    const lastCorrectAnswers = lastSelfPacedAnswers.filter((answer) => answer.status === "correct");
-    if (lastCorrectAnswers.length >= this.config.self_paced.min_correct) return this.stop();
+    const correctAnswers = selfPacedAnswers.filter((answer) => answer.status === "correct" && answer.timeTaken <= this.config.self_paced.max_correct_duration);
+    if (correctAnswers.length >= this.config.self_paced.total_correct_count) return this.stop();
 
     // 4) If (roughly 4) correct answers in a row
     // We move to the next round
-    const lastNAnswers = lastSelfPacedAnswers.slice(-this.config.self_paced.max_right_count);
+    const lastNAnswers = selfPacedAnswers.slice(-this.config.self_paced.max_right_count);
     if (lastNAnswers.filter((answer) => answer.status === "correct").length === this.config.self_paced.max_right_count) {
       this.currentRound = 2;
       // Set machine paced timeout
@@ -136,30 +136,18 @@ export class CogSpeedGame {
 
   /**
    * Round type 2
-   * @return {void | Promise<void>}
+   * @return {Promise <void>}
    */
-  machinePacedRound(): void | Promise<void> {
-    console.log("Machine paced round");
-
+  async machinePacedRound(): Promise <void> {
     // 1) Determine speedup and slowdown amount based on the ratio last answer
     const lastAnswer = this.previousAnswers.filter((answer) => answer.roundType === 2).slice(-1)[0];
     // If there is a last answer, change the timeout
     if (lastAnswer) {
       if (lastAnswer.status === "correct") {
         // If the answer is correct, speed up the timeout
-        console.log("Speeding up", {
-          ratio: lastAnswer.ratio,
-          timeout: this.currentTimeout,
-          newTimeout: this.currentTimeout + (lastAnswer.ratio - 1.0) * this.config.machine_paced.speedup.speedup_with_ratio_amount,
-        });
         this.currentTimeout += (lastAnswer.ratio - 1.0) * this.config.machine_paced.speedup.speedup_with_ratio_amount;
       } else if (lastAnswer.status === "incorrect") {
         // If the answer is incorrect, slow down the timeout
-        console.log("Slowing down", {
-          ratio: lastAnswer.ratio,
-          timeout: this.currentTimeout,
-          newTimeout: this.currentTimeout + this.config.machine_paced.slowdown.base_duration,
-        });
         this.currentTimeout += this.config.machine_paced.slowdown.base_duration;
       }
     }
@@ -193,9 +181,9 @@ export class CogSpeedGame {
    * Round type 3
    * Simulates a mini self paced environment after a block
    * In order to act as a cooldown period
-   * @return {void | Promise<void>}
+   * @return {Promise <void>}
    */
-  postBlockRound(): void | Promise<void> {
+  async postBlockRound(): Promise <void> {
     const lastTwoBlocks = this.previousBlockTimeouts.slice(-2);
     // 1) If the last two blocks are within (roughly 135ms) of each other then the test is a success
     if (lastTwoBlocks.length === 2 && Math.abs(lastTwoBlocks[0] - lastTwoBlocks[1]) < this.config.machine_paced.blocking.duration_delta) {
@@ -227,11 +215,9 @@ export class CogSpeedGame {
    * 
    * While this function is similar to postBlockRound, there are subtle differences
    * which would make it difficult to merge the two functions
-   * @return {void | Promise<void>}
+   * @return {Promise <void>}
    */
-  selfPacedRestartRound(): void | Promise<void> {
-    console.log("Self paced restart round");
-
+  async selfPacedRestartRound(): Promise <void> {
     // 1) We can exit post-block successfully with (roughly 2) correct answers in a row
     // If the last (roughly 2) answers were correct, continue to machine paced
     const lastNAnswers = this.previousAnswers
@@ -257,9 +243,7 @@ export class CogSpeedGame {
    * 
    * The final unscored rounds
    */
-  finalRounds(): void | Promise<void> {
-    console.log("Final rounds");
-
+  async finalRounds(): Promise <void> {
     const lastNRounds = this.previousAnswers.slice(-this.config.number_of_endmode_rounds).filter((answer) => answer.roundType === 5);
     if (lastNRounds.length === this.config.number_of_endmode_rounds) {
       return this.stop(true);
@@ -360,7 +344,6 @@ export class CogSpeedGame {
 
     const data: { [key: string]: any } = {
       success,
-      // @ts-ignore
       testDuration: round(performance.now() - this.startTime),
       numberOfRounds: this.previousAnswers.length,
       blockingRoundDuration,
