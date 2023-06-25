@@ -37,7 +37,7 @@ export class CogSpeedGame {
   previousBlockTimeouts: number[] = [-1];
 
   // Answers
-  answer: number | undefined;
+  answer: number = -1;
   previousAnswers: { [key: string]: any }[] = [];
 
   // Timers
@@ -271,17 +271,20 @@ export class CogSpeedGame {
   /**
    * Button clicked
    * @param {number | boolean} location The location of the button clicked or false if no response
+   * @param {number} timeClicked The time (performance.now) the button was clicked
    * @return {void}
    */
-  public buttonClicked(location: number | boolean = false): void {
+  public buttonClicked(location: number | null = null, timeClicked: number | null = null): void {
+    timeClicked = timeClicked || performance.now();
+
     const previousAnswer = this.previousAnswers[this.previousAnswers.length - 1];
     const previousTime = previousAnswer ? previousAnswer._time_epoch : this.startTime;
 
-    let timeTaken = performance.now() - previousTime;
+    let timeTaken = timeClicked - previousTime;
     let answer = this.answer;
-    let status = location === false ? "no response" : location === this.answer ? "correct" : "incorrect";
+    let status = location === null ? "no response" : location === this.answer ? "correct" : "incorrect";
     let isCorrectFromPrevious = false;
-    let ratio = this.currentTimeout === -1 ? 0 : (performance.now() - previousTime) / this.currentTimeout;
+    let ratio = this.currentTimeout === -1 ? 0 : (timeClicked - previousTime) / this.currentTimeout;
 
     if (
       previousAnswer &&
@@ -300,7 +303,7 @@ export class CogSpeedGame {
     }
 
     // Log answer
-    const data: { [key: string]: number | string | undefined | null | boolean } = {
+    const data: { [key: string]: number | string | null | boolean } = {
       status, // correct, incorrect, no response
       answerLocation: answer, // Location of answer
       // Current duration (timeout)
@@ -311,7 +314,7 @@ export class CogSpeedGame {
       // Ratio of time taken to respond to time given
       isCorrectFromPrevious, // If the answer was correct from the previous answer
       ratio,
-      _time_epoch: performance.now(), // Time of answer
+      _time_epoch: timeClicked, // Time of answer
     };
 
     // if (this.currentRoundType === "machine-paced") {
