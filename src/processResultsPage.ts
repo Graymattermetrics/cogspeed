@@ -103,7 +103,9 @@ export class ProcessResultsPage {
       .map((k) => `${k}: ${data[k].toString().slice(0, 100)}`)
       .join("\n");
 
-    let textContent = data.success ? `Test finished [temp text] \n${testSummary}` : "Test stopped (failed) [temp text]";
+    let textContent = data.success
+      ? `Test finished [temp text] \n${testSummary}`
+      : "Test stopped (failed) [temp text]";
     textContent += "\n**Click me to download results**";
 
     const text = new Text(textContent, {

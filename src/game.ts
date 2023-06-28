@@ -15,7 +15,7 @@ import { ProcessResultsPage } from "./processResultsPage";
  * 3: postblock
  * 4: self-paced restart
  * 5: final rounds
- * 
+ *
  * The way in which each round is handled is as follows:
  * buttonClicked -> nextRound -> round -> stop | nextRound
  * The round function is called to create timers for the round
@@ -45,7 +45,11 @@ export class CogSpeedGame {
   maxTestTimeout: NodeJS.Timeout | undefined;
   currentRoundTimeout: NodeJS.Timeout | undefined;
 
-  constructor(private app: Application, private config: { [key: string]: any }, private ui: CogSpeedGraphicsHandler) {}
+  constructor(
+    public config: { [key: string]: any },
+    private app: Application | null = null,
+    private ui: CogSpeedGraphicsHandler | null = null
+  ) {}
 
   /**
    * Returns the ratio of correct to incorrect
@@ -53,12 +57,16 @@ export class CogSpeedGame {
    */
   getCorrectRollingMean(): number {
     // Create rolling mean answers of last machine paced answers up to the last post-block round
-    const lastNonMachinePacedRound = this.previousAnswers.slice().reverse().findIndex((answer: { [key: string]: any }) => answer.roundType !== 2);
+    const lastNonMachinePacedRound = this.previousAnswers
+      .slice()
+      .reverse()
+      .findIndex((answer: { [key: string]: any }) => answer.roundType !== 2);
     const lastRollingMeanAnswers = this.previousAnswers.slice(-lastNonMachinePacedRound);
     // Get the correct answers (count answers as correct if the rolling mean is not large enough)
-    const correctAnswers = lastRollingMeanAnswers.filter((answer) => answer.status === "correct").length
-     + this.config.machine_paced.rolling_average.mean_size - lastRollingMeanAnswers.length;
-    console.log({ correctAnswers, lastRollingMeanAnswers, lastNonMachinePacedRound });
+    const correctAnswers =
+      lastRollingMeanAnswers.filter((answer) => answer.status === "correct").length +
+      this.config.machine_paced.rolling_average.mean_size -
+      lastRollingMeanAnswers.length;
     return correctAnswers / this.config.machine_paced.rolling_average.mean_size;
   }
 
@@ -66,15 +74,18 @@ export class CogSpeedGame {
    * Simply runs the next round
    */
   nextRound(): void {
-    this.ui.clearStage();
+    this.ui?.clearStage();
 
     // Create random answer location
-    const answerLocation = Math.floor(Math.random() * 6) + 1; // 1-6
+    // Pick random number from 1-6 excluding the previous answer
+    const numbers = [1, 2, 3, 4, 5, 6];
+    numbers.splice(numbers.indexOf(this.answer), 1);
+    const answerLocation = numbers[Math.floor(Math.random() * numbers.length)];
     // const answerLocation = 1;
     this.answer = answerLocation;
 
     // Set display sprites
-    this.ui.setDisplayNumbers(answerLocation);
+    this.ui?.setDisplayNumbers(answerLocation);
 
     const rounds = {
       0: this.trainingRound,
@@ -108,7 +119,10 @@ export class CogSpeedGame {
   async selfPacedStartupRound(): Promise<void> {
     // 1) Set no response timeout (roughly 6000ms)
     clearTimeout(this.currentRoundTimeout);
-    this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.self_paced.no_response_duration);
+    this.currentRoundTimeout = setTimeout(
+      this.stop.bind(this),
+      this.config.self_paced.no_response_duration
+    );
 
     // 2) Max wrong limit (roughly 5)
     const selfPacedAnswers = this.previousAnswers.filter((answer) => answer.roundType === 1);
@@ -117,18 +131,27 @@ export class CogSpeedGame {
 
     // 3) More than (roughly 12) correct answers that are less than (roughly 3000ms)
     // But not (roughly 4) correct answers in a row
-    const correctAnswers = selfPacedAnswers.filter((answer) => answer.status === "correct" && answer.timeTaken <= this.config.self_paced.max_correct_duration);
+    const correctAnswers = selfPacedAnswers.filter(
+      (answer) =>
+        answer.status === "correct" &&
+        answer.timeTaken <= this.config.self_paced.max_correct_duration
+    );
     if (correctAnswers.length >= this.config.self_paced.total_correct_count) return this.stop();
 
     // 4) If (roughly 4) correct answers in a row
     // We move to the next round
     const lastNAnswers = selfPacedAnswers.slice(-this.config.self_paced.max_right_count);
-    if (lastNAnswers.filter((answer) => answer.status === "correct").length === this.config.self_paced.max_right_count) {
+    if (
+      lastNAnswers.filter((answer) => answer.status === "correct").length ===
+      this.config.self_paced.max_right_count
+    ) {
       this.currentRound = 2;
       // Set machine paced timeout
       this.currentTimeout =
-        Math.min(lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) / 4, this.config.machine_paced.max_start_duration) -
-        this.config.machine_paced.slowdown.initial_duration; // Minimim response time (roughly 100ms)
+        Math.min(
+          lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) / 4,
+          this.config.machine_paced.max_start_duration
+        ) - this.config.machine_paced.slowdown.initial_duration; // Minimim response time (roughly 100ms)
       // Call next round
       return this.machinePacedRound();
     }
@@ -138,14 +161,23 @@ export class CogSpeedGame {
    * Round type 2
    * @return {Promise <void>}
    */
-  async machinePacedRound(): Promise <void> {
+  async machinePacedRound(): Promise<void> {
     // 1) Determine speedup and slowdown amount based on the ratio last answer
     const lastAnswer = this.previousAnswers.filter((answer) => answer.roundType === 2).slice(-1)[0];
     // If there is a last answer, change the timeout
     if (lastAnswer) {
       if (lastAnswer.status === "correct") {
         // If the answer is correct, speed up the timeout
-        this.currentTimeout += (lastAnswer.ratio - 1.0) * this.config.machine_paced.speedup.speedup_with_ratio_amount;
+        console.log(
+          "Current timeout",
+          this.currentTimeout,
+          "adding",
+          (lastAnswer.ratio - 1.0) * this.config.machine_paced.speedup.speedup_with_ratio_amount,
+          "last ratio",
+          lastAnswer
+        );
+        this.currentTimeout +=
+          (lastAnswer.ratio - 1.0) * this.config.machine_paced.speedup.speedup_with_ratio_amount;
       } else if (lastAnswer.status === "incorrect") {
         // If the answer is incorrect, slow down the timeout
         this.currentTimeout += this.config.machine_paced.slowdown.base_duration;
@@ -154,8 +186,13 @@ export class CogSpeedGame {
 
     // 2) Determine if the last (roughly 2) answers were no response
     // Indicating that the user has blocked
-    const lastNAnswers = this.previousAnswers.slice(-this.config.machine_paced.blocking.no_input_count).filter((answer) => answer.roundType === 2);
-    if (lastNAnswers.filter((answer) => answer.status === "no response").length === this.config.machine_paced.blocking.no_input_count) {
+    const lastNAnswers = this.previousAnswers
+      .slice(-this.config.machine_paced.blocking.no_input_count)
+      .filter((answer) => answer.roundType === 2);
+    if (
+      lastNAnswers.filter((answer) => answer.status === "no response").length ===
+      this.config.machine_paced.blocking.no_input_count
+    ) {
       this.currentRound = 3;
       // Add the block time to the previousBlockTimeouts
       this.previousBlockTimeouts.push(this.currentTimeout);
@@ -183,10 +220,14 @@ export class CogSpeedGame {
    * In order to act as a cooldown period
    * @return {Promise <void>}
    */
-  async postBlockRound(): Promise <void> {
+  async postBlockRound(): Promise<void> {
     const lastTwoBlocks = this.previousBlockTimeouts.slice(-2);
     // 1) If the last two blocks are within (roughly 135ms) of each other then the test is a success
-    if (lastTwoBlocks.length === 2 && Math.abs(lastTwoBlocks[0] - lastTwoBlocks[1]) < this.config.machine_paced.blocking.duration_delta) {
+    if (
+      lastTwoBlocks.length === 2 &&
+      Math.abs(lastTwoBlocks[0] - lastTwoBlocks[1]) <
+        this.config.machine_paced.blocking.duration_delta
+    ) {
       this.currentRound = 5;
       return this.finalRounds();
     }
@@ -196,7 +237,10 @@ export class CogSpeedGame {
     const lastNAnswers = this.previousAnswers
       .slice(-this.config.machine_paced.blocking.min_correct_answers)
       .filter((answer) => answer.roundType === 3);
-    if (lastNAnswers.filter((answer) => answer.status === "correct").length === this.config.machine_paced.blocking.min_correct_answers) {
+    if (
+      lastNAnswers.filter((answer) => answer.status === "correct").length ===
+      this.config.machine_paced.blocking.min_correct_answers
+    ) {
       this.currentRound = 2;
       return this.machinePacedRound();
     }
@@ -204,7 +248,10 @@ export class CogSpeedGame {
     // 3) If there are (roughly 3) answers wrong before (roughly 2) correct answers in a row
     // So end test unsuccessfully
     const lastPostBlockAnswers = this.previousAnswers.filter((answer) => answer.roundType === 3);
-    if (lastPostBlockAnswers.filter((answer) => answer.status === "incorrect").length === this.config.machine_paced.blocking.max_wrong_answers)
+    if (
+      lastPostBlockAnswers.filter((answer) => answer.status === "incorrect").length ===
+      this.config.machine_paced.blocking.max_wrong_answers
+    )
       return this.stop(false);
 
     clearTimeout(this.currentRoundTimeout);
@@ -212,18 +259,21 @@ export class CogSpeedGame {
 
   /**
    * Round type 4
-   * 
+   *
    * While this function is similar to postBlockRound, there are subtle differences
    * which would make it difficult to merge the two functions
    * @return {Promise <void>}
    */
-  async selfPacedRestartRound(): Promise <void> {
+  async selfPacedRestartRound(): Promise<void> {
     // 1) We can exit post-block successfully with (roughly 2) correct answers in a row
     // If the last (roughly 2) answers were correct, continue to machine paced
     const lastNAnswers = this.previousAnswers
       .slice(-this.config.machine_paced.blocking.min_correct_answers)
       .filter((answer) => answer.roundType === 3);
-    if (lastNAnswers.filter((answer) => answer.status === "correct").length === this.config.machine_paced.blocking.min_correct_answers) {
+    if (
+      lastNAnswers.filter((answer) => answer.status === "correct").length ===
+      this.config.machine_paced.blocking.min_correct_answers
+    ) {
       this.currentRound = 2;
       this.currentTimeout -= this.config.machine_paced.slowdown.base_duration;
       return this.machinePacedRound();
@@ -232,7 +282,10 @@ export class CogSpeedGame {
     // 2) If there are (roughly 3) answers wrong before (roughly 2) correct answers in a row
     // So end test unsuccessfully
     const lastPostBlockAnswers = this.previousAnswers.filter((answer) => answer.roundType === 3);
-    if (lastPostBlockAnswers.filter((answer) => answer.status === "incorrect").length === this.config.machine_paced.blocking.max_wrong_answers)
+    if (
+      lastPostBlockAnswers.filter((answer) => answer.status === "incorrect").length ===
+      this.config.machine_paced.blocking.max_wrong_answers
+    )
       return this.stop(false);
 
     clearTimeout(this.currentRoundTimeout);
@@ -240,17 +293,18 @@ export class CogSpeedGame {
 
   /**
    * Round type 5
-   * 
+   *
    * The final unscored rounds
    */
-  async finalRounds(): Promise <void> {
-    const lastNRounds = this.previousAnswers.slice(-this.config.number_of_endmode_rounds).filter((answer) => answer.roundType === 5);
+  async finalRounds(): Promise<void> {
+    const lastNRounds = this.previousAnswers
+      .slice(-this.config.number_of_endmode_rounds)
+      .filter((answer) => answer.roundType === 5);
     if (lastNRounds.length === this.config.number_of_endmode_rounds) {
       return this.stop(true);
     }
     clearTimeout(this.currentRoundTimeout);
   }
-
 
   /**
    * Button clicked
@@ -266,7 +320,8 @@ export class CogSpeedGame {
 
     let timeTaken = timeClicked - previousTime;
     let answer = this.answer;
-    let status = location === null ? "no response" : location === this.answer ? "correct" : "incorrect";
+    let status =
+      location === null ? "no response" : location === this.answer ? "correct" : "incorrect";
     let isCorrectFromPrevious = false;
     let ratio = this.currentTimeout === -1 ? 0 : (timeClicked - previousTime) / this.currentTimeout;
 
@@ -306,7 +361,6 @@ export class CogSpeedGame {
     // }
 
     this.previousAnswers.push(data);
-    console.log(this.previousAnswers, this.previousBlockTimeouts);
     this.nextRound();
   }
 
@@ -315,15 +369,17 @@ export class CogSpeedGame {
    * @return {void}
    * @return {Promise<void>}
    */
-  public async start(): Promise<void> {
-    this.ui.setupGame(this);
+  public async start(time: number | null = null): Promise<void> {
+    this.ui?.setupGame(this);
 
-    this.startTime = performance.now();
+    this.startTime = time === null ? performance.now() : time;
     this.maxTestTimeout = setTimeout(this.stop.bind(this), this.config.timeouts.max_test_duration);
     this.nextRound();
   }
 
   public async stop(success: boolean = false): Promise<void> {
+    if (!this.app) return;
+
     for (var i = this.app.stage.children.length - 1; i >= 0; i--) {
       this.app.stage.removeChild(this.app.stage.children[i]);
     }
@@ -340,7 +396,9 @@ export class CogSpeedGame {
       (this.config.cpi_calculation.cpi_max - this.config.cpi_calculation.cpi_min) /
       (this.config.cpi_calculation.brd_min - this.config.cpi_calculation.brd_max);
     // M(BRD - CPImin) + 100
-    const cognitiveProcessingIndex = round(M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100);
+    const cognitiveProcessingIndex = round(
+      M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100
+    );
 
     const data: { [key: string]: any } = {
       success,

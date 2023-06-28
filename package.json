@@ -3,10 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
     "@types/node": "^16.18.23",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
@@ -22,8 +20,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "jest",
+    "eject": "react-scripts eject",
+    "style": "prettier --write src/ --print-width 100"
   },
   "eslintConfig": {
     "extends": [
@@ -44,8 +43,11 @@
     ]
   },
   "devDependencies": {
-    "@types/pixi.js": "^5.0.0",
+    "@jest/globals": "^29.5.0",
+    "@types/jest": "^29.5.2",
     "@types/uuid": "^9.0.1",
-    "jest": "^27.5.1"
+    "jest": "^29.5.0",
+    "prettier": "^2.8.8",
+    "ts-jest": "^29.1.0"
   }
 }
