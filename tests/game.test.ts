@@ -128,6 +128,7 @@ describe("Test game algorithm", () => {
 			game.buttonClicked(); // No answer
 		}
 		expect(game.currentRound).toBe(3);
+    expect(setTimeout).lastCalledWith(expect.any(Function), config.machine_paced.blocking.no_response_duration);
 	});
 
 	it("[mp] should enter self paced restart mode if the roll mean limit is exceeded", async () => {

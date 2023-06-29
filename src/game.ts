@@ -255,6 +255,7 @@ export class CogSpeedGame {
       return this.stop(false);
 
     clearTimeout(this.currentRoundTimeout);
+    this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.machine_paced.blocking.no_response_duration);
   }
 
   /**
