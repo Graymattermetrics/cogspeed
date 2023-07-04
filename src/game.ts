@@ -55,19 +55,19 @@ export class CogSpeedGame {
    * Returns the ratio of correct to incorrect
    * answers in the rolling mean
    */
-  getCorrectRollingMean(): number {
+  getIncorrectRollingMean(): number {
     // Create rolling mean answers of last machine paced answers up to the last post-block round
-    const lastNonMachinePacedRound = this.previousAnswers
+    let lastNonMachinePacedRound = this.previousAnswers
       .slice()
       .reverse()
       .findIndex((answer: { [key: string]: any }) => answer.roundType !== 2);
+    if (lastNonMachinePacedRound === -1) lastNonMachinePacedRound = 0;
+
     const lastRollingMeanAnswers = this.previousAnswers.slice(-lastNonMachinePacedRound);
     // Get the correct answers (count answers as correct if the rolling mean is not large enough)
-    const correctAnswers =
-      lastRollingMeanAnswers.filter((answer) => answer.status === "correct").length +
-      this.config.machine_paced.rolling_average.mean_size -
-      lastRollingMeanAnswers.length;
-    return correctAnswers / this.config.machine_paced.rolling_average.mean_size;
+    const incorrectAnswers =
+      lastRollingMeanAnswers.filter((answer) => ["incorrect", "no response"].includes(answer.status)).length
+    return incorrectAnswers / this.config.machine_paced.rolling_average.mean_size;
   }
 
   /**
@@ -163,19 +163,11 @@ export class CogSpeedGame {
    */
   async machinePacedRound(): Promise<void> {
     // 1) Determine speedup and slowdown amount based on the ratio last answer
-    const lastAnswer = this.previousAnswers.filter((answer) => answer.roundType === 2).slice(-1)[0];
+    const lastAnswer = this.previousAnswers.slice(-1).filter((answer) => answer.roundType === 2)[0];
     // If there is a last answer, change the timeout
     if (lastAnswer) {
       if (lastAnswer.status === "correct") {
         // If the answer is correct, speed up the timeout
-        console.log(
-          "Current timeout",
-          this.currentTimeout,
-          "adding",
-          (lastAnswer.ratio - 1.0) * this.config.machine_paced.speedup.speedup_with_ratio_amount,
-          "last ratio",
-          lastAnswer
-        );
         this.currentTimeout +=
           (lastAnswer.ratio - 1.0) * this.config.machine_paced.speedup.speedup_with_ratio_amount;
       } else if (lastAnswer.status === "incorrect") {
@@ -201,13 +193,16 @@ export class CogSpeedGame {
       return this.postBlockRound();
     }
 
-    // 3) Roll mean limit exceeded
-    // So we place the user in an SP Restart Phase
-    const correctRatio = this.getCorrectRollingMean();
-    if (correctRatio < this.config.machine_paced.rolling_average.threshold) {
-      this.currentRound = 4;
-      return this.selfPacedRestartRound();
+    if (lastAnswer) {
+      // 3) Roll mean limit exceeded
+      // So we place the user in an SP Restart Phase
+      const incorrectRatio = this.getIncorrectRollingMean();
+      if (incorrectRatio > this.config.machine_paced.rolling_average.threshold) {
+        this.currentRound = 4;
+        return this.selfPacedRestartRound();
+      }
     }
+    
 
     // Set no response timeout from the average of the last 4 answers (roughly 1500ms)
     clearTimeout(this.currentRoundTimeout);
@@ -266,11 +261,11 @@ export class CogSpeedGame {
    * @return {Promise <void>}
    */
   async selfPacedRestartRound(): Promise<void> {
-    // 1) We can exit post-block successfully with (roughly 2) correct answers in a row
+    // 1) We can exit self paced restart successfully with (roughly 2) correct answers in a row
     // If the last (roughly 2) answers were correct, continue to machine paced
     const lastNAnswers = this.previousAnswers
       .slice(-this.config.machine_paced.blocking.min_correct_answers)
-      .filter((answer) => answer.roundType === 3);
+      .filter((answer) => answer.roundType === 4);
     if (
       lastNAnswers.filter((answer) => answer.status === "correct").length ===
       this.config.machine_paced.blocking.min_correct_answers
@@ -282,9 +277,14 @@ export class CogSpeedGame {
 
     // 2) If there are (roughly 3) answers wrong before (roughly 2) correct answers in a row
     // So end test unsuccessfully
-    const lastPostBlockAnswers = this.previousAnswers.filter((answer) => answer.roundType === 3);
+    const lastNonSelfPacedRestartAnswer = this.previousAnswers
+      .slice()
+      .reverse()
+      .findIndex((answer) => answer.roundType !== 4);
+
+    const lastSelfPacedRestartAnswers = this.previousAnswers.slice(-lastNonSelfPacedRestartAnswer).filter((answer) => answer.roundType === 4);
     if (
-      lastPostBlockAnswers.filter((answer) => answer.status === "incorrect").length ===
+      lastSelfPacedRestartAnswers.filter((answer) => answer.status === "incorrect").length ===
       this.config.machine_paced.blocking.max_wrong_answers
     )
       return this.stop(false);
