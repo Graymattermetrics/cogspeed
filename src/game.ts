@@ -65,8 +65,9 @@ export class CogSpeedGame {
 
     const lastRollingMeanAnswers = this.previousAnswers.slice(-lastNonMachinePacedRound);
     // Get the correct answers (count answers as correct if the rolling mean is not large enough)
-    const incorrectAnswers =
-      lastRollingMeanAnswers.filter((answer) => ["incorrect", "no response"].includes(answer.status)).length
+    const incorrectAnswers = lastRollingMeanAnswers.filter((answer) =>
+      ["incorrect", "no response"].includes(answer.status)
+    ).length;
     return incorrectAnswers / this.config.machine_paced.rolling_average.mean_size;
   }
 
@@ -110,7 +111,10 @@ export class CogSpeedGame {
       this.currentRound = 1;
       return this.selfPacedStartupRound();
     }
-    this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.timeouts.max_initial_no_response);
+    this.currentRoundTimeout = setTimeout(
+      this.stop.bind(this),
+      this.config.timeouts.max_initial_no_response
+    );
   }
 
   /**
@@ -203,7 +207,6 @@ export class CogSpeedGame {
         return this.selfPacedRestartRound();
       }
     }
-    
 
     // Set no response timeout from the average of the last 4 answers (roughly 1500ms)
     clearTimeout(this.currentRoundTimeout);
@@ -229,7 +232,10 @@ export class CogSpeedGame {
     }
 
     // If there are too many blocks (roughly 6) the test must exit
-    if (this.previousBlockTimeouts.length === this.config.machine_paced.blocking.max_block_count - 1) {
+    if (
+      this.previousBlockTimeouts.length ===
+      this.config.machine_paced.blocking.max_block_count - 1
+    ) {
       return this.stop();
     }
 
@@ -256,7 +262,10 @@ export class CogSpeedGame {
       return this.stop(false);
 
     clearTimeout(this.currentRoundTimeout);
-    this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.machine_paced.blocking.no_response_duration);
+    this.currentRoundTimeout = setTimeout(
+      this.stop.bind(this),
+      this.config.machine_paced.blocking.no_response_duration
+    );
   }
 
   /**
@@ -288,7 +297,9 @@ export class CogSpeedGame {
       .reverse()
       .findIndex((answer) => answer.roundType !== 4);
 
-    const lastSelfPacedRestartAnswers = this.previousAnswers.slice(-lastNonSelfPacedRestartAnswer).filter((answer) => answer.roundType === 4);
+    const lastSelfPacedRestartAnswers = this.previousAnswers
+      .slice(-lastNonSelfPacedRestartAnswer)
+      .filter((answer) => answer.roundType === 4);
     if (
       lastSelfPacedRestartAnswers.filter((answer) => answer.status === "incorrect").length ===
       this.config.machine_paced.blocking.max_wrong_answers
@@ -408,7 +419,9 @@ export class CogSpeedGame {
       M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100
     );
 
-    const firstMachinePacedRound: {[key: string]: any} | undefined = this.previousAnswers.filter((answer: {[key: string]: any}) => answer.roundType === 2)[0]
+    const firstMachinePacedRound: { [key: string]: any } | undefined = this.previousAnswers.filter(
+      (answer: { [key: string]: any }) => answer.roundType === 2
+    )[0];
 
     const data: { [key: string]: any } = {
       success,
@@ -420,7 +433,7 @@ export class CogSpeedGame {
       date: new Date().toISOString(),
       previousAnswers: this.previousAnswers,
       machinePacedBaseline: firstMachinePacedRound?.duration,
-      version: this.config.version
+      version: this.config.version,
     };
 
     const resultsPage = new ProcessResultsPage(this.app);

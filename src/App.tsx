@@ -21,11 +21,14 @@ app.stage.interactive = true;
  * @return {Promise<void>}
  */
 async function loadConfig(): Promise<{ [key: string]: any }> {
-  return (
-    await axios.get(
-      "https://t6pedjjwcb.execute-api.us-east-2.amazonaws.com/default/getCogspeedConfig"
-    )
-  ).data;
+  let configUrl =
+    "https://t6pedjjwcb.execute-api.us-east-2.amazonaws.com/default/getCogspeedConfig";
+  const urlParams = new URLSearchParams(window.location.search);
+  const version = urlParams.get("version");
+  if (version) {
+    configUrl += "?version=" + version;
+  }
+  return (await axios.get(configUrl)).data;
 }
 
 /**
