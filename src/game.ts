@@ -228,6 +228,11 @@ export class CogSpeedGame {
       return this.finalRounds();
     }
 
+    // If there are too many blocks (roughly 6) the test must exit
+    if (this.previousBlockTimeouts.length === this.config.machine_paced.blocking.max_block_count - 1) {
+      return this.stop();
+    }
+
     // 2) We can exit post-block successfully with (roughly 2) correct answers in a row
     // If the last (roughly 2) answers were correct, continue to machine paced
     const lastNAnswers = this.previousAnswers
