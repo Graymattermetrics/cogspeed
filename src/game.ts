@@ -363,6 +363,7 @@ export class CogSpeedGame {
     // }
 
     this.previousAnswers.push(data);
+    console.log(this.previousAnswers);
     this.nextRound();
   }
 
@@ -402,6 +403,8 @@ export class CogSpeedGame {
       M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100
     );
 
+    const firstMachinePacedRound: {[key: string]: any} | undefined = this.previousAnswers.filter((answer: {[key: string]: any}) => answer.roundType === 2)[0]
+
     const data: { [key: string]: any } = {
       success,
       testDuration: round(performance.now() - this.startTime),
@@ -411,6 +414,7 @@ export class CogSpeedGame {
       id: v4(),
       date: new Date().toISOString(),
       previousAnswers: this.previousAnswers,
+      machinePacedBaseline: firstMachinePacedRound?.duration
     };
 
     const resultsPage = new ProcessResultsPage(this.app);
