@@ -110,6 +110,7 @@ export class CogSpeedGame {
       this.currentRound = 1;
       return this.selfPacedStartupRound();
     }
+    this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.timeouts.max_initial_no_response);
   }
 
   /**

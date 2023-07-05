@@ -46,7 +46,9 @@ describe("Test game algorithm", () => {
     expect(game).toBeDefined();
     expect(game.currentRound).toBe(0); // Should be in training round
     expect(game.previousAnswers).toEqual([]);
-    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(setTimeout).toHaveBeenCalledTimes(2);
+    expect(setTimeout).toBeCalledWith(expect.any(Function), config.timeouts.max_initial_no_response);
+    expect(setTimeout).toBeCalledWith(expect.any(Function), config.timeouts.max_test_duration);
   });
 
   it("[tr] should have n training rounds", async () => {
@@ -57,7 +59,7 @@ describe("Test game algorithm", () => {
     }
     expect(game.currentRound).toBe(1);
     expect(game.previousAnswers.length).toEqual(config.self_paced.number_of_training_rounds);
-    expect(setTimeout).toHaveBeenCalledTimes(2);
+    expect(setTimeout).toHaveBeenCalledTimes(3);
   });
 
   it("[sp] should exit self paced mode if there are n wrong answers", async () => {
