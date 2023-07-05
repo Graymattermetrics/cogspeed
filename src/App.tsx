@@ -28,6 +28,12 @@ async function loadConfig(): Promise<{ [key: string]: any }> {
   if (version) {
     configUrl += "?version=" + version;
   }
+  if (!version) {
+    const branch = urlParams.get("branch");
+    if (branch) {
+      configUrl += "?branch=" + branch;
+    }
+  }
   return (await axios.get(configUrl)).data;
 }
 
