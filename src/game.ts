@@ -419,7 +419,8 @@ export class CogSpeedGame {
       id: v4(),
       date: new Date().toISOString(),
       previousAnswers: this.previousAnswers,
-      machinePacedBaseline: firstMachinePacedRound?.duration
+      machinePacedBaseline: firstMachinePacedRound?.duration,
+      version: this.config.version
     };
 
     const resultsPage = new ProcessResultsPage(this.app);
