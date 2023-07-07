@@ -423,6 +423,16 @@ export class CogSpeedGame {
       (answer: { [key: string]: any }) => answer.roundType === 2
     )[0];
 
+    const totalMachinePacedAnswers = this.previousAnswers.filter(
+      (answer: { [key: string]: any }) => answer.roundType === 2
+    );
+    const meanMachinePacedAnswerTime = totalMachinePacedAnswers.reduce(
+      (a: number, b: { [key: string]: any }) => a + b.timeTaken, 0
+    );
+    const quickestResponse = Math.min(...totalMachinePacedAnswers.map((answer) => answer.timeTaken));
+    const slowestResponse = Math.max(...totalMachinePacedAnswers.map((answer) => answer.timeTaken));
+
+  
     const data: { [key: string]: any } = {
       success,
       testDuration: round(performance.now() - this.startTime),
@@ -434,6 +444,17 @@ export class CogSpeedGame {
       previousAnswers: this.previousAnswers,
       machinePacedBaseline: firstMachinePacedRound?.duration,
       version: this.config.version,
+      totalMachinePacedAnswers: totalMachinePacedAnswers.length,
+      totalMachinePacedCorrectAnswers: totalMachinePacedAnswers.filter(
+        (answer: { [key: string]: any }) => answer.status === "correct"
+      ).length,
+      totalMachinePacedIncorrectAnswers: totalMachinePacedAnswers.filter(
+        (answer: { [key: string]: any }) => answer.status === "incorrect"
+      ).length,
+      quickestResponse,
+      slowestResponse,
+      meanMachinePacedAnswerTime,
+      blockCount: this.previousBlockTimeouts.length,
     };
 
     const resultsPage = new ProcessResultsPage(this.app);
