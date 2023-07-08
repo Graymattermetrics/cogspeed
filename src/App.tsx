@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { Application } from "pixi.js";
+import { Application, Text } from "pixi.js";
 import { CogSpeedGame } from "./game";
 import { StartPage } from "./startPage";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
@@ -49,7 +49,27 @@ async function main(): Promise<void> {
 
   resizeCanvas(); // TODO
 
+  // Show GMM Logo while loading all textures
+  // Temp text instead of logo for now
+  const loadingText = new Text("Loading", {
+    fontFamily: "Arial",
+    fontSize: 24,
+    fill: 0xffffff,
+    align: "center",
+  });
+  loadingText.anchor.set(0.5);
+  loadingText.position.set(gameWidth / 2, gameHeight / 2);
+  app.stage.addChild(loadingText);
+  app.ticker.add((delta) => {
+    loadingText.text =  "Loading" + ".".repeat(Math.floor(app.ticker.lastTime / 1000) % 3 + 1);
+  });
+
   const graphicsManager = new CogSpeedGraphicsHandler(app);
+
+  // Emulate loading time
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  app.stage.removeChild(loadingText);
   graphicsManager.setBackground("carbon");
 
   const startPage = new StartPage(app, graphicsManager);

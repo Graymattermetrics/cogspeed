@@ -1,10 +1,10 @@
 import axios from "axios";
 import { Application, Container, Graphics, Point, Sprite, Text, Texture } from "pixi.js";
 
-import loadingGearImage from "./assets/loading_gear.png";
+import { CogSpeedGraphicsHandler } from "./ui/handler";
 
 export class ProcessResultsPage {
-  constructor(private app: Application) {}
+  constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {}
 
   private downloadHandler(data: object) {
     // Generate the log file content (replace this with your own logic)
@@ -57,14 +57,13 @@ export class ProcessResultsPage {
   public loadingScreen(): Container {
     const container = new Container();
     this.app.stage.addChild(container);
-    const loadingGearTexture = Texture.from(loadingGearImage);
 
     const dynamicScreenWidth = this.app.screen.width * 0.1;
     const dynamicScreenHeight = this.app.screen.height * 0.1;
 
     for (let y = 0; y < 2; y++) {
       for (let x = 0; x < 2; x++) {
-        const loadingGearSprite = new Sprite(loadingGearTexture);
+        const loadingGearSprite = new Sprite(this.ui.loadingGearTexture);
         loadingGearSprite.scale = new Point(0.4, 0.4);
         loadingGearSprite.x = dynamicScreenWidth * (x === 0 ? 2 : 8);
         loadingGearSprite.y = dynamicScreenHeight * (y === 0 ? 4 : 6);

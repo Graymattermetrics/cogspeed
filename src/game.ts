@@ -397,7 +397,7 @@ export class CogSpeedGame {
   }
 
   public async stop(success: boolean = false): Promise<void> {
-    if (!this.app) return;
+    if (!this.app || !this.ui) return;
 
     for (var i = this.app.stage.children.length - 1; i >= 0; i--) {
       this.app.stage.removeChild(this.app.stage.children[i]);
@@ -453,14 +453,14 @@ export class CogSpeedGame {
       ).length,
       totalMachinePacedNoResponseAnswers: totalMachinePacedAnswers.filter(
         (answer: { [key: string]: any }) => answer.status === "no response"
-      ).length
+      ).length,
       quickestResponse,
       slowestResponse,
       meanMachinePacedAnswerTime,
       blockCount: this.previousBlockTimeouts.length,
     };
 
-    const resultsPage = new ProcessResultsPage(this.app);
+    const resultsPage = new ProcessResultsPage(this.app, this.ui);
     await resultsPage.show(data);
   }
 }

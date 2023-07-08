@@ -1,7 +1,5 @@
 import { Application, Container, Graphics, Point, Sprite, Text, Texture } from "pixi.js";
 
-import logoWithGearsImage from "./assets/logo_with_gears.png";
-import readyDemoImage from "./assets/ready_demmo.png";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 
 type GraphicList = [Graphics, number, number, number, number];
@@ -9,15 +7,9 @@ type GraphicList = [Graphics, number, number, number, number];
 export class StartPage {
   private container: Container;
 
-  private readyDemoTexture: Texture;
-  private logoTexture: Texture;
-
   constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {
     this.container = new Container();
     this.app.stage.addChild(this.container);
-
-    this.readyDemoTexture = Texture.from(readyDemoImage);
-    this.logoTexture = Texture.from(logoWithGearsImage);
   }
 
   private async confirm(confirmText: string, denyText: string = ""): Promise<boolean> {
@@ -145,7 +137,7 @@ export class StartPage {
    */
   private async displayReadyDemo() {
     // Display the ready demo screen
-    const readyDemo = new Sprite(this.readyDemoTexture);
+    const readyDemo = new Sprite(this.ui.readyDemoTexture);
     readyDemo.x = 0;
     readyDemo.y = 0;
     readyDemo.width = this.app.screen.width;
@@ -161,7 +153,7 @@ export class StartPage {
    */
   private async displayHomePage() {
     // Create the logo
-    const logoSprite = new Sprite(this.logoTexture);
+    const logoSprite = new Sprite(this.ui.logoTexture);
     logoSprite.width = this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
     logoSprite.height = this.app.screen.height * 0.6 > 400 ? 400 : this.app.screen.height * 0.6;
     logoSprite.x = this.app.screen.width * 0.5 - logoSprite.width * 0.5;
