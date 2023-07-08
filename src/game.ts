@@ -451,6 +451,9 @@ export class CogSpeedGame {
       totalMachinePacedIncorrectAnswers: totalMachinePacedAnswers.filter(
         (answer: { [key: string]: any }) => answer.status === "incorrect"
       ).length,
+      totalMachinePacedNoResponseAnswers: totalMachinePacedAnswers.filter(
+        (answer: { [key: string]: any }) => answer.status === "no response"
+      ).length
       quickestResponse,
       slowestResponse,
       meanMachinePacedAnswerTime,
