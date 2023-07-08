@@ -99,7 +99,7 @@ export class ProcessResultsPage {
 
     const testSummary = Object.keys(data)
       .filter((k) => !["previousAnswers", "id", "geolocation"].includes(k))
-      .map((k) => `${k}: ${data[k].toString().slice(0, 100)}`)
+      .map((k) => `${k}: ${data[k]?.toString().slice(0, 100)}`)
       .join("\n");
 
     let textContent = data.success
