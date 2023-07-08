@@ -174,7 +174,7 @@ export class CogSpeedGame {
       if (lastAnswer.status === "correct") {
         // If the answer is correct, speed up the timeout
         this.currentTimeout +=
-          (lastAnswer.ratio - 1.0) * this.config.machine_paced.speedup.speedup_with_ratio_amount;
+          (lastAnswer.ratio - this.config.machine_paced.speedup.weighting) * this.config.machine_paced.speedup.speedup_with_ratio_amount;
       } else if (lastAnswer.status === "incorrect") {
         // If the answer is incorrect, slow down the timeout
         this.currentTimeout += this.config.machine_paced.slowdown.base_duration;

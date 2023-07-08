@@ -151,11 +151,11 @@ describe("Test game algorithm", () => {
     let timeout = game.currentTimeout;
 
     game.buttonClicked(game.answer, 500); // Right answer (500ms)
-    timeout += (500 / timeout - 1) * config.machine_paced.speedup.speedup_with_ratio_amount;
+    timeout += (500 / timeout - config.machine_paced.speedup.weighting) * config.machine_paced.speedup.speedup_with_ratio_amount;
     expect(game.currentTimeout).toBe(timeout)
 
     game.buttonClicked(game.answer, 1000); // Right answer (500ms + 500ms)
-    timeout += (500 / timeout - 1) * config.machine_paced.speedup.speedup_with_ratio_amount;
+    timeout += (500 / timeout - config.machine_paced.speedup.weighting) * config.machine_paced.speedup.speedup_with_ratio_amount;
     expect(game.currentTimeout).toBe(timeout)
     
     game.buttonClicked(game.answer, 1000 + timeout); // Right answer (1000 + timeout ms)
