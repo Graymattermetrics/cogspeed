@@ -25,14 +25,10 @@ async function loadConfig(): Promise<{ [key: string]: any }> {
     "https://t6pedjjwcb.execute-api.us-east-2.amazonaws.com/default/getCogspeedConfig";
   const urlParams = new URLSearchParams(window.location.search);
   const version = urlParams.get("version");
-  if (version) {
-    configUrl += "?version=" + version;
-  }
-  if (!version) {
+  if (version) configUrl += `?version=${version}`;
+  else {
     const branch = urlParams.get("branch");
-    if (branch) {
-      configUrl += "?branch=" + branch;
-    }
+    if (branch) configUrl += `?branch=${branch}`;
   }
   return (await axios.get(configUrl)).data;
 }
@@ -48,6 +44,22 @@ async function main(): Promise<void> {
   appDiv.appendChild(app.view);
 
   resizeCanvas(); // TODO
+
+  console.log(config);
+  if (config.error) {
+    const errorText = new Text(config.reason, {
+      fontFamily: "Arial",
+      fontSize: 18,
+      fill: 0xffffff,
+      align: "center",
+    });
+    errorText.style.wordWrap = true;
+    errorText.style.wordWrapWidth = app.screen.width - 30;
+    errorText.anchor.set(0.5);
+    errorText.position.set(gameWidth / 2, gameHeight / 2);
+    app.stage.addChild(errorText);
+    return;
+  }
 
   // Show GMM Logo while loading all textures
   // Temp text instead of logo for now

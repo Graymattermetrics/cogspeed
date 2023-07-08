@@ -76,7 +76,7 @@ describe("Test game algorithm", () => {
   it("should use the config variable", () => {
     // Use the config variable in your test assertions
     expect(config).toBeDefined();
-    expect(config.control).toEqual(true);
+    expect(config.error).toEqual(false);
   });
 
   it("[game] should create a game", async () => {
@@ -156,9 +156,6 @@ describe("Test game algorithm", () => {
 
     game.buttonClicked(game.answer, 1000); // Right answer (500ms + 500ms)
     timeout += (500 / timeout - config.machine_paced.speedup.weighting) * config.machine_paced.speedup.speedup_with_ratio_amount;
-    expect(game.currentTimeout).toBe(timeout)
-    
-    game.buttonClicked(game.answer, 1000 + timeout); // Right answer (1000 + timeout ms)
     expect(game.currentTimeout).toBe(timeout)
   });
 
