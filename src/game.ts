@@ -428,7 +428,7 @@ export class CogSpeedGame {
     );
     const meanMachinePacedAnswerTime = totalMachinePacedAnswers.reduce(
       (a: number, b: { [key: string]: any }) => a + b.timeTaken, 0
-    );
+    ) / totalMachinePacedAnswers.length;
     const quickestResponse = Math.min(...totalMachinePacedAnswers.map((answer) => answer.timeTaken));
     const slowestResponse = Math.max(...totalMachinePacedAnswers.map((answer) => answer.timeTaken));
 
