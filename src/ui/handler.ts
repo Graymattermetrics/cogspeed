@@ -1,6 +1,7 @@
-import { Application, Container, Point, Rectangle, Sprite, Texture } from "pixi.js";
+import { Application, Container, Point, Rectangle, Sprite, Texture, Text } from "pixi.js";
 
 import buttonTextureImage from "../assets/button.png";
+import invertedButtonTextureImage from "../assets/button_inverted.png";
 import buttonWellTextureImage from "../assets/button_well.png";
 import gearTextureImage from "../assets/gear.png";
 import gearWellTextureImage from "../assets/gear_well.png";
@@ -11,6 +12,7 @@ import largeButtonTextureImage from "../assets/large_button.png";
 import loadingGearImage from "../assets/loading_gear.png";
 import logoWithGearsImage from "../assets/logo_with_gears.png";
 import readyDemoImage from "../assets/ready_demmo.png";
+import dashMeter from "../assets/dash_meter.png";
 
 import { CogSpeedGame } from "../game";
 import bgCarbonImage from "../assets/bg_carbon.jpg";
@@ -68,6 +70,7 @@ export class CogSpeedGraphicsHandler {
   public gearTexture: Texture;
   public buttonWellTexture: Texture;
   public buttonTexture: Texture;
+  public invertedButtonTexture: Texture;
   public numbersAndDotsTexture: Texture;
   public numbersAndDotsInvertedTexture: Texture;
   public bgCarbonTexture: Texture;
@@ -77,12 +80,14 @@ export class CogSpeedGraphicsHandler {
   public loadingGearTexture: Texture;
   public readyDemoTexture: Texture;
   public logoTexture: Texture;
+  public dashMeterTexture: Texture;
 
   constructor(public app: Application) {
     this.gearWellTexture = Texture.from(gearWellTextureImage);
     this.gearTexture = Texture.from(gearTextureImage);
     this.buttonWellTexture = Texture.from(buttonWellTextureImage);
     this.buttonTexture = Texture.from(buttonTextureImage);
+    this.invertedButtonTexture = Texture.from(invertedButtonTextureImage);
     this.numbersAndDotsTexture = Texture.from(numbersAndDotsTextureImage);
     this.numbersAndDotsInvertedTexture = Texture.from(numbersAndDotsInvertedTextureImage);
     this.bgCarbonTexture = Texture.from(bgCarbonImage);
@@ -92,6 +97,7 @@ export class CogSpeedGraphicsHandler {
     this.loadingGearTexture = Texture.from(loadingGearImage);
     this.readyDemoTexture = Texture.from(readyDemoImage);
     this.logoTexture = Texture.from(logoWithGearsImage);
+    this.dashMeterTexture = Texture.from(dashMeter);
 
     // Load number and dot assets
     const { numbers, dots } = this.loadNumbersAndDots(false);
@@ -162,6 +168,41 @@ export class CogSpeedGraphicsHandler {
     return { numbers: numbers, dots: dots };
   }
 
+  /**
+   * Creates a text object and adds it to the container
+   * Ease of use function
+   * @param content The text to display
+   * @param mulX The x position multiplier (0.5 = center, 1 = right, 0 = left)
+   * @param mulY The y position multiplier (0.5 = center, 1 = bottom, 0 = top)
+   * @param container The container to add the text to
+   * @param options The options for the text (fontFamily, fontSize, fill, align)
+   */
+  public createText(content: string, mulX: number, mulY: number, container: Container, options: {
+    fontFamily?: string, 
+    fontSize?: number,
+    fill?: number,
+    align?: 'center' | 'left' | 'right',
+  } = {}) {
+    const text = new Text(content);
+    // Trebuchet by default
+    if (options.fontFamily) text.style.fontFamily = options.fontFamily;
+    else text.style.fontFamily = 'Trebuchet';
+    // Fontsize of 30 by default
+    if (options.fontSize) text.style.fontSize = options.fontSize;
+    else text.style.fontSize = 30;
+    // Cogspeed light blue by default
+    if (options.fill) text.style.fill = options.fill;
+    else text.style.fill = 0x6493c9;
+    // Align center by default
+    if (options.align) text.style.align = options.align;
+    else text.style.align = 'center';
+
+    text.x = this.app.screen.width * mulX;
+    text.y = this.app.screen.height * mulY;
+    text.anchor.set(0.5);
+    container.addChild(text);
+  }
+  
   /**
    * Sets the position of a sprite
    * @param {Sprite} sprite The sprite to set the position of
@@ -300,7 +341,8 @@ export class CogSpeedGraphicsHandler {
     const buttons = [];
     // Add buttons
     for (let i = 1; i <= 6; i++) {
-      const button = new Sprite(this.buttonTexture);
+      const inverted = Math.random() > 0.5;
+      const button = new Sprite(inverted ? this.invertedButtonTexture : this.buttonTexture);
       button.anchor.set(0.5);
       const gearK = 2.592592;
       button.width = gear.width / gearK;
@@ -343,9 +385,9 @@ export class CogSpeedGraphicsHandler {
     sprite.parent.removeChild(animationSprite);
   }
 
-  public setBackground(texture: string) {
+  public setBackground(texture: string, stage: Container) {
     // Remove old background
-    this.app.stage.removeChild(this.app.stage.getChildByName("background") as Sprite);
+    stage.removeChild(stage.getChildByName("background") as Sprite);
 
     const background = new Sprite(
       texture === "carbon" ? this.bgCarbonTexture : this.bgSteelTexture
@@ -354,7 +396,7 @@ export class CogSpeedGraphicsHandler {
     background.width = this.app.screen.width;
     background.height = this.app.screen.height;
 
-    this.app.stage.addChild(background);
+    stage.addChild(background);
   }
 
   public createDisplayGear(posX: number, posY: number, gearLocation: string): Container {
@@ -394,7 +436,7 @@ export class CogSpeedGraphicsHandler {
    * @param {CogSpeedGame} game The game to set up
    */
   public setupGame(game: CogSpeedGame): void {
-    this.setBackground("steel");
+    this.setBackground("steel", this.app.stage);
 
     // Create left and right display gears
     // TODO: Make location scalable

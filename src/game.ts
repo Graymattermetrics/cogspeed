@@ -394,6 +394,7 @@ export class CogSpeedGame {
     this.startTime = time === null ? performance.now() : time;
     this.maxTestTimeout = setTimeout(this.stop.bind(this), this.config.timeouts.max_test_duration);
     this.nextRound();
+    this.stop();
   }
 
   public async stop(success: boolean = false): Promise<void> {

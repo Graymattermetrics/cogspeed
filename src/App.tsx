@@ -45,10 +45,9 @@ async function main(): Promise<void> {
 
   resizeCanvas(); // TODO
 
-  console.log(config);
   if (config.error) {
     const errorText = new Text(config.reason, {
-      fontFamily: "Arial",
+      fontFamily: "Trebuchet",
       fontSize: 18,
       fill: 0xffffff,
       align: "center",
@@ -64,14 +63,13 @@ async function main(): Promise<void> {
   // Show GMM Logo while loading all textures
   // Temp text instead of logo for now
   const loadingText = new Text("Loading", {
-    fontFamily: "Arial",
+    fontFamily: "Trebuchet",
     fontSize: 24,
     fill: 0xffffff,
     align: "center",
   });
   loadingText.anchor.set(0.5);
   loadingText.position.set(gameWidth / 2, gameHeight / 2);
-  app.stage.addChild(loadingText);
   app.ticker.add((delta) => {
     loadingText.text =  "Loading" + ".".repeat(Math.floor(app.ticker.lastTime / 1000) % 3 + 1);
   });
@@ -79,10 +77,10 @@ async function main(): Promise<void> {
   const graphicsManager = new CogSpeedGraphicsHandler(app);
 
   // Emulate loading time
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  await new Promise((resolve) => setTimeout(resolve, 10));
 
   app.stage.removeChild(loadingText);
-  graphicsManager.setBackground("carbon");
+  graphicsManager.setBackground("carbon", app.stage);
 
   const startPage = new StartPage(app, graphicsManager);
   // Initiate before displaying to load config
