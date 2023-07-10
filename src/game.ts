@@ -141,14 +141,14 @@ export class CogSpeedGame {
     // 2) Max wrong limit (roughly 5)
     const selfPacedAnswers = this.previousAnswers.filter((answer) => answer.roundType === 1);
     const wrongAnswers = selfPacedAnswers.filter((answer) => answer.status === "incorrect");
-    if (wrongAnswers.length >= this.config.self_paced.max_wrong_count) return this.stop();
+    if (wrongAnswers.length >= this.config.self_paced.max_wrong_count) return this.stop(2);
 
     // 3) More than (roughly 12) correct answers that are less than (roughly 3000ms)
     // But not (roughly 4) correct answers in a row
     const correctAnswers = selfPacedAnswers.filter(
       (answer) => answer.status === "correct" && answer.timeTaken <= this.config.self_paced.max_correct_duration
     );
-    if (correctAnswers.length >= this.config.self_paced.total_correct_count) return this.stop();
+    if (correctAnswers.length >= this.config.self_paced.total_correct_count) return this.stop(2);
 
     // 4) If (roughly 4) correct answers in a row
     // We move to the next round
@@ -237,7 +237,7 @@ export class CogSpeedGame {
 
     // If there are too many blocks (roughly 6) the test must exit
     if (this.previousBlockTimeouts.length === this.config.machine_paced.blocking.max_block_count - 1) {
-      return this.stop();
+      return this.stop(3);
     }
 
     // 2) We can exit post-block successfully with (roughly 2) correct answers in a row
@@ -260,7 +260,7 @@ export class CogSpeedGame {
       lastPostBlockAnswers.filter((answer) => answer.status === "incorrect").length ===
       this.config.machine_paced.blocking.max_wrong_answers
     )
-      return this.stop(false);
+      return this.stop(2);
 
     clearTimeout(this.currentRoundTimeout);
     this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.machine_paced.blocking.no_response_duration);
@@ -302,7 +302,7 @@ export class CogSpeedGame {
       lastSelfPacedRestartAnswers.filter((answer) => answer.status === "incorrect").length ===
       this.config.machine_paced.blocking.max_wrong_answers
     )
-      return this.stop(false);
+      return this.stop(2);
 
     clearTimeout(this.currentRoundTimeout);
   }
@@ -317,7 +317,7 @@ export class CogSpeedGame {
       .slice(-this.config.number_of_endmode_rounds)
       .filter((answer) => answer.roundType === 5);
     if (lastNRounds.length === this.config.number_of_endmode_rounds) {
-      return this.stop(true);
+      return this.stop(0);  // Successfully exit (only way to successfully exit)
     }
     clearTimeout(this.currentRoundTimeout);
   }
@@ -404,10 +404,20 @@ export class CogSpeedGame {
     this.nextRound();
   }
 
-  public async stop(success: boolean = false): Promise<void> {
+  /**
+   * The status codes link to a message and status in the config 
+   * for example (0 = "success", 1 = "Timed out...")
+   * 
+   * @param statusCode The status code of the exit
+   */
+  public async stop(statusCode: number = 1): Promise<void> {
     if (!this.app || !this.ui) return;
 
     console.log(this.previousAnswers);
+
+    const info = this.config.exit_codes[statusCode];
+    const status = info.status;
+    const message = info.message;
 
     for (var i = this.app.stage.children.length - 1; i >= 0; i--) {
       this.app.stage.removeChild(this.app.stage.children[i]);
@@ -455,7 +465,10 @@ export class CogSpeedGame {
       correctMachinePacedAnswers.length;
 
     const data: { [key: string]: any } = {
-      success,
+      statusCode,
+      status,
+      success: statusCode === 0,
+      message,
       testDuration: round(performance.now() - this.startTime),
       numberOfRounds: this.previousAnswers.length,
       blockingRoundDuration,
