@@ -1,6 +1,7 @@
 import { Application, Container, Point, Rectangle, Sprite, Texture } from "pixi.js";
 
 import buttonTextureImage from "../assets/button.png";
+import invertedButtonTextureImage from "../assets/button_inverted.png";
 import buttonWellTextureImage from "../assets/button_well.png";
 import gearTextureImage from "../assets/gear.png";
 import gearWellTextureImage from "../assets/gear_well.png";
@@ -68,6 +69,7 @@ export class CogSpeedGraphicsHandler {
   public gearTexture: Texture;
   public buttonWellTexture: Texture;
   public buttonTexture: Texture;
+  public invertedButtonTexture: Texture;
   public numbersAndDotsTexture: Texture;
   public numbersAndDotsInvertedTexture: Texture;
   public bgCarbonTexture: Texture;
@@ -83,6 +85,7 @@ export class CogSpeedGraphicsHandler {
     this.gearTexture = Texture.from(gearTextureImage);
     this.buttonWellTexture = Texture.from(buttonWellTextureImage);
     this.buttonTexture = Texture.from(buttonTextureImage);
+    this.invertedButtonTexture = Texture.from(invertedButtonTextureImage);
     this.numbersAndDotsTexture = Texture.from(numbersAndDotsTextureImage);
     this.numbersAndDotsInvertedTexture = Texture.from(numbersAndDotsInvertedTextureImage);
     this.bgCarbonTexture = Texture.from(bgCarbonImage);
@@ -300,7 +303,8 @@ export class CogSpeedGraphicsHandler {
     const buttons = [];
     // Add buttons
     for (let i = 1; i <= 6; i++) {
-      const button = new Sprite(this.buttonTexture);
+      const inverted = gearLocation === "input" ? false : Math.random() > 0.8;
+      const button = new Sprite(inverted ? this.invertedButtonTexture : this.buttonTexture);
       button.anchor.set(0.5);
       const gearK = 2.592592;
       button.width = gear.width / gearK;
@@ -363,7 +367,7 @@ export class CogSpeedGraphicsHandler {
   }
 
   public createInputGear(posX: number, posY: number, game: CogSpeedGame): void {
-    const [container, buttons] = this.createGear(posX, posY);
+    const [container, buttons] = this.createGear(posX, posY, "input");
 
     for (let i = 1; i <= 6; i++) {
       const button = buttons[i - 1];
