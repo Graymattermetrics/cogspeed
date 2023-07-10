@@ -1,0 +1,26 @@
+# Run npm run style to write all styling changes
+name: Run style
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+        matrix:
+          node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install prettier
+        run: npm i -g prettier
+      - name: Run prettier
+        run: |
+          npm run style
+          git config --global user.name github-actions
+          git config --global user.email '${GITHUB_ACTOR}@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+      - name: Push style changes
+        run: |
+          git add .
+          git commit -am "style: Fix code formatting problems" ||  true
+          git push --force origin HEAD:$GITHUB_REF || true
