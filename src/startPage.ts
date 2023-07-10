@@ -15,10 +15,11 @@ export class StartPage {
   private async confirm(confirmText: string, denyText: string = ""): Promise<boolean> {
     const yesBorder = new Sprite(this.ui.smallButtons[1]);
     yesBorder.scale = new Point(1.2, 1.2);
+    yesBorder.anchor.set(0.5);
     yesBorder.width = this.app.screen.width * 0.4;
     yesBorder.height = this.app.screen.height * 0.2;
-    yesBorder.x = this.app.screen.width * 0.5;
-    yesBorder.y = this.app.screen.height * 0.78;
+    yesBorder.x = this.app.screen.width * 0.70;
+    yesBorder.y = this.app.screen.height * 0.85;
     this.container.addChild(yesBorder);
 
     const yesText = new Text(confirmText, {
@@ -26,8 +27,9 @@ export class StartPage {
       fontSize: 30,
       fill: 0xffffff,
     });
-    yesText.x = yesBorder.x + (yesBorder.width - yesText.width) * 0.5;
-    yesText.y = yesBorder.y + (yesBorder.height - yesText.height) * 0.5;
+    yesText.anchor.set(0.5);
+    yesText.x = this.app.screen.width * 0.70;
+    yesText.y = this.app.screen.height * 0.85;
     this.container.addChild(yesText);
 
     if (denyText === "") {
@@ -36,11 +38,12 @@ export class StartPage {
     }
 
     const noBorder = new Sprite(this.ui.smallButtons[1]);
+    noBorder.anchor.set(0.5);
     noBorder.scale = new Point(1.2, 1.2);
     noBorder.width = this.app.screen.width * 0.4;
     noBorder.height = this.app.screen.height * 0.2;
-    noBorder.x = this.app.screen.width * 0.1;
-    noBorder.y = this.app.screen.height * 0.78;
+    noBorder.x = this.app.screen.width * 0.3;
+    noBorder.y = this.app.screen.height * 0.85;
     this.container.addChild(noBorder);
 
     const noText = new Text(denyText, {
@@ -48,8 +51,9 @@ export class StartPage {
       fontSize: 30,
       fill: 0xffffff,
     });
-    noText.x = noBorder.x + (noBorder.width - noText.width) * 0.5;
-    noText.y = noBorder.y + (noBorder.height - noText.height) * 0.5;
+    noText.anchor.set(0.5);
+    noText.x = this.app.screen.width * 0.3;
+    noText.y = this.app.screen.height * 0.85;
     this.container.addChild(noText);
 
     const keypress = await this.waitForKeyPress([yesBorder, yesText], [noBorder, noText]);
@@ -63,8 +67,8 @@ export class StartPage {
       fill: fill,
       align: "center",
     });
-
-    textObject.x = x - (centre ? textObject.width * 0.6 : 0);
+    textObject.anchor.set(0.5);
+    textObject.x = x;
     textObject.y = y;
 
     if (wordWrap) {
@@ -129,11 +133,14 @@ export class StartPage {
    */
   private async displayReadyDemo() {
     // Display the ready demo screen
+    const size = 512;
+    const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
+    
     const readyDemo = new Sprite(this.ui.readyDemoTexture);
-    readyDemo.x = 0;
-    readyDemo.y = 0;
-    readyDemo.width = this.app.screen.width;
-    readyDemo.height = this.app.screen.height;
+    readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
+    readyDemo.x = this.app.screen.width * 0.5;
+    readyDemo.y = this.app.screen.height * 0.5;
+    readyDemo.anchor.set(0.5);
     readyDemo.eventMode = "dynamic";
 
     this.container.addChild(readyDemo);
@@ -145,17 +152,22 @@ export class StartPage {
    */
   private async displayHomePage() {
     // Create the logo
+    const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
+    const size = 512;
+    
     const logoSprite = new Sprite(this.ui.logoTexture);
-    logoSprite.width = this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
-    logoSprite.height = this.app.screen.height * 0.6 > 400 ? 400 : this.app.screen.height * 0.6;
-    logoSprite.x = this.app.screen.width * 0.5 - logoSprite.width * 0.5;
+    logoSprite.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
+    logoSprite.anchor.set(0.5);
+    logoSprite.x = this.app.screen.width * 0.5;
+    logoSprite.y = this.app.screen.height * 0.35;
     this.container.addChild(logoSprite);
 
     const buttonBorder = new Sprite(this.ui.largeButtonTexture);
+    buttonBorder.anchor.set(0.5);
     buttonBorder.width = this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
     buttonBorder.height = this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25;
-    buttonBorder.x = this.app.screen.width * 0.5 - buttonBorder.width * 0.5;
-    buttonBorder.y = this.app.screen.height * 0.7;
+    buttonBorder.x = this.app.screen.width * 0.5;
+    buttonBorder.y = this.app.screen.height * 0.8;
     this.container.addChild(buttonBorder);
 
     // Display the start page
@@ -164,9 +176,10 @@ export class StartPage {
       fontSize: 36,
       fill: 0xffffff,
     });
+    startNowButton.anchor.set(0.5);
     // Center the start now button
-    startNowButton.x = buttonBorder.x + (buttonBorder.width - startNowButton.width) * 0.5;
-    startNowButton.y = buttonBorder.y + (buttonBorder.height - startNowButton.height) * 0.5;
+    startNowButton.x = this.app.screen.width * 0.5;
+    startNowButton.y = this.app.screen.height * 0.8;
     this.container.addChild(startNowButton);
 
     await this.waitForKeyPress([buttonBorder, startNowButton]);
@@ -182,8 +195,8 @@ export class StartPage {
   private async displayTestDisclaimer(): Promise<boolean> {
     this.createText(
       "Take this test only when you're in a safe condition to do so.",
-      this.app.screen.width * 0.05,
-      this.app.screen.height * 0.05,
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.1,
       24,
       { wordWrap: true }
     );
@@ -273,7 +286,7 @@ export class StartPage {
 
       const text = new Text(`${7 - index}. ${levels[index]}`, {
         fontFamily: "Trebuchet",
-        fontSize: 20,
+        fontSize: 18,
         fill: 0xffffff,
       });
       text.x = x + 10;
@@ -294,8 +307,8 @@ export class StartPage {
    * @returns {Promise<{ [key: string]: any }>} The test data
    */
   public async start(): Promise<{ [key: string]: any } | false> {
-    if (process.env.NODE_ENV === "development") return {};
-    
+    // if (process.env.NODE_ENV === "development") return {};
+
     // Display the home page
     await this.displayHomePage();
 
@@ -317,9 +330,10 @@ export class StartPage {
     // Display the ready demo screen
     await this.displayReadyDemo();
 
-    return {
-      fatigueLevel,
-      ...sleepData,
-    };
+    // return {
+    //   fatigueLevel,
+    //   ...sleepData,
+    // };
+    return {}
   }
 }
