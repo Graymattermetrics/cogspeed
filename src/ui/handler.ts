@@ -221,10 +221,8 @@ export class CogSpeedGraphicsHandler {
     }
   }
 
-  public setDisplayNumbers(answerLocation: number) {
+  public setDisplayNumbers(answerLocation: number, queryNumber: number, numberOrDot: "numbers" | "dots"): void {
     // Create and set query sprite
-    const queryNumber = Math.floor(Math.random() * 9) + 1;
-    const numberOrDot = Math.random() > 0.5 ? "numbers" : "dots";
     const queryNumberSprite = this.getSprite(numberOrDot, queryNumber, false);
     this.setSpritePosition(queryNumberSprite, 0.5, 0.75);
 

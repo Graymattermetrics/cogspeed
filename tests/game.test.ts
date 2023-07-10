@@ -79,6 +79,20 @@ describe("Test game algorithm", () => {
     expect(config.error).toEqual(false);
   });
 
+  it("should never show the same query twice in a row", () => {
+    const game = createGame();
+    game.nextRound();
+
+    let query = game.query;
+    for (let i = 0; i < 10000; i++) {
+      // Iterate 5000 times to make sure we don't get the same query twice
+      // because of randomization
+      game.nextRound();
+      expect(game.query).not.toEqual(query);
+      query = game.query;
+    }
+  });
+
   it("[game] should create a game", async () => {
     const game = createGame();
     expect(game).toBeDefined();

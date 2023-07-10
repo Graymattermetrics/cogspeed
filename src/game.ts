@@ -39,6 +39,7 @@ export class CogSpeedGame {
 
   // Answers
   answer: number = -1;
+  query: {queryNumber: number, numbersOrDots: "numbers" | "dots"} = {queryNumber: -1, numbersOrDots: "numbers"};
   previousAnswers: { [key: string]: any }[] = [];
 
   // Timers
@@ -85,8 +86,19 @@ export class CogSpeedGame {
     // const answerLocation = 1;
     this.answer = answerLocation;
 
+    const queryNumber = Math.floor(Math.random() * 9) + 1;
+    let numbersOrDots: "dots" | "numbers" = Math.random() > 0.5 ? "numbers" : "dots";
+    if (queryNumber === this.query["queryNumber"]) {
+      numbersOrDots = this.query["numbersOrDots"] === "numbers" ? "dots" : "numbers";
+    }
+
+    this.query = {
+      queryNumber,
+      numbersOrDots: numbersOrDots,
+    }
+
     // Set display sprites
-    this.ui?.setDisplayNumbers(answerLocation);
+    this.ui?.setDisplayNumbers(answerLocation, queryNumber, numbersOrDots);
 
     const rounds = {
       0: this.trainingRound,
@@ -362,7 +374,9 @@ export class CogSpeedGame {
     // Log answer
     const data: { [key: string]: number | string | null | boolean } = {
       status, // correct, incorrect, no response
-      answerLocation: answer, // Location of answer
+      answerLocation: answer, // Location of the answer sprite (1-6)
+      locationClicked: location, // Location of the click (1-6) - will match answerLocation if correct
+      queryNumber: ``,  // The query number concatinated with the  
       // Current duration (timeout)
       duration: this.currentTimeout,
       roundNumber: this.previousAnswers.length + 1, // Round number
@@ -379,7 +393,6 @@ export class CogSpeedGame {
     // }
 
     this.previousAnswers.push(data);
-    console.log(this.previousAnswers);
     this.nextRound();
   }
 
@@ -399,6 +412,8 @@ export class CogSpeedGame {
   public async stop(success: boolean = false): Promise<void> {
     if (!this.app || !this.ui) return;
 
+    console.log(this.previousAnswers);
+    
     for (var i = this.app.stage.children.length - 1; i >= 0; i--) {
       this.app.stage.removeChild(this.app.stage.children[i]);
     }

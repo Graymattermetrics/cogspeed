@@ -45,7 +45,6 @@ async function main(): Promise<void> {
 
   resizeCanvas(); // TODO
 
-  console.log(config);
   if (config.error) {
     const errorText = new Text(config.reason, {
       fontFamily: "Arial",
