@@ -1,7 +1,6 @@
 import { Application, Container, Point, Rectangle, Sprite, Texture, Text } from "pixi.js";
 
 import buttonTextureImage from "../assets/button.png";
-import invertedButtonTextureImage from "../assets/button_inverted.png";
 import buttonWellTextureImage from "../assets/button_well.png";
 import gearTextureImage from "../assets/gear.png";
 import gearWellTextureImage from "../assets/gear_well.png";
@@ -70,7 +69,6 @@ export class CogSpeedGraphicsHandler {
   public gearTexture: Texture;
   public buttonWellTexture: Texture;
   public buttonTexture: Texture;
-  public invertedButtonTexture: Texture;
   public numbersAndDotsTexture: Texture;
   public numbersAndDotsInvertedTexture: Texture;
   public bgCarbonTexture: Texture;
@@ -87,7 +85,6 @@ export class CogSpeedGraphicsHandler {
     this.gearTexture = Texture.from(gearTextureImage);
     this.buttonWellTexture = Texture.from(buttonWellTextureImage);
     this.buttonTexture = Texture.from(buttonTextureImage);
-    this.invertedButtonTexture = Texture.from(invertedButtonTextureImage);
     this.numbersAndDotsTexture = Texture.from(numbersAndDotsTextureImage);
     this.numbersAndDotsInvertedTexture = Texture.from(numbersAndDotsInvertedTextureImage);
     this.bgCarbonTexture = Texture.from(bgCarbonImage);
@@ -341,8 +338,7 @@ export class CogSpeedGraphicsHandler {
     const buttons = [];
     // Add buttons
     for (let i = 1; i <= 6; i++) {
-      const inverted = Math.random() > 0.5;
-      const button = new Sprite(inverted ? this.invertedButtonTexture : this.buttonTexture);
+      const button = new Sprite(this.buttonTexture);
       button.anchor.set(0.5);
       const gearK = 2.592592;
       button.width = gear.width / gearK;
