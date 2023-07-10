@@ -473,7 +473,7 @@ export class CogSpeedGame {
       numberOfRounds: this.previousAnswers.length,
       blockingRoundDuration,
       cognitiveProcessingIndex,
-      blockCount: this.previousBlockTimeouts.length,
+      blockCount: this.previousBlockTimeouts.length - 1,
       answerLogs: this.previousAnswers,
       machinePacedBaseline: firstMachinePacedRound?.duration,
       version: this.config.version,
