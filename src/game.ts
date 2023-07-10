@@ -356,9 +356,19 @@ export class CogSpeedGame {
       ratio = timeTaken / this.currentTimeout;
     }
 
+    const normalizeRounds = {
+      0: "training",
+      1: "self-paced",
+      2: "machine-paced",
+      3: "post-block",
+      4: "self-paced-restart",
+      5: "final",
+    }
+
     // Log answer
     const data: { [key: string]: number | string | null | boolean } = {
       status, // correct, incorrect, no response
+      roundTypeNormalized: normalizeRounds[this.currentRound],
       answerLocation: answer, // Location of the answer sprite (1-6)
       locationClicked: location, // Location of the click (1-6) - will match answerLocation if correct
       queryNumber: ``, // The query number concatinated with the
