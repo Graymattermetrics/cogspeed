@@ -44,20 +44,7 @@ async function main(): Promise<void> {
 
   resizeCanvas(); // TODO
 
-  if (config.error) {
-    const errorText = new Text(config.reason, {
-      fontFamily: "Arial",
-      fontSize: 18,
-      fill: 0xffffff,
-      align: "center",
-    });
-    errorText.style.wordWrap = true;
-    errorText.style.wordWrapWidth = app.screen.width - 30;
-    errorText.anchor.set(0.5);
-    errorText.position.set(gameWidth / 2, gameHeight / 2);
-    app.stage.addChild(errorText);
-    return;
-  }
+  if (config.error) throw new Error(config.reason);
 
   // Show GMM Logo while loading all textures
   // Temp text instead of logo for now
