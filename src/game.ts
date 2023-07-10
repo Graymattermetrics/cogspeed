@@ -236,7 +236,7 @@ export class CogSpeedGame {
     }
 
     // If there are too many blocks (roughly 6) the test must exit
-    if (this.previousBlockTimeouts.length === this.config.machine_paced.blocking.max_block_count - 1) {
+    if (this.previousBlockTimeouts.length - 1 === this.config.machine_paced.blocking.max_block_count) {
       return this.stop(3);
     }
 
