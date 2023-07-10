@@ -103,7 +103,6 @@ export class ProcessResultsPage {
         container.addChild(loadingGearSprite);
       }
     }
-
     return container;
   }
 
@@ -115,26 +114,49 @@ export class ProcessResultsPage {
 
     const dashMeter = new Sprite(this.ui.dashMeterTexture);
     dashMeter.width = this.app.screen.width + this.app.screen.width * 0.19;
-    dashMeter.height = this.app.screen.height * 0.5 + dashMeter.width * 0.08;
+    dashMeter.height = this.app.screen.height * 0.5 + dashMeter.width * 0.02;
     dashMeter.x = this.app.screen.width * 0.5;
     dashMeter.y = this.app.screen.height * 0.41;
     dashMeter.anchor.set(0.5);
     container.addChild(dashMeter);
 
-    this.ui.createText(`C\nSeems OK. Passable`, 0.5, 0.05, container, {})
-    this.ui.createText(`Cognitive Performance Index`, 0.5, (dashMeter.y + (dashMeter.height * 0.3)) / this.app.screen.height, container, {
+    const background = new Graphics();
+    background.beginFill(0x18c436, 1);
+    background.drawRect(0, 0, this.app.screen.width, this.app.screen.height * 0.1);
+    background.endFill();
+    container.addChild(background);
+
+    this.ui.createText(`C\nSeems OK. Passable`, 0.5, 0.05, container, {
+      fill: 0xFFFFFF,
+    })  // TOOD: Replace with data variable
+
+    this.ui.createText("Cognitive Performance Index", 0.5, (dashMeter.y + (dashMeter.height * 0.3)) / this.app.screen.height, container, {
       fill: 0xc2e2ff,
       fontSize: 12
     })
+    // TOOD: Replace with data variable
     this.ui.createText(`65`, 0.6, (dashMeter.y + (dashMeter.height * 0.2)) / this.app.screen.height, container, {
       fill: 0xc2e2ff,
       fontSize: 50
     });
-    this.ui.createText(`CPI`, 0.35, (dashMeter.y + (dashMeter.height * 0.15)) / this.app.screen.height, container, {
+    this.ui.createText("CPI", 0.35, (dashMeter.y + (dashMeter.height * 0.15)) / this.app.screen.height, container, {
       fill: 0xc2e2ff,
       fontSize: 20
     });
+    const sfpBar = new Sprite(this.ui.spfBarTexture);
+    sfpBar.width = this.app.screen.width + this.app.screen.width * 0.1;
+    sfpBar.height = this.app.screen.height * 0.1;
+    sfpBar.x = this.app.screen.width * 0.5;
+    sfpBar.y = dashMeter.x + dashMeter.height * 0.827;
+    sfpBar.anchor.set(0.5);
+    container.addChild(sfpBar);
 
+    for (let i = 1; i < 8; i++) {
+      this.ui.createText(`${i}`, 0.05 + ((i - 1) * 0.15), (sfpBar.y) / this.app.screen.height, container, {
+        fill: (i === 4) ? 0x4dd64d : 0x5d5e5e,  // TOOD: Replace with data variable
+        fontSize: (i === 4) ? 30 : 20  // TOOD: Replace with data variable
+      });
+    }
     return container;
   }
 
@@ -147,14 +169,17 @@ export class ProcessResultsPage {
     data.geolocation = geolocation;
     data.normalizedLocation = normalizedLocation;
 
-    // Emulate a loading screen
-    await new Promise((resolve) => setTimeout(resolve, 10));
-    
-    this.ui.createText("Test Complete!", 0.5, 0.45, loadingContainer);
-    this.ui.createText(data.success ? "Success" : "Failed", 0.5, 0.55, loadingContainer, {
+    const messageText = this.ui.createText("Test Complete!", 0.5, 0.45, loadingContainer);
+    const statusText = this.ui.createText("Analyzing...", 0.5, 0.55, loadingContainer, {
       fontSize: 35,
       fill: data.success ? 0x6493c9 : 0xff0000,
     });
+
+    // Emulate a loading screen
+    const duration = process.env.NODE_ENV === "development" ? 200 : 3000;
+    await new Promise((resolve) => setTimeout(resolve, duration));
+    
+    statusText.text = data.success ? "Success" : "Failed";
     this.ui.createText("Tap to show results", 0.5, 0.8, loadingContainer);
 
     // Wait for a click on the loading screen before showing results

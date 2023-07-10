@@ -77,7 +77,8 @@ async function main(): Promise<void> {
   const graphicsManager = new CogSpeedGraphicsHandler(app);
 
   // Emulate loading time
-  await new Promise((resolve) => setTimeout(resolve, 10));
+  const duration = process.env.NODE_ENV === "development" ? 100 : 3000;
+  await new Promise((resolve) => setTimeout(resolve, duration));
 
   app.stage.removeChild(loadingText);
   graphicsManager.setBackground("carbon", app.stage);

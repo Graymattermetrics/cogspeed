@@ -11,7 +11,9 @@ import largeButtonTextureImage from "../assets/large_button.png";
 import loadingGearImage from "../assets/loading_gear.png";
 import logoWithGearsImage from "../assets/logo_with_gears.png";
 import readyDemoImage from "../assets/ready_demmo.png";
-import dashMeter from "../assets/dash_meter.png";
+import dashMeterImage from "../assets/dash_meter.png";
+import gateSheetImage from "../assets/gate_sheet.png";
+import spfBarImage from "../assets/spf_bar.png";
 
 import { CogSpeedGame } from "../game";
 import bgCarbonImage from "../assets/bg_carbon.jpg";
@@ -79,6 +81,8 @@ export class CogSpeedGraphicsHandler {
   public readyDemoTexture: Texture;
   public logoTexture: Texture;
   public dashMeterTexture: Texture;
+  public gateSheetTexture: Texture;
+  public spfBarTexture: Texture;
 
   constructor(public app: Application) {
     this.gearWellTexture = Texture.from(gearWellTextureImage);
@@ -94,7 +98,9 @@ export class CogSpeedGraphicsHandler {
     this.loadingGearTexture = Texture.from(loadingGearImage);
     this.readyDemoTexture = Texture.from(readyDemoImage);
     this.logoTexture = Texture.from(logoWithGearsImage);
-    this.dashMeterTexture = Texture.from(dashMeter);
+    this.dashMeterTexture = Texture.from(dashMeterImage);
+    this.gateSheetTexture = Texture.from(gateSheetImage);
+    this.spfBarTexture = Texture.from(spfBarImage);
 
     // Load number and dot assets
     const { numbers, dots } = this.loadNumbersAndDots(false);
@@ -175,6 +181,7 @@ export class CogSpeedGraphicsHandler {
    * @param options The options for the text (fontFamily, fontSize, fill, align)
    */
   public createText(content: string, mulX: number, mulY: number, container: Container, options: {
+    textSprite?: Sprite,
     fontFamily?: string, 
     fontSize?: number,
     fill?: number,
@@ -198,6 +205,7 @@ export class CogSpeedGraphicsHandler {
     text.y = this.app.screen.height * mulY;
     text.anchor.set(0.5);
     container.addChild(text);
+    return text;
   }
   
   /**
