@@ -183,7 +183,10 @@ export class ProcessResultsPage {
     this.ui.createText("Tap to show results", 0.5, 0.8, loadingContainer);
 
     // Wait for a click on the loading screen before showing results
-    this.waitForKeyPress(loadingContainer);
+    const waitPromise = this.waitForKeyPress(loadingContainer);
+    if (process.env.NODE_ENV !== "development") {
+      await waitPromise;
+    }
     this.app.stage.removeChild(loadingContainer);
 
     // Create the screen for the results
