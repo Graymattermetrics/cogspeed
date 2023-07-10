@@ -56,13 +56,7 @@ export class StartPage {
     return keypress === yesBorder || keypress === yesText;
   }
 
-  private createText(
-    text: string,
-    x: number,
-    y: number,
-    fontSize: number,
-    { wordWrap = true, centre = false, fill = 0xffffff }
-  ) {
+  private createText(text: string, x: number, y: number, fontSize: number, { wordWrap = true, centre = false, fill = 0xffffff }) {
     const textObject = new Text(text, {
       fontFamily: "Trebuchet",
       fontSize: fontSize,
@@ -84,9 +78,7 @@ export class StartPage {
   /**
    * Wait for a click on a sprite but don't destroy the sprite
    */
-  private async waitForKeyPressNoDestroy(
-    sprite: (Sprite | Container | Text)[] = [this.container]
-  ): Promise<void> {
+  private async waitForKeyPressNoDestroy(sprite: (Sprite | Container | Text)[] = [this.container]): Promise<void> {
     // Block until a sprite is clicked but don't destroy the sprite
     var block = true;
 

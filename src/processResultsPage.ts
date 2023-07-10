@@ -94,17 +94,16 @@ export class ProcessResultsPage {
     const loadingContainer = this.loadingScreen();
 
     const [geolocation, normalizedLocation] = await this.getCurrentPosition();
-    data.geolocation = geolocation;
-    data.normalizedLocation = normalizedLocation;
+    data.location = {
+      geolocation,
+      normalizedLocation,
+    };
 
-    const testSummary = Object.keys(data)
-      .filter((k) => !["previousAnswers", "id", "geolocation"].includes(k))
-      .map((k) => `${k}: ${data[k]?.toString().slice(0, 100)}`)
-      .join("\n");
+    const responseData = JSON.parse(JSON.stringify(data));
+    delete responseData['answerLogs'];
+    const testSummary = JSON.stringify(responseData, null, 2).replaceAll('"', "").replaceAll(",", "")
 
-    let textContent = data.success
-      ? `Test finished [temp text] \n${testSummary}`
-      : "Test stopped (failed) [temp text]";
+    let textContent = data.success ? `Test finished [temp text] \n${testSummary}` : "Test stopped (failed) [temp text]";
     textContent += "\n**Click me to download results**";
 
     const text = new Text(textContent, {

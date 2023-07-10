@@ -22,7 +22,7 @@
     "build": "react-scripts build",
     "test": "jest",
     "eject": "react-scripts eject",
-    "style": "prettier --write src/ --print-width 100"
+    "style": "prettier --write src/ tests/ --print-width 130"
   },
   "eslintConfig": {
     "extends": [

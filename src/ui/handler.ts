@@ -114,10 +114,7 @@ export class CogSpeedGraphicsHandler {
     const spaceBetween = 128;
 
     for (let i = 0; i < 2; i++) {
-      const smallButtonTexture = new Texture(
-        this.smallButtonTextures.baseTexture,
-        new Rectangle(i * spaceBetween, 0, 128, 96)
-      );
+      const smallButtonTexture = new Texture(this.smallButtonTextures.baseTexture, new Rectangle(i * spaceBetween, 0, 128, 96));
       buttons.push(smallButtonTexture);
     }
     return buttons;
@@ -137,10 +134,7 @@ export class CogSpeedGraphicsHandler {
 
       // Split up numbers and dots png into separate sprites
 
-      const numberOrDotTexture = new Texture(
-        texture.baseTexture,
-        new Rectangle(posX, posY, spaceBetween, spaceBetween)
-      );
+      const numberOrDotTexture = new Texture(texture.baseTexture, new Rectangle(posX, posY, spaceBetween, spaceBetween));
       const numberOrDot = new Sprite(numberOrDotTexture);
 
       numberOrDot.anchor.set(0.5);
@@ -172,12 +166,7 @@ export class CogSpeedGraphicsHandler {
    * @param {number} y The y position
    * @param {Container | undefined} container The container to add the sprite to (if undefined, adds to stage)
    */
-  public setSpritePosition(
-    sprite: Sprite,
-    x: number,
-    y: number,
-    container: Container | undefined = undefined
-  ): void {
+  public setSpritePosition(sprite: Sprite, x: number, y: number, container: Container | undefined = undefined): void {
     sprite.x = container ? x : this.app.screen.width * x;
     sprite.y = container ? y : this.app.screen.height * y;
 
@@ -205,11 +194,7 @@ export class CogSpeedGraphicsHandler {
    * Gets a random sprite that is either inverted or not
    * @return {Sprite}
    */
-  public getSprite(
-    spriteType: "numbers" | "dots",
-    spriteNumber: number,
-    randomInverted: boolean = true
-  ): Sprite {
+  public getSprite(spriteType: "numbers" | "dots", spriteNumber: number, randomInverted: boolean = true): Sprite {
     const spriteInverted = randomInverted ? Math.random() > 0.5 : false;
 
     if (spriteType === "numbers") {
@@ -226,11 +211,7 @@ export class CogSpeedGraphicsHandler {
     const queryNumberSprite = this.getSprite(numberOrDot, queryNumber, false);
     this.setSpritePosition(queryNumberSprite, 0.5, 0.75);
 
-    const answerSprite = this.getSprite(
-      numberOrDot !== "numbers" ? "numbers" : "dots",
-      queryNumber,
-      true
-    );
+    const answerSprite = this.getSprite(numberOrDot !== "numbers" ? "numbers" : "dots", queryNumber, true);
     this.setSpritePosition(
       answerSprite,
       buttonPositions[answerLocation](this.gearWellSize, this.gearWellSize)[0],
@@ -250,11 +231,7 @@ export class CogSpeedGraphicsHandler {
       const number = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
       delete numbers[number];
 
-      const randomIncorrectSprite = this.getSprite(
-        number > 9 ? "dots" : "numbers",
-        number > 9 ? number - 9 : number,
-        true
-      );
+      const randomIncorrectSprite = this.getSprite(number > 9 ? "dots" : "numbers", number > 9 ? number - 9 : number, true);
 
       this.setSpritePosition(
         randomIncorrectSprite,
@@ -349,9 +326,7 @@ export class CogSpeedGraphicsHandler {
     // Remove old background
     this.app.stage.removeChild(this.app.stage.getChildByName("background") as Sprite);
 
-    const background = new Sprite(
-      texture === "carbon" ? this.bgCarbonTexture : this.bgSteelTexture
-    );
+    const background = new Sprite(texture === "carbon" ? this.bgCarbonTexture : this.bgSteelTexture);
     background.name = "background";
     background.width = this.app.screen.width;
     background.height = this.app.screen.height;

@@ -10,9 +10,7 @@ jest.spyOn(global, "setTimeout");
 let config: { [key: string]: any };
 
 beforeAll(async () => {
-  const response = await axios.get(
-    "https://t6pedjjwcb.execute-api.us-east-2.amazonaws.com/default/getCogspeedConfig"
-  );
+  const response = await axios.get("https://t6pedjjwcb.execute-api.us-east-2.amazonaws.com/default/getCogspeedConfig");
   config = response.data;
 });
 
@@ -44,8 +42,8 @@ const selfPacedStartupGame = () => {
   for (let i = 0; i < config.self_paced.number_of_training_rounds; i++) {
     game.buttonClicked(0); // We don't care where it is clicked
   }
-  return game
-}
+  return game;
+};
 
 /**
  * Creates a game that has completed the self paced startup rounds
@@ -53,24 +51,24 @@ const selfPacedStartupGame = () => {
  */
 const machinePacedGame = () => {
   const game = selfPacedStartupGame();
-		
-  for (let i = 0; i < config.self_paced.max_right_count; i ++) {
-    game.buttonClicked(game.answer, (i+1) * 1000); // Right answer with +1000ms delay each time
+
+  for (let i = 0; i < config.self_paced.max_right_count; i++) {
+    game.buttonClicked(game.answer, (i + 1) * 1000); // Right answer with +1000ms delay each time
   }
   return game;
-}
+};
 
 /**
  * Creates a game that is in post block round
  */
-const postBlockGame  = () => {
+const postBlockGame = () => {
   const game = machinePacedGame();
 
-  for (let i = 0; i < config.machine_paced.blocking.no_input_count; i ++) {
+  for (let i = 0; i < config.machine_paced.blocking.no_input_count; i++) {
     game.buttonClicked(); // No answer
   }
   return game;
-}
+};
 
 describe("Test game algorithm", () => {
   it("should use the config variable", () => {
@@ -125,37 +123,37 @@ describe("Test game algorithm", () => {
     const game = selfPacedStartupGame();
 
     // Click the right answer n times but add in a wrong answer
-		// Eg 12 / 3 = 4
+    // Eg 12 / 3 = 4
     for (let i = 0; i < 4; i++) {
       game.buttonClicked(game.answer, 100); // Right answer (<3000ms delay)
       game.buttonClicked(game.answer, 100); // Right answer
-      game.buttonClicked(game.answer, 100); // Right answer		
-			if (i != 3) game.buttonClicked(-1, 100); // Wrong answer
+      game.buttonClicked(game.answer, 100); // Right answer
+      if (i != 3) game.buttonClicked(-1, 100); // Wrong answer
     }
     expect(game.stop).toHaveBeenCalledTimes(1);
   });
 
-	it("[sp] should not exit self paced mode if the correct answers are > than n seconds", async() => {
-		const game = selfPacedStartupGame();
+  it("[sp] should not exit self paced mode if the correct answers are > than n seconds", async () => {
+    const game = selfPacedStartupGame();
 
     // Click the right answer n times but add in a wrong answer
-		// Eg 12 / 3 = 4
+    // Eg 12 / 3 = 4
     for (let i = 0; i < 4; i++) {
-      game.buttonClicked(game.answer, (i+1) * config.self_paced.max_correct_duration + 1); // Right answer (>3000ms delay)
-      game.buttonClicked(game.answer, (i+1) * config.self_paced.max_correct_duration + 3001); // Right answer
-      game.buttonClicked(game.answer, (i+1) * config.self_paced.max_correct_duration + 6001); // Right answer		
-			if (i != 3) game.buttonClicked(-1, (i+1) * config.self_paced.max_correct_duration + 9001); // Wrong answer
+      game.buttonClicked(game.answer, (i + 1) * config.self_paced.max_correct_duration + 1); // Right answer (>3000ms delay)
+      game.buttonClicked(game.answer, (i + 1) * config.self_paced.max_correct_duration + 3001); // Right answer
+      game.buttonClicked(game.answer, (i + 1) * config.self_paced.max_correct_duration + 6001); // Right answer
+      if (i != 3) game.buttonClicked(-1, (i + 1) * config.self_paced.max_correct_duration + 9001); // Wrong answer
     }
     expect(game.stop).toHaveBeenCalledTimes(0);
-	});
+  });
 
-	it("[sp] should exit self paced startup mode if there are n correct answers in a row", async () => {
-		const game = machinePacedGame();
-		expect(game.currentRound).toBe(2);
-		expect(game.currentTimeout).toBe(1000 - config.machine_paced.slowdown.base_duration);
+  it("[sp] should exit self paced startup mode if there are n correct answers in a row", async () => {
+    const game = machinePacedGame();
+    expect(game.currentRound).toBe(2);
+    expect(game.currentTimeout).toBe(1000 - config.machine_paced.slowdown.base_duration);
     expect(game.stop).toHaveBeenCalledTimes(0);
     expect(setTimeout).lastCalledWith(expect.any(Function), 1000 - config.machine_paced.slowdown.base_duration);
-	});
+  });
 
   it("[mp] should speedup after correct answer", () => {
     const game = machinePacedGame();
@@ -166,41 +164,42 @@ describe("Test game algorithm", () => {
 
     game.buttonClicked(game.answer, 500); // Right answer (500ms)
     timeout += (500 / timeout - config.machine_paced.speedup.weighting) * config.machine_paced.speedup.speedup_with_ratio_amount;
-    expect(game.currentTimeout).toBe(timeout)
+    expect(game.currentTimeout).toBe(timeout);
 
     game.buttonClicked(game.answer, 1000); // Right answer (500ms + 500ms)
     timeout += (500 / timeout - config.machine_paced.speedup.weighting) * config.machine_paced.speedup.speedup_with_ratio_amount;
-    expect(game.currentTimeout).toBe(timeout)
+    expect(game.currentTimeout).toBe(timeout);
   });
 
   it("[mp] should slowdown after wrong answer", () => {
     const game = machinePacedGame();
     let timeout = game.currentTimeout;
-    
-    game.buttonClicked(-1); // Wrong answer (ignores time)
-    timeout += config.machine_paced.slowdown.base_duration;
-    expect(game.currentTimeout).toBe(timeout)
 
     game.buttonClicked(-1); // Wrong answer (ignores time)
     timeout += config.machine_paced.slowdown.base_duration;
-    expect(game.currentTimeout).toBe(timeout)
+    expect(game.currentTimeout).toBe(timeout);
+
+    game.buttonClicked(-1); // Wrong answer (ignores time)
+    timeout += config.machine_paced.slowdown.base_duration;
+    expect(game.currentTimeout).toBe(timeout);
   });
 
-	it("[spr] should enter self paced restart mode if the roll mean limit is exceeded", async () => {
-		const game = machinePacedGame();
+  it("[spr] should enter self paced restart mode if the roll mean limit is exceeded", async () => {
+    const game = machinePacedGame();
 
-    const thresholdNumber = Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) + 1;
-		for (let i = 0; i < thresholdNumber; i ++) {
-			game.buttonClicked(-1); // Wrong answer
-		} 
+    const thresholdNumber =
+      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) + 1;
+    for (let i = 0; i < thresholdNumber; i++) {
+      game.buttonClicked(-1); // Wrong answer
+    }
     expect(game.currentRound).toBe(4);
-	});
+  });
 
   it("[pb] should enter post block mode if there are n answers without response", async () => {
-		const game = postBlockGame();
-		expect(game.currentRound).toBe(3);
+    const game = postBlockGame();
+    expect(game.currentRound).toBe(3);
     expect(setTimeout).lastCalledWith(expect.any(Function), config.machine_paced.blocking.no_response_duration);
-	});
+  });
 
   it("[pb] should exit with n correct answers in a row", () => {
     const game = postBlockGame();
@@ -223,16 +222,17 @@ describe("Test game algorithm", () => {
 
   it("should not be stuck in recursion if it goes from machine paced to self paced startup", () => {
     const game = machinePacedGame();
-		
-		for (let i = 0; i < config.self_paced.max_right_count; i ++) {
-			game.buttonClicked(game.answer, (i+1) * 1000); // Right answer with +1000ms delay each time
-		}
+
+    for (let i = 0; i < config.self_paced.max_right_count; i++) {
+      game.buttonClicked(game.answer, (i + 1) * 1000); // Right answer with +1000ms delay each time
+    }
     expect(game.currentRound).toBe(2);
 
-    const thresholdNumber = Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) + 1;
-		for (let i = 0; i < thresholdNumber; i ++) {
-			game.buttonClicked(-1); // Wrong answer
-		} 
+    const thresholdNumber =
+      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) + 1;
+    for (let i = 0; i < thresholdNumber; i++) {
+      game.buttonClicked(-1); // Wrong answer
+    }
     expect(game.currentRound).toBe(4);
 
     // Return to machine paced

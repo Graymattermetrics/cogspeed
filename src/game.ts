@@ -39,7 +39,10 @@ export class CogSpeedGame {
 
   // Answers
   answer: number = -1;
-  query: {queryNumber: number, numbersOrDots: "numbers" | "dots"} = {queryNumber: -1, numbersOrDots: "numbers"};
+  query: { queryNumber: number; numbersOrDots: "numbers" | "dots" } = {
+    queryNumber: -1,
+    numbersOrDots: "numbers",
+  };
   previousAnswers: { [key: string]: any }[] = [];
 
   // Timers
@@ -95,7 +98,7 @@ export class CogSpeedGame {
     this.query = {
       queryNumber,
       numbersOrDots: numbersOrDots,
-    }
+    };
 
     // Set display sprites
     this.ui?.setDisplayNumbers(answerLocation, queryNumber, numbersOrDots);
@@ -123,10 +126,7 @@ export class CogSpeedGame {
       this.currentRound = 1;
       return this.selfPacedStartupRound();
     }
-    this.currentRoundTimeout = setTimeout(
-      this.stop.bind(this),
-      this.config.timeouts.max_initial_no_response
-    );
+    this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.timeouts.max_initial_no_response);
   }
 
   /**
@@ -136,10 +136,7 @@ export class CogSpeedGame {
   async selfPacedStartupRound(): Promise<void> {
     // 1) Set no response timeout (roughly 6000ms)
     clearTimeout(this.currentRoundTimeout);
-    this.currentRoundTimeout = setTimeout(
-      this.stop.bind(this),
-      this.config.self_paced.no_response_duration
-    );
+    this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.self_paced.no_response_duration);
 
     // 2) Max wrong limit (roughly 5)
     const selfPacedAnswers = this.previousAnswers.filter((answer) => answer.roundType === 1);
@@ -149,19 +146,14 @@ export class CogSpeedGame {
     // 3) More than (roughly 12) correct answers that are less than (roughly 3000ms)
     // But not (roughly 4) correct answers in a row
     const correctAnswers = selfPacedAnswers.filter(
-      (answer) =>
-        answer.status === "correct" &&
-        answer.timeTaken <= this.config.self_paced.max_correct_duration
+      (answer) => answer.status === "correct" && answer.timeTaken <= this.config.self_paced.max_correct_duration
     );
     if (correctAnswers.length >= this.config.self_paced.total_correct_count) return this.stop();
 
     // 4) If (roughly 4) correct answers in a row
     // We move to the next round
     const lastNAnswers = selfPacedAnswers.slice(-this.config.self_paced.max_right_count);
-    if (
-      lastNAnswers.filter((answer) => answer.status === "correct").length ===
-      this.config.self_paced.max_right_count
-    ) {
+    if (lastNAnswers.filter((answer) => answer.status === "correct").length === this.config.self_paced.max_right_count) {
       this.currentRound = 2;
       // Set machine paced timeout
       this.currentTimeout =
@@ -186,7 +178,8 @@ export class CogSpeedGame {
       if (lastAnswer.status === "correct") {
         // If the answer is correct, speed up the timeout
         this.currentTimeout +=
-          (lastAnswer.ratio - this.config.machine_paced.speedup.weighting) * this.config.machine_paced.speedup.speedup_with_ratio_amount;
+          (lastAnswer.ratio - this.config.machine_paced.speedup.weighting) *
+          this.config.machine_paced.speedup.speedup_with_ratio_amount;
       } else if (lastAnswer.status === "incorrect") {
         // If the answer is incorrect, slow down the timeout
         this.currentTimeout += this.config.machine_paced.slowdown.base_duration;
@@ -236,18 +229,14 @@ export class CogSpeedGame {
     // 1) If the last two blocks are within (roughly 135ms) of each other then the test is a success
     if (
       lastTwoBlocks.length === 2 &&
-      Math.abs(lastTwoBlocks[0] - lastTwoBlocks[1]) <
-        this.config.machine_paced.blocking.duration_delta
+      Math.abs(lastTwoBlocks[0] - lastTwoBlocks[1]) < this.config.machine_paced.blocking.duration_delta
     ) {
       this.currentRound = 5;
       return this.finalRounds();
     }
 
     // If there are too many blocks (roughly 6) the test must exit
-    if (
-      this.previousBlockTimeouts.length ===
-      this.config.machine_paced.blocking.max_block_count - 1
-    ) {
+    if (this.previousBlockTimeouts.length === this.config.machine_paced.blocking.max_block_count - 1) {
       return this.stop();
     }
 
@@ -274,10 +263,7 @@ export class CogSpeedGame {
       return this.stop(false);
 
     clearTimeout(this.currentRoundTimeout);
-    this.currentRoundTimeout = setTimeout(
-      this.stop.bind(this),
-      this.config.machine_paced.blocking.no_response_duration
-    );
+    this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.machine_paced.blocking.no_response_duration);
   }
 
   /**
@@ -350,8 +336,7 @@ export class CogSpeedGame {
 
     let timeTaken = timeClicked - previousTime;
     let answer = this.answer;
-    let status =
-      location === null ? "no response" : location === this.answer ? "correct" : "incorrect";
+    let status = location === null ? "no response" : location === this.answer ? "correct" : "incorrect";
     let isCorrectFromPrevious = false;
     let ratio = this.currentTimeout === -1 ? 0 : (timeClicked - previousTime) / this.currentTimeout;
 
@@ -376,7 +361,7 @@ export class CogSpeedGame {
       status, // correct, incorrect, no response
       answerLocation: answer, // Location of the answer sprite (1-6)
       locationClicked: location, // Location of the click (1-6) - will match answerLocation if correct
-      queryNumber: ``,  // The query number concatinated with the  
+      queryNumber: ``, // The query number concatinated with the
       // Current duration (timeout)
       duration: this.currentTimeout,
       roundNumber: this.previousAnswers.length + 1, // Round number
@@ -413,13 +398,22 @@ export class CogSpeedGame {
     if (!this.app || !this.ui) return;
 
     console.log(this.previousAnswers);
-    
+
     for (var i = this.app.stage.children.length - 1; i >= 0; i--) {
       this.app.stage.removeChild(this.app.stage.children[i]);
     }
 
     const round = (num: number, sf: number = 3) => {
       return Math.round((num * 10 ** sf) / 10 ** sf);
+    };
+    const filterByStatus = (answers: { [key: string]: any }[], status: string) => {
+      return answers.filter((answer: { [key: string]: any }) => answer.status === status);
+    };
+    const filterByRoundType = (answers: { [key: string]: any }[], roundType: number) => {
+      return answers.filter((answer: { [key: string]: any }) => answer.roundType === roundType);
+    };
+    const mapToTimeTaken = (answers: { [key: string]: any }[]) => {
+      return answers.map((answer: { [key: string]: any }) => answer.timeTaken);
     };
 
     const sumOfLastTwoBlocks = this.previousBlockTimeouts.slice(-2).reduce((a, b) => a + b, 0);
@@ -430,49 +424,52 @@ export class CogSpeedGame {
       (this.config.cpi_calculation.cpi_max - this.config.cpi_calculation.cpi_min) /
       (this.config.cpi_calculation.brd_min - this.config.cpi_calculation.brd_max);
     // M(BRD - CPImin) + 100
-    const cognitiveProcessingIndex = round(
-      M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100
-    );
+    const cognitiveProcessingIndex = round(M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100);
 
     const firstMachinePacedRound: { [key: string]: any } | undefined = this.previousAnswers.filter(
       (answer: { [key: string]: any }) => answer.roundType === 2
     )[0];
 
-    const totalMachinePacedAnswers = this.previousAnswers.filter(
-      (answer: { [key: string]: any }) => answer.roundType === 2
-    );
-    const meanMachinePacedAnswerTime = totalMachinePacedAnswers.reduce(
-      (a: number, b: { [key: string]: any }) => a + b.timeTaken, 0
-    ) / totalMachinePacedAnswers.length;
-    const quickestResponse = Math.min(...totalMachinePacedAnswers.map((answer) => answer.timeTaken));
-    const slowestResponse = Math.max(...totalMachinePacedAnswers.map((answer) => answer.timeTaken));
+    const totalMachinePacedAnswers = filterByRoundType(this.previousAnswers, 2);
+    const correctMachinePacedAnswers = filterByStatus(totalMachinePacedAnswers, "correct");
 
-  
+    const quickestResponse = Math.min(...mapToTimeTaken(totalMachinePacedAnswers));
+    const quickestCorrectResponse = Math.min(...mapToTimeTaken(filterByStatus(totalMachinePacedAnswers, "correct")));
+    const slowestResponse = Math.max(...mapToTimeTaken(totalMachinePacedAnswers));
+    const slowestCorrectResponse = Math.max(...mapToTimeTaken(filterByStatus(totalMachinePacedAnswers, "correct")));
+    const meanMachinePacedAnswerTime =
+      totalMachinePacedAnswers.reduce((a: number, b: { [key: string]: any }) => a + b.timeTaken, 0) /
+      totalMachinePacedAnswers.length;
+    const meanCorrectMachinePacedAnswerTime =
+      correctMachinePacedAnswers.reduce((a: number, b: { [key: string]: any }) => a + b.timeTaken, 0) /
+      correctMachinePacedAnswers.length;
+
     const data: { [key: string]: any } = {
       success,
       testDuration: round(performance.now() - this.startTime),
       numberOfRounds: this.previousAnswers.length,
       blockingRoundDuration,
       cognitiveProcessingIndex,
-      id: v4(),
-      date: new Date().toISOString(),
-      previousAnswers: this.previousAnswers,
+      blockCount: this.previousBlockTimeouts.length,
+      answerLogs: this.previousAnswers,
       machinePacedBaseline: firstMachinePacedRound?.duration,
       version: this.config.version,
-      totalMachinePacedAnswers: totalMachinePacedAnswers.length,
-      totalMachinePacedCorrectAnswers: totalMachinePacedAnswers.filter(
-        (answer: { [key: string]: any }) => answer.status === "correct"
-      ).length,
-      totalMachinePacedIncorrectAnswers: totalMachinePacedAnswers.filter(
-        (answer: { [key: string]: any }) => answer.status === "incorrect"
-      ).length,
-      totalMachinePacedNoResponseAnswers: totalMachinePacedAnswers.filter(
-        (answer: { [key: string]: any }) => answer.status === "no response"
-      ).length,
-      quickestResponse,
-      slowestResponse,
-      meanMachinePacedAnswerTime,
-      blockCount: this.previousBlockTimeouts.length,
+      answers: {
+        totalMachinePacedAnswers: totalMachinePacedAnswers.length,
+        totalMachinePacedCorrectAnswers: correctMachinePacedAnswers.length,
+        totalMachinePacedIncorrectAnswers: filterByStatus(totalMachinePacedAnswers, "incorrect").length,
+        totalMachinePacedNoResponseAnswers: filterByStatus(totalMachinePacedAnswers, "no response").length,
+      },
+      responseTimes: {
+        quickestResponse,
+        quickestCorrectResponse,
+        slowestResponse,
+        slowestCorrectResponse,
+        meanMachinePacedAnswerTime,
+        meanCorrectMachinePacedAnswerTime,
+      },
+      _test_date: new Date().toISOString(),
+      _test_id: v4(),
     };
 
     const resultsPage = new ProcessResultsPage(this.app, this.ui);

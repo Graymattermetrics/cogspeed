@@ -21,8 +21,7 @@ app.stage.interactive = true;
  * @return {Promise<void>}
  */
 async function loadConfig(): Promise<{ [key: string]: any }> {
-  let configUrl =
-    "https://t6pedjjwcb.execute-api.us-east-2.amazonaws.com/default/getCogspeedConfig";
+  let configUrl = "https://t6pedjjwcb.execute-api.us-east-2.amazonaws.com/default/getCogspeedConfig";
   const urlParams = new URLSearchParams(window.location.search);
   const version = urlParams.get("version");
   if (version) configUrl += `?version=${version}`;
@@ -72,7 +71,7 @@ async function main(): Promise<void> {
   loadingText.position.set(gameWidth / 2, gameHeight / 2);
   app.stage.addChild(loadingText);
   app.ticker.add((delta) => {
-    loadingText.text =  "Loading" + ".".repeat(Math.floor(app.ticker.lastTime / 1000) % 3 + 1);
+    loadingText.text = "Loading" + ".".repeat((Math.floor(app.ticker.lastTime / 1000) % 3) + 1);
   });
 
   const graphicsManager = new CogSpeedGraphicsHandler(app);
