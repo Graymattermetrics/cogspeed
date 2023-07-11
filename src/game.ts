@@ -477,6 +477,7 @@ export class CogSpeedGame {
       answerLogs: this.previousAnswers,
       machinePacedBaseline: firstMachinePacedRound?.duration,
       version: this.config.version,
+      finalRatio: this.previousAnswers[this.previousAnswers.length - 1].timeTaken / blockingRoundDuration,
       answers: {
         totalMachinePacedAnswers: totalMachinePacedAnswers.length,
         totalMachinePacedCorrectAnswers: correctMachinePacedAnswers.length,
