@@ -7,7 +7,10 @@ type GraphicList = [Graphics, number, number, number, number];
 export class StartPage {
   private container: Container;
 
-  constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {
+  constructor(
+    private app: Application,
+    private ui: CogSpeedGraphicsHandler,
+  ) {
     this.container = new Container();
     this.app.stage.addChild(this.container);
   }
@@ -18,7 +21,7 @@ export class StartPage {
     yesBorder.anchor.set(0.5);
     yesBorder.width = this.app.screen.width * 0.4;
     yesBorder.height = this.app.screen.height * 0.2;
-    yesBorder.x = this.app.screen.width * 0.70;
+    yesBorder.x = this.app.screen.width * 0.7;
     yesBorder.y = this.app.screen.height * 0.85;
     this.container.addChild(yesBorder);
 
@@ -28,7 +31,7 @@ export class StartPage {
       fill: 0xffffff,
     });
     yesText.anchor.set(0.5);
-    yesText.x = this.app.screen.width * 0.70;
+    yesText.x = this.app.screen.width * 0.7;
     yesText.y = this.app.screen.height * 0.85;
     this.container.addChild(yesText);
 
@@ -103,7 +106,7 @@ export class StartPage {
    */
   private async waitForKeyPress(
     sprite: (Sprite | Container | Text)[] = [this.container],
-    secondSprites: (Sprite | Container | Text)[] = []
+    secondSprites: (Sprite | Container | Text)[] = [],
   ): Promise<Sprite | Container | null> {
     [...sprite, ...secondSprites].forEach((sprite_) => {
       sprite_.eventMode = "dynamic";
@@ -135,7 +138,7 @@ export class StartPage {
     // Display the ready demo screen
     const size = 512;
     const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
-    
+
     const readyDemo = new Sprite(this.ui.readyDemoTexture);
     readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
     readyDemo.x = this.app.screen.width * 0.5;
@@ -154,7 +157,7 @@ export class StartPage {
     // Create the logo
     const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
     const size = 512;
-    
+
     const logoSprite = new Sprite(this.ui.logoTexture);
     logoSprite.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
     logoSprite.anchor.set(0.5);
@@ -198,7 +201,7 @@ export class StartPage {
       this.app.screen.width * 0.5,
       this.app.screen.height * 0.1,
       24,
-      { wordWrap: true }
+      { wordWrap: true },
     );
 
     this.createText("Ready?", this.app.screen.width * 0.5, this.app.screen.height * 0.5, 48, {
@@ -334,6 +337,6 @@ export class StartPage {
     //   fatigueLevel,
     //   ...sleepData,
     // };
-    return {}
+    return {};
   }
 }

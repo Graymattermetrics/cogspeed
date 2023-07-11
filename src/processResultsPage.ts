@@ -4,7 +4,10 @@ import { Application, Container, Graphics, Point, Sprite, Text, Texture } from "
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 
 export class ProcessResultsPage {
-  constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {}
+  constructor(
+    private app: Application,
+    private ui: CogSpeedGraphicsHandler,
+  ) {}
 
   private downloadHandler(data: object) {
     // Generate the log file content (replace this with your own logic)
@@ -38,7 +41,7 @@ export class ProcessResultsPage {
         },
         (error) => {
           resolve(null);
-        }
+        },
       );
     });
     const geolocation = coords ? `${coords.latitude},${coords.longitude}` : null;
@@ -100,8 +103,8 @@ export class ProcessResultsPage {
     };
 
     const responseData = JSON.parse(JSON.stringify(data));
-    delete responseData['answerLogs'];
-    const testSummary = JSON.stringify(responseData, null, 2).replaceAll('"', "").replaceAll(",", "")
+    delete responseData["answerLogs"];
+    const testSummary = JSON.stringify(responseData, null, 2).replaceAll('"', "").replaceAll(",", "");
 
     let textContent = data.success ? `Test finished [temp text] \n${testSummary}` : "Test stopped (failed) [temp text]";
     textContent += "\n**Click me to download results**";

@@ -52,7 +52,7 @@ export class CogSpeedGame {
   constructor(
     public config: { [key: string]: any },
     private app: Application | null = null,
-    private ui: CogSpeedGraphicsHandler | null = null
+    private ui: CogSpeedGraphicsHandler | null = null,
   ) {}
 
   /**
@@ -70,7 +70,7 @@ export class CogSpeedGame {
     const lastRollingMeanAnswers = this.previousAnswers.slice(-lastNonMachinePacedRound);
     // Get the correct answers (count answers as correct if the rolling mean is not large enough)
     const incorrectAnswers = lastRollingMeanAnswers.filter((answer) =>
-      ["incorrect", "no response"].includes(answer.status)
+      ["incorrect", "no response"].includes(answer.status),
     ).length;
     return incorrectAnswers / this.config.machine_paced.rolling_average.mean_size;
   }
@@ -146,7 +146,7 @@ export class CogSpeedGame {
     // 3) More than (roughly 12) correct answers that are less than (roughly 3000ms)
     // But not (roughly 4) correct answers in a row
     const correctAnswers = selfPacedAnswers.filter(
-      (answer) => answer.status === "correct" && answer.timeTaken <= this.config.self_paced.max_correct_duration
+      (answer) => answer.status === "correct" && answer.timeTaken <= this.config.self_paced.max_correct_duration,
     );
     if (correctAnswers.length >= this.config.self_paced.total_correct_count) return this.stop(2);
 
@@ -159,7 +159,7 @@ export class CogSpeedGame {
       this.currentTimeout =
         Math.min(
           lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) / 4,
-          this.config.machine_paced.max_start_duration
+          this.config.machine_paced.max_start_duration,
         ) - this.config.machine_paced.slowdown.initial_duration; // Minimim response time (roughly 100ms)
       // Call next round
       return this.machinePacedRound();
@@ -317,7 +317,7 @@ export class CogSpeedGame {
       .slice(-this.config.number_of_endmode_rounds)
       .filter((answer) => answer.roundType === 5);
     if (lastNRounds.length === this.config.number_of_endmode_rounds) {
-      return this.stop(0);  // Successfully exit (only way to successfully exit)
+      return this.stop(0); // Successfully exit (only way to successfully exit)
     }
     clearTimeout(this.currentRoundTimeout);
   }
@@ -363,7 +363,7 @@ export class CogSpeedGame {
       3: "post-block",
       4: "self-paced-restart",
       5: "final",
-    }
+    };
 
     // Log answer
     const data: { [key: string]: number | string | null | boolean } = {
@@ -405,9 +405,9 @@ export class CogSpeedGame {
   }
 
   /**
-   * The status codes link to a message and status in the config 
+   * The status codes link to a message and status in the config
    * for example (0 = "success", 1 = "Timed out...")
-   * 
+   *
    * @param statusCode The status code of the exit
    */
   public async stop(statusCode: number = 1): Promise<void> {
@@ -447,7 +447,7 @@ export class CogSpeedGame {
     const cognitiveProcessingIndex = round(M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100);
 
     const firstMachinePacedRound: { [key: string]: any } | undefined = this.previousAnswers.filter(
-      (answer: { [key: string]: any }) => answer.roundType === 2
+      (answer: { [key: string]: any }) => answer.roundType === 2,
     )[0];
 
     const totalMachinePacedAnswers = filterByRoundType(this.previousAnswers, 2);

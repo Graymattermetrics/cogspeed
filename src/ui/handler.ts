@@ -216,7 +216,7 @@ export class CogSpeedGraphicsHandler {
       answerSprite,
       buttonPositions[answerLocation](this.gearWellSize, this.gearWellSize)[0],
       buttonPositions[answerLocation](this.gearWellSize, this.gearWellSize)[1],
-      answerLocation > 3 ? this.leftGearContainer : this.rightGearContainer
+      answerLocation > 3 ? this.leftGearContainer : this.rightGearContainer,
     );
 
     const numbers = Array.from({ length: 19 }, (x, i) => i);
@@ -237,7 +237,7 @@ export class CogSpeedGraphicsHandler {
         randomIncorrectSprite,
         buttonPositions[i + 1](this.gearWellSize, this.gearWellSize)[0],
         buttonPositions[i + 1](this.gearWellSize, this.gearWellSize)[1],
-        i > 2 ? this.leftGearContainer : this.rightGearContainer
+        i > 2 ? this.leftGearContainer : this.rightGearContainer,
       );
     }
   }
