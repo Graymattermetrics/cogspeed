@@ -53,7 +53,7 @@ export class CogSpeedGame {
     public config: { [key: string]: any },
     private app: Application | null = null,
     private ui: CogSpeedGraphicsHandler | null = null,
-    private sleepData: {[key: string]: any} = {}
+    private sleepData: { [key: string]: any } = {},
   ) {}
 
   /**
@@ -478,7 +478,7 @@ export class CogSpeedGame {
       answerLogs: this.previousAnswers,
       machinePacedBaseline: firstMachinePacedRound?.duration,
       version: this.config.version,
-      sleepData: {...this.sleepData},
+      sleepData: { ...this.sleepData },
       finalRatio: this.previousAnswers[this.previousAnswers.length - 1]?.timeTaken / blockingRoundDuration,
       answers: {
         totalMachinePacedAnswers: totalMachinePacedAnswers.length,
