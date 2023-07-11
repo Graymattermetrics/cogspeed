@@ -138,9 +138,9 @@ describe("Test game algorithm", () => {
 	it("[sp] should exit self paced startup mode if there are n correct answers in a row", async () => {
 		const game = machinePacedGame();
 		expect(game.currentRound).toBe(2);
-		expect(game.currentTimeout).toBe(1000 - config.machine_paced.slowdown.base_duration);
+		expect(game.currentTimeout).toBe(1000 - config.machine_paced.slowdown.initial_duration);
     expect(game.stop).toHaveBeenCalledTimes(0);
-    expect(setTimeout).lastCalledWith(expect.any(Function), 1000 - config.machine_paced.slowdown.base_duration);
+    expect(setTimeout).lastCalledWith(expect.any(Function), 1000 - config.machine_paced.slowdown.initial_duration);
 	});
 
   it("[mp] should speedup after correct answer", () => {
