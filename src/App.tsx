@@ -72,10 +72,11 @@ async function main(): Promise<void> {
   const startPage = new StartPage(app, graphicsManager);
   // Initiate before displaying to load config
   // Display start page
-  await startPage.start();
+  const sleepData = await startPage.start();
+  if (!sleepData) throw new Error("No sleep data");
 
   // Game phase - called after start button is clicked
-  const game = new CogSpeedGame(config, app, graphicsManager);
+  const game = new CogSpeedGame(config, app, graphicsManager, sleepData);
   game.start();
 }
 

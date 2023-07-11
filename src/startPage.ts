@@ -310,7 +310,7 @@ export class StartPage {
    * @returns {Promise<{ [key: string]: any }>} The test data
    */
   public async start(): Promise<{ [key: string]: any } | false> {
-    // if (process.env.NODE_ENV === "development") return {};
+    if (process.env.NODE_ENV === "development") return {};
 
     // Display the home page
     await this.displayHomePage();
@@ -333,10 +333,9 @@ export class StartPage {
     // Display the ready demo screen
     await this.displayReadyDemo();
 
-    // return {
-    //   fatigueLevel,
-    //   ...sleepData,
-    // };
-    return {};
+    return {
+      fatigueLevel,
+      ...sleepData,
+    };
   }
 }

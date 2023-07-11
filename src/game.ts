@@ -53,6 +53,7 @@ export class CogSpeedGame {
     public config: { [key: string]: any },
     private app: Application | null = null,
     private ui: CogSpeedGraphicsHandler | null = null,
+    private sleepData: {[key: string]: any} = {}
   ) {}
 
   /**
@@ -477,7 +478,8 @@ export class CogSpeedGame {
       answerLogs: this.previousAnswers,
       machinePacedBaseline: firstMachinePacedRound?.duration,
       version: this.config.version,
-      finalRatio: this.previousAnswers[this.previousAnswers.length - 1].timeTaken / blockingRoundDuration,
+      sleepData: {...this.sleepData},
+      finalRatio: this.previousAnswers[this.previousAnswers.length - 1]?.timeTaken / blockingRoundDuration,
       answers: {
         totalMachinePacedAnswers: totalMachinePacedAnswers.length,
         totalMachinePacedCorrectAnswers: correctMachinePacedAnswers.length,
@@ -492,8 +494,9 @@ export class CogSpeedGame {
         meanMachinePacedAnswerTime,
         meanCorrectMachinePacedAnswerTime,
       },
-      _test_date: new Date().toISOString(),
-      _test_id: v4(),
+      _date: new Date().toISOString(),
+      _date_minute_offset: new Date().getTimezoneOffset(),
+      _id: v4(),
     };
 
     const resultsPage = new ProcessResultsPage(this.app, this.ui);
