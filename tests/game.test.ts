@@ -163,11 +163,17 @@ describe("Test game algorithm", () => {
     let timeout = game.currentTimeout;
 
     game.buttonClicked(game.answer, 500); // Right answer (500ms)
-    timeout += Math.max(((500 / timeout - config.machine_paced.correct.weighting) * config.machine_paced.correct.speedup_with_ratio_amount), -config.machine_paced.correct.max_speedup_amount);
+    timeout += Math.max(
+      (500 / timeout - config.machine_paced.correct.weighting) * config.machine_paced.correct.speedup_with_ratio_amount,
+      -config.machine_paced.correct.max_speedup_amount,
+    );
     expect(game.currentTimeout).toBe(timeout);
 
     game.buttonClicked(game.answer, 1000); // Right answer (500ms + 500ms)
-    timeout += Math.max(((500 / timeout - config.machine_paced.correct.weighting) * config.machine_paced.correct.speedup_with_ratio_amount), -config.machine_paced.correct.max_speedup_amount);
+    timeout += Math.max(
+      (500 / timeout - config.machine_paced.correct.weighting) * config.machine_paced.correct.speedup_with_ratio_amount,
+      -config.machine_paced.correct.max_speedup_amount,
+    );
     expect(game.currentTimeout).toBe(timeout);
   });
 
@@ -244,7 +250,7 @@ describe("Test game algorithm", () => {
     const game = machinePacedGame();
 
     // Reset the time of the previous answer so 200 is +200ms
-    game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;  
+    game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;
     game.currentTimeout = 1000;
     game.buttonClicked(game.answer, 200); // Right answer (200ms)
     expect(game.currentTimeout).toBe(1000 - config.machine_paced.correct.max_speedup_amount);
@@ -255,7 +261,7 @@ describe("Test game algorithm", () => {
   // it("[mp] should never slowdown more than the slowdown variable", () => {
   //   const game = machinePacedGame();
 
-  //   game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;  
+  //   game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;
   //   game.currentTimeout = 1000;
   //   const previousAnswer = game.answer
   //   game.buttonClicked(null, 1000); // No response
