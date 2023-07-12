@@ -178,15 +178,16 @@ export class CogSpeedGame {
     if (lastAnswer) {
       if (lastAnswer.status === "correct") {
         // If the answer is correct, speed up the timeout
-        let speedupAmount = (lastAnswer.ratio - this.config.machine_paced.correct.weighting) *
-          this.config.machine_paced.correct.speedup_with_ratio_amount;  // Eg speedup by 200ms
-        console.log("Current speedup", speedupAmount, lastAnswer.ratio)
+        let speedupAmount =
+          (lastAnswer.ratio - this.config.machine_paced.correct.weighting) *
+          this.config.machine_paced.correct.speedup_with_ratio_amount; // Eg speedup by 200ms
+        console.log("Current speedup", speedupAmount, lastAnswer.ratio);
         // If the speedup time is greater than 0, limit it to the max speedup amount
         if (speedupAmount > 0) speedupAmount = Math.min(speedupAmount, this.config.machine_paced.correct.max_slowdown_amount);
         // If the speedup time is less than 0, limit it to the max slowdown amount
         else speedupAmount = Math.max(speedupAmount, -this.config.machine_paced.correct.max_speedup_amount);
-        console.log("New speedup", speedupAmount, )
-        this.currentTimeout += speedupAmount
+        console.log("New speedup", speedupAmount);
+        this.currentTimeout += speedupAmount;
       } else if (lastAnswer.status === "incorrect") {
         // If the answer is incorrect, slow down the timeout
         this.currentTimeout += this.config.machine_paced.incorrect.base_duration;
