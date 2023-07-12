@@ -53,14 +53,14 @@ export class CogSpeedGame {
     public config: { [key: string]: any },
     private app: Application | null = null,
     private ui: CogSpeedGraphicsHandler | null = null,
-    private sleepData: { [key: string]: any } = {},
+    private sleepData: { [key: string]: any } = {}
   ) {}
 
   /**
    * Returns the ratio of correct to incorrect
    * answers in the rolling mean
    */
-  getIncorrectRollingMean(): number {
+  getCorrectRollingMean(): number {
     // Create rolling mean answers of last machine paced answers up to the last post-block round
     let lastNonMachinePacedRound = this.previousAnswers
       .slice()
@@ -70,10 +70,12 @@ export class CogSpeedGame {
 
     const lastRollingMeanAnswers = this.previousAnswers.slice(-lastNonMachinePacedRound);
     // Get the correct answers (count answers as correct if the rolling mean is not large enough)
-    const incorrectAnswers = lastRollingMeanAnswers.filter((answer) =>
-      ["incorrect", "no response"].includes(answer.status),
-    ).length;
-    return incorrectAnswers / this.config.machine_paced.rolling_average.mean_size;
+    const correctAnswers = lastRollingMeanAnswers.filter((answer) => answer.status === "correct").length;
+
+    return (
+      (correctAnswers + (this.config.machine_paced.rolling_average.mean_size - lastRollingMeanAnswers.length)) /
+      this.config.machine_paced.rolling_average.mean_size
+    );
   }
 
   /**
@@ -147,7 +149,7 @@ export class CogSpeedGame {
     // 3) More than (roughly 12) correct answers that are less than (roughly 3000ms)
     // But not (roughly 4) correct answers in a row
     const correctAnswers = selfPacedAnswers.filter(
-      (answer) => answer.status === "correct" && answer.timeTaken <= this.config.self_paced.max_correct_duration,
+      (answer) => answer.status === "correct" && answer.timeTaken <= this.config.self_paced.max_correct_duration
     );
     if (correctAnswers.length >= this.config.self_paced.total_correct_count) return this.stop(2);
 
@@ -160,7 +162,7 @@ export class CogSpeedGame {
       this.currentTimeout =
         Math.min(
           lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) / 4,
-          this.config.machine_paced.max_start_duration,
+          this.config.machine_paced.max_start_duration
         ) - this.config.machine_paced.initial_speedup_amount; // Minimim response time (roughly 100ms)
       // Call next round
       return this.machinePacedRound();
@@ -181,12 +183,10 @@ export class CogSpeedGame {
         let speedupAmount =
           (lastAnswer.ratio - this.config.machine_paced.correct.weighting) *
           this.config.machine_paced.correct.speedup_with_ratio_amount; // Eg speedup by 200ms
-        console.log("Current speedup", speedupAmount, lastAnswer.ratio);
         // If the speedup time is greater than 0, limit it to the max speedup amount
         if (speedupAmount > 0) speedupAmount = Math.min(speedupAmount, this.config.machine_paced.correct.max_slowdown_amount);
         // If the speedup time is less than 0, limit it to the max slowdown amount
         else speedupAmount = Math.max(speedupAmount, -this.config.machine_paced.correct.max_speedup_amount);
-        console.log("New speedup", speedupAmount);
         this.currentTimeout += speedupAmount;
       } else if (lastAnswer.status === "incorrect") {
         // If the answer is incorrect, slow down the timeout
@@ -214,8 +214,8 @@ export class CogSpeedGame {
     if (lastAnswer) {
       // 3) Roll mean limit exceeded
       // So we place the user in an SP Restart Phase
-      const incorrectRatio = this.getIncorrectRollingMean();
-      if (incorrectRatio > this.config.machine_paced.rolling_average.threshold) {
+      const correctRatio = this.getCorrectRollingMean();
+      if (correctRatio < this.config.machine_paced.rolling_average.threshold) {
         this.currentRound = 4;
         return this.selfPacedRestartRound();
       }
@@ -380,7 +380,7 @@ export class CogSpeedGame {
       answerLocation: answer, // Location of the answer sprite (1-6)
       locationClicked: location, // Location of the click (1-6) - will match answerLocation if correct
       queryNumber: `${this.query["queryNumber"]}:${this.query["numbersOrDots"]}`, // The query number concatinated with the numbers or dots
-      incorrectRollingMeanRatio: this.getIncorrectRollingMean(), // The incorrect rolling mean
+      correctRollingMeanRatio: this.getCorrectRollingMean(), // The incorrect rolling mean
       // Current duration (timeout)
       duration: this.currentTimeout,
       roundNumber: this.previousAnswers.length + 1, // Round number
@@ -422,8 +422,6 @@ export class CogSpeedGame {
   public async stop(statusCode: number = 1): Promise<void> {
     if (!this.app || !this.ui) return;
 
-    console.log(this.previousAnswers);
-
     const info = this.config.exit_codes[statusCode];
     const status = info.status;
     const message = info.message;
@@ -456,7 +454,7 @@ export class CogSpeedGame {
     const cognitiveProcessingIndex = round(M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100);
 
     const firstMachinePacedRound: { [key: string]: any } | undefined = this.previousAnswers.filter(
-      (answer: { [key: string]: any }) => answer.roundType === 2,
+      (answer: { [key: string]: any }) => answer.roundType === 2
     )[0];
 
     const totalMachinePacedAnswers = filterByRoundType(this.previousAnswers, 2);

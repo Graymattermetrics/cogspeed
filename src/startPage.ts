@@ -7,10 +7,7 @@ type GraphicList = [Graphics, number, number, number, number];
 export class StartPage {
   private container: Container;
 
-  constructor(
-    private app: Application,
-    private ui: CogSpeedGraphicsHandler,
-  ) {
+  constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {
     this.container = new Container();
     this.app.stage.addChild(this.container);
   }
@@ -106,7 +103,7 @@ export class StartPage {
    */
   private async waitForKeyPress(
     sprite: (Sprite | Container | Text)[] = [this.container],
-    secondSprites: (Sprite | Container | Text)[] = [],
+    secondSprites: (Sprite | Container | Text)[] = []
   ): Promise<Sprite | Container | null> {
     [...sprite, ...secondSprites].forEach((sprite_) => {
       sprite_.eventMode = "dynamic";
@@ -201,7 +198,7 @@ export class StartPage {
       this.app.screen.width * 0.5,
       this.app.screen.height * 0.1,
       24,
-      { wordWrap: true },
+      { wordWrap: true }
     );
 
     this.createText("Ready?", this.app.screen.width * 0.5, this.app.screen.height * 0.5, 48, {

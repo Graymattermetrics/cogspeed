@@ -165,14 +165,14 @@ describe("Test game algorithm", () => {
     game.buttonClicked(game.answer, 500); // Right answer (500ms)
     timeout += Math.max(
       (500 / timeout - config.machine_paced.correct.weighting) * config.machine_paced.correct.speedup_with_ratio_amount,
-      -config.machine_paced.correct.max_speedup_amount,
+      -config.machine_paced.correct.max_speedup_amount
     );
     expect(game.currentTimeout).toBe(timeout);
 
     game.buttonClicked(game.answer, 1000); // Right answer (500ms + 500ms)
     timeout += Math.max(
       (500 / timeout - config.machine_paced.correct.weighting) * config.machine_paced.correct.speedup_with_ratio_amount,
-      -config.machine_paced.correct.max_speedup_amount,
+      -config.machine_paced.correct.max_speedup_amount
     );
     expect(game.currentTimeout).toBe(timeout);
   });
@@ -194,7 +194,8 @@ describe("Test game algorithm", () => {
     const game = machinePacedGame();
 
     const thresholdNumber =
-      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) + 1;
+      config.machine_paced.rolling_average.mean_size -
+      (Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold));
     for (let i = 0; i < thresholdNumber; i++) {
       game.buttonClicked(-1); // Wrong answer
     }
@@ -266,7 +267,6 @@ describe("Test game algorithm", () => {
   //   const previousAnswer = game.answer
   //   game.buttonClicked(null, 1000); // No response
   //   game.buttonClicked(previousAnswer, 1500); // Right answer (1500ms)
-  //   console.log(game.previousAnswers)
 
   //   expect(game.currentTimeout).toBe(1000 + config.machine_paced.correct.max_slowdown_amount);
   // });
