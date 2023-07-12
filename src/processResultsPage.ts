@@ -4,7 +4,10 @@ import { Application, Container, Graphics, Point, Sprite, Text, Texture } from "
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 
 export class ProcessResultsPage {
-  constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {}
+  constructor(
+    private app: Application,
+    private ui: CogSpeedGraphicsHandler,
+  ) {}
 
   private downloadHandler(data: object) {
     // Generate the log file content (replace this with your own logic)
@@ -38,7 +41,7 @@ export class ProcessResultsPage {
         },
         (error) => {
           resolve(null);
-        }
+        },
       );
     });
     const geolocation = coords ? `${coords.latitude},${coords.longitude}` : null;
