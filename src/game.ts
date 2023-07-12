@@ -372,7 +372,8 @@ export class CogSpeedGame {
       roundTypeNormalized: normalizeRounds[this.currentRound],
       answerLocation: answer, // Location of the answer sprite (1-6)
       locationClicked: location, // Location of the click (1-6) - will match answerLocation if correct
-      queryNumber: ``, // The query number concatinated with the
+      queryNumber: `${this.query["queryNumber"]}:${this.query["numbersOrDots"]}`, // The query number concatinated with the numbers or dots
+      incorrectRollingMeanRatio: this.getIncorrectRollingMean(), // The incorrect rolling mean
       // Current duration (timeout)
       duration: this.currentTimeout,
       roundNumber: this.previousAnswers.length + 1, // Round number
