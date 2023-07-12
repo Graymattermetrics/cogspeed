@@ -150,9 +150,9 @@ describe("Test game algorithm", () => {
   it("[sp] should exit self paced startup mode if there are n correct answers in a row", async () => {
     const game = machinePacedGame();
     expect(game.currentRound).toBe(2);
-    expect(game.currentTimeout).toBe(1000 - config.machine_paced.slowdown.initial_duration);
+    expect(game.currentTimeout).toBe(1000 - config.machine_paced.incorrect.initial_duration);
     expect(game.stop).toHaveBeenCalledTimes(0);
-    expect(setTimeout).lastCalledWith(expect.any(Function), 1000 - config.machine_paced.slowdown.initial_duration);
+    expect(setTimeout).lastCalledWith(expect.any(Function), 1000 - config.machine_paced.incorrect.initial_duration);
   });
 
   it("[mp] should speedup after correct answer", () => {
@@ -163,11 +163,11 @@ describe("Test game algorithm", () => {
     let timeout = game.currentTimeout;
 
     game.buttonClicked(game.answer, 500); // Right answer (500ms)
-    timeout += (500 / timeout - config.machine_paced.speedup.weighting) * config.machine_paced.speedup.speedup_with_ratio_amount;
+    timeout += Math.max(((500 / timeout - config.machine_paced.correct.weighting) * config.machine_paced.correct.speedup_with_ratio_amount), -config.machine_paced.correct.max_speedup_amount);
     expect(game.currentTimeout).toBe(timeout);
 
     game.buttonClicked(game.answer, 1000); // Right answer (500ms + 500ms)
-    timeout += (500 / timeout - config.machine_paced.speedup.weighting) * config.machine_paced.speedup.speedup_with_ratio_amount;
+    timeout += Math.max(((500 / timeout - config.machine_paced.correct.weighting) * config.machine_paced.correct.speedup_with_ratio_amount), -config.machine_paced.correct.max_speedup_amount);
     expect(game.currentTimeout).toBe(timeout);
   });
 
@@ -176,11 +176,11 @@ describe("Test game algorithm", () => {
     let timeout = game.currentTimeout;
 
     game.buttonClicked(-1); // Wrong answer (ignores time)
-    timeout += config.machine_paced.slowdown.base_duration;
+    timeout += config.machine_paced.incorrect.base_duration;
     expect(game.currentTimeout).toBe(timeout);
 
     game.buttonClicked(-1); // Wrong answer (ignores time)
-    timeout += config.machine_paced.slowdown.base_duration;
+    timeout += config.machine_paced.incorrect.base_duration;
     expect(game.currentTimeout).toBe(timeout);
   });
 
@@ -220,7 +220,7 @@ describe("Test game algorithm", () => {
     expect(game.stop).toHaveBeenCalledTimes(1);
   });
 
-  it("should not be stuck in recursion if it goes from machine paced to self paced startup", () => {
+  it("[mp] should not be stuck in recursion if it goes from machine paced to self paced startup", () => {
     const game = machinePacedGame();
 
     for (let i = 0; i < config.self_paced.max_right_count; i++) {
@@ -239,4 +239,29 @@ describe("Test game algorithm", () => {
     game.buttonClicked(game.answer, 10000); // Right answer (500ms)
     game.buttonClicked(game.answer, 11000); // Right answer (500ms)
   });
+
+  it("[mp] should never speedup more than the speedup variable", () => {
+    const game = machinePacedGame();
+
+    // Reset the time of the previous answer so 200 is +200ms
+    game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;  
+    game.currentTimeout = 1000;
+    game.buttonClicked(game.answer, 200); // Right answer (200ms)
+    expect(game.currentTimeout).toBe(1000 - config.machine_paced.correct.max_speedup_amount);
+  });
+
+  // Uncomment if there is a scenario where it is possible to slowdown
+  // more than the slowdown variable
+  // it("[mp] should never slowdown more than the slowdown variable", () => {
+  //   const game = machinePacedGame();
+
+  //   game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;  
+  //   game.currentTimeout = 1000;
+  //   const previousAnswer = game.answer
+  //   game.buttonClicked(null, 1000); // No response
+  //   game.buttonClicked(previousAnswer, 1500); // Right answer (1500ms)
+  //   console.log(game.previousAnswers)
+
+  //   expect(game.currentTimeout).toBe(1000 + config.machine_paced.correct.max_slowdown_amount);
+  // });
 });

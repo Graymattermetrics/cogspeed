@@ -161,7 +161,7 @@ export class CogSpeedGame {
         Math.min(
           lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) / 4,
           this.config.machine_paced.max_start_duration,
-        ) - this.config.machine_paced.slowdown.initial_duration; // Minimim response time (roughly 100ms)
+        ) - this.config.machine_paced.incorrect.initial_duration; // Minimim response time (roughly 100ms)
       // Call next round
       return this.machinePacedRound();
     }
@@ -178,12 +178,18 @@ export class CogSpeedGame {
     if (lastAnswer) {
       if (lastAnswer.status === "correct") {
         // If the answer is correct, speed up the timeout
-        this.currentTimeout +=
-          (lastAnswer.ratio - this.config.machine_paced.speedup.weighting) *
-          this.config.machine_paced.speedup.speedup_with_ratio_amount;
+        let speedupAmount = (lastAnswer.ratio - this.config.machine_paced.correct.weighting) *
+          this.config.machine_paced.correct.speedup_with_ratio_amount;  // Eg speedup by 200ms
+        console.log("Current speedup", speedupAmount, lastAnswer.ratio)
+        // If the speedup time is greater than 0, limit it to the max speedup amount
+        if (speedupAmount > 0) speedupAmount = Math.min(speedupAmount, this.config.machine_paced.correct.max_slowdown_amount);
+        // If the speedup time is less than 0, limit it to the max slowdown amount
+        else speedupAmount = Math.max(speedupAmount, -this.config.machine_paced.correct.max_speedup_amount);
+        console.log("New speedup", speedupAmount, )
+        this.currentTimeout += speedupAmount
       } else if (lastAnswer.status === "incorrect") {
         // If the answer is incorrect, slow down the timeout
-        this.currentTimeout += this.config.machine_paced.slowdown.base_duration;
+        this.currentTimeout += this.config.machine_paced.incorrect.base_duration;
       }
     }
 
@@ -285,7 +291,7 @@ export class CogSpeedGame {
       this.config.machine_paced.blocking.min_correct_answers
     ) {
       this.currentRound = 2;
-      this.currentTimeout -= this.config.machine_paced.slowdown.base_duration;
+      this.currentTimeout -= this.config.machine_paced.incorrect.base_duration;
       return this.machinePacedRound();
     }
 
