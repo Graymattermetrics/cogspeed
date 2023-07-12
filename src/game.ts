@@ -161,7 +161,7 @@ export class CogSpeedGame {
         Math.min(
           lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) / 4,
           this.config.machine_paced.max_start_duration,
-        ) - this.config.machine_paced.incorrect.initial_duration; // Minimim response time (roughly 100ms)
+        ) - this.config.machine_paced.initial_speedup_amount; // Minimim response time (roughly 100ms)
       // Call next round
       return this.machinePacedRound();
     }
