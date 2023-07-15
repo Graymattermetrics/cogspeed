@@ -247,7 +247,6 @@ describe("Test game algorithm", () => {
     game.buttonClicked(game.answer, 11000); // Right answer (500ms)
   });
 
-
   // Uncomment if there is a scenario where it is possible
   // to speedup or slowdown more than the speedup/slowdown variables
 
@@ -266,11 +265,11 @@ describe("Test game algorithm", () => {
 
     game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;
     game.currentTimeout = 1000;
-    const previousAnswer = game.answer
+    const previousAnswer = game.answer;
     game.buttonClicked(null, 2499); // No response
     game.buttonClicked(previousAnswer, 3000); // Right answer (+500ms to previous answer)
 
-    // While this is impossible because the no response cannot be more 
+    // While this is impossible because the no response cannot be more
     // than the game timeout, this is the only way to force a scenario
     // in which it is possible to slowdown more than the slowdown variable
     expect(game.currentTimeout).toBe(1000 + config.machine_paced.correct.max_slowdown_amount);
