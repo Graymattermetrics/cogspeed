@@ -164,14 +164,14 @@ describe("Test game algorithm", () => {
 
     game.buttonClicked(game.answer, 500); // Right answer (500ms)
     timeout += Math.max(
-      (500 / timeout - config.machine_paced.correct.weighting) * config.machine_paced.correct.speedup_with_ratio_amount,
+      (config.machine_paced.correct.x * (500 / timeout) - config.machine_paced.correct.y) * timeout,
       -config.machine_paced.correct.max_speedup_amount,
     );
     expect(game.currentTimeout).toBe(timeout);
 
     game.buttonClicked(game.answer, 1000); // Right answer (500ms + 500ms)
     timeout += Math.max(
-      (500 / timeout - config.machine_paced.correct.weighting) * config.machine_paced.correct.speedup_with_ratio_amount,
+      (config.machine_paced.correct.x * (500 / timeout) - config.machine_paced.correct.y) * timeout,
       -config.machine_paced.correct.max_speedup_amount,
     );
     expect(game.currentTimeout).toBe(timeout);
@@ -247,27 +247,32 @@ describe("Test game algorithm", () => {
     game.buttonClicked(game.answer, 11000); // Right answer (500ms)
   });
 
+
+  // Uncomment if there is a scenario where it is possible
+  // to speedup or slowdown more than the speedup/slowdown variables
+
   it("[mp] should never speedup more than the speedup variable", () => {
     const game = machinePacedGame();
 
-    // Reset the time of the previous answer so 200 is +200ms
+    // Reset the time of the previous answer so 10 is +10ms
     game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;
-    game.currentTimeout = 1000;
-    game.buttonClicked(game.answer, 200); // Right answer (200ms)
-    expect(game.currentTimeout).toBe(1000 - config.machine_paced.correct.max_speedup_amount);
+    game.currentTimeout = 2500; // Very high to push to the limits of the speedup/slodwn
+    game.buttonClicked(game.answer, 10); // Right answer (10ms)
+    expect(game.currentTimeout).toBe(2500 - config.machine_paced.correct.max_speedup_amount);
   });
 
-  // Uncomment if there is a scenario where it is possible to slowdown
-  // more than the slowdown variable
-  // it("[mp] should never slowdown more than the slowdown variable", () => {
-  //   const game = machinePacedGame();
+  it("[mp] should never slowdown more than the slowdown variable", () => {
+    const game = machinePacedGame();
 
-  //   game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;
-  //   game.currentTimeout = 1000;
-  //   const previousAnswer = game.answer
-  //   game.buttonClicked(null, 1000); // No response
-  //   game.buttonClicked(previousAnswer, 1500); // Right answer (1500ms)
+    game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;
+    game.currentTimeout = 1000;
+    const previousAnswer = game.answer
+    game.buttonClicked(null, 2499); // No response
+    game.buttonClicked(previousAnswer, 3000); // Right answer (+500ms to previous answer)
 
-  //   expect(game.currentTimeout).toBe(1000 + config.machine_paced.correct.max_slowdown_amount);
-  // });
+    // While this is impossible because the no response cannot be more 
+    // than the game timeout, this is the only way to force a scenario
+    // in which it is possible to slowdown more than the slowdown variable
+    expect(game.currentTimeout).toBe(1000 + config.machine_paced.correct.max_slowdown_amount);
+  });
 });
