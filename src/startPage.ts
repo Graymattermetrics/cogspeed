@@ -328,7 +328,8 @@ export class StartPage {
     }
 
     // Display the Samn Perelli checklist
-    const fatigueLevel = await this.displaySamnPerelliChecklist();
+    // Minus 8 because the scale is inverted
+    const fatigueLevel = 8 - await this.displaySamnPerelliChecklist();
 
     // Display the ready demo screen
     await this.displayReadyDemo();
