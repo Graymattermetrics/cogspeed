@@ -36,6 +36,7 @@ export class CogSpeedGame {
 
   // Hold the timeout of the last two blocks
   previousBlockTimeouts: number[] = [-1];
+  numberOfRollMeanLimitExceedences: number = 0;
 
   // Answers
   answer: number = -1;
@@ -217,6 +218,7 @@ export class CogSpeedGame {
       const correctRatio = this.getCorrectRollingMean();
       if (correctRatio < this.config.machine_paced.rolling_average.threshold) {
         this.currentRound = 4;
+        this.numberOfRollMeanLimitExceedences++;
         return this.selfPacedRestartRound();
       }
     }
@@ -481,10 +483,10 @@ export class CogSpeedGame {
       blockingRoundDuration,
       cognitiveProcessingIndex,
       blockCount: this.previousBlockTimeouts.length - 1,
-      answerLogs: this.previousAnswers,
       machinePacedBaseline: firstMachinePacedRound?.duration,
       version: this.config.version,
       sleepData: { ...this.sleepData },
+      numberOfRollMeanLimitExceedences: this.numberOfRollMeanLimitExceedences,
       finalRatio: this.previousAnswers[this.previousAnswers.length - 1]?.timeTaken / blockingRoundDuration,
       answers: {
         totalMachinePacedAnswers: totalMachinePacedAnswers.length,
@@ -500,6 +502,7 @@ export class CogSpeedGame {
         meanMachinePacedAnswerTime,
         meanCorrectMachinePacedAnswerTime,
       },
+      answerLogs: this.previousAnswers,
       _date: new Date().toISOString(),
       _date_minute_offset: new Date().getTimezoneOffset(),
       _id: v4(),
