@@ -424,6 +424,9 @@ export class CogSpeedGame {
   public async stop(statusCode: number = 1): Promise<void> {
     if (!this.app || !this.ui) return;
 
+    clearTimeout(this.maxTestTimeout);
+    clearTimeout(this.currentTimeout);
+
     const info = this.config.exit_codes[statusCode];
     const status = info.status;
     const message = info.message;
