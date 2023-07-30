@@ -274,4 +274,15 @@ describe("Test game algorithm", () => {
     // in which it is possible to slowdown more than the slowdown variable
     expect(game.currentTimeout).toBe(1000 + config.machine_paced.correct.max_slowdown_amount);
   });
+
+  it("[mp] should never have the same answerLocation two times in a row", () => {
+    const game = machinePacedGame();
+
+    let previousAnswer = game.answer;
+    for (let i = 0; i < 1000; i ++) {
+      game.buttonClicked(previousAnswer, 1000); // Right answer (1000ms)
+      expect(game.answer).not.toBe(previousAnswer);
+      previousAnswer = game.answer;
+    }
+  });
 });
