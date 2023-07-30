@@ -279,7 +279,7 @@ describe("Test game algorithm", () => {
     const game = machinePacedGame();
 
     let previousAnswer = game.answer;
-    for (let i = 0; i < 1000; i ++) {
+    for (let i = 0; i < 1000; i++) {
       game.buttonClicked(previousAnswer, 1000); // Right answer (1000ms)
       expect(game.answer).not.toBe(previousAnswer);
       previousAnswer = game.answer;
