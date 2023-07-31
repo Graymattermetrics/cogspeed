@@ -54,7 +54,7 @@ export class CogSpeedGame {
     public config: { [key: string]: any },
     private app: Application | null = null,
     private ui: CogSpeedGraphicsHandler | null = null,
-    private sleepData: { [key: string]: any } = {},
+    private sleepData: { [key: string]: any } = {}
   ) {}
 
   /**
@@ -150,7 +150,7 @@ export class CogSpeedGame {
     // 3) More than (roughly 12) correct answers that are less than (roughly 3000ms)
     // But not (roughly 4) correct answers in a row
     const correctAnswers = selfPacedAnswers.filter(
-      (answer) => answer.status === "correct" && answer.timeTaken <= this.config.self_paced.max_correct_duration,
+      (answer) => answer.status === "correct" && answer.timeTaken <= this.config.self_paced.max_correct_duration
     );
     if (correctAnswers.length >= this.config.self_paced.total_correct_count) return this.stop(2);
 
@@ -163,7 +163,7 @@ export class CogSpeedGame {
       this.currentTimeout =
         Math.min(
           lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) / 4,
-          this.config.machine_paced.max_start_duration,
+          this.config.machine_paced.max_start_duration
         ) - this.config.machine_paced.initial_speedup_amount; // Minimim response time (roughly 100ms)
       // Call next round
       return this.machinePacedRound();
@@ -347,22 +347,27 @@ export class CogSpeedGame {
     let timeTaken = timeClicked - previousTime;
     let answer = this.answer;
     let status = location === null ? "no response" : location === this.answer ? "correct" : "incorrect";
-    let isCorrectFromPrevious = false;
+    let isCorrectOrIncorrectFromPrevious = "";
     let ratio = this.currentTimeout === -1 ? 0 : (timeClicked - previousTime) / this.currentTimeout;
 
     if (
       previousAnswer &&
       previousAnswer.status === "no response" &&
       this.config.machine_paced.minimum_response_time > timeTaken &&
-      location === previousAnswer.answerLocation
+      location != null
     ) {
-      // The answer is correct for the previous answer
-      status = "correct";
-      answer = this.previousAnswers[this.previousAnswers.length - 1].answerLocation;
-      timeTaken = timeTaken + previousAnswer.timeTaken;
-      isCorrectFromPrevious = true;
+      if (location === previousAnswer.answerLocation) {
+        // The answer is correct for the previous answer
+        status = "correct";
+        isCorrectOrIncorrectFromPrevious = "correct";
+      } else {
+        // The answer is incorrect from the previous answer
+        status = "incorrect";
+        isCorrectOrIncorrectFromPrevious = "incorrect";
+      }
 
       // Update ratio (> 1)
+      timeTaken += previousAnswer.timeTaken;
       ratio = timeTaken / this.currentTimeout;
     }
 
@@ -389,14 +394,10 @@ export class CogSpeedGame {
       roundType: this.currentRound, // Round type
       timeTaken, // Time delta between previous answer
       // Ratio of time taken to respond to time given
-      isCorrectFromPrevious, // If the answer was correct from the previous answer
+      isCorrectOrIncorrectFromPrevious, // If the answer was correct from the previous answer
       ratio,
       _time_epoch: timeClicked, // Time of answer
     };
-
-    // if (this.currentRoundType === "machine-paced") {
-    //   data["lastCorrectAnswers"] = `${this.getCorrectAnswers()}/${this.config.machine_paced.rolling_average.mean_size}`;
-    // }
 
     this.previousAnswers.push(data);
     this.nextRound();
@@ -459,7 +460,7 @@ export class CogSpeedGame {
     const cognitiveProcessingIndex = round(M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100);
 
     const firstMachinePacedRound: { [key: string]: any } | undefined = this.previousAnswers.filter(
-      (answer: { [key: string]: any }) => answer.roundType === 2,
+      (answer: { [key: string]: any }) => answer.roundType === 2
     )[0];
 
     const totalMachinePacedAnswers = filterByRoundType(this.previousAnswers, 2);
