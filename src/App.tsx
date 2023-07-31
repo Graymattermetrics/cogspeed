@@ -64,7 +64,7 @@ async function main(): Promise<void> {
   const graphicsManager = new CogSpeedGraphicsHandler(app);
 
   // Emulate loading time
-  const loadingTime = (process.env.NODE_ENV === "development") ? 100 : 3000;
+  const loadingTime = process.env.NODE_ENV === "development" ? 100 : 3000;
   await new Promise((resolve) => setTimeout(resolve, loadingTime));
 
   app.stage.removeChild(loadingText);
