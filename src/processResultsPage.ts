@@ -15,9 +15,9 @@ export class ProcessResultsPage {
 
     let formattedData = ``;
     for (const [key, value] of Object.entries(data)) {
-      if (['answerLogs'].includes(key)) continue;
+      if (["answerLogs"].includes(key)) continue;
       if (typeof value === "object") formattedData += this.formatObject(value);
-      else formattedData += `${key} = ${value}\n`
+      else formattedData += `${key} = ${value}\n`;
     }
     return formattedData;
   }
@@ -48,32 +48,35 @@ export class ProcessResultsPage {
       tableDataObj.push(tableAnswer);
     }
 
-    return `${this.formatObject(data)}\n` + table(tableDataObj, {
-      border: {
-        topBody: `─`,
-        topJoin: `┬`,
-        topLeft: `┌`,
-        topRight: `┐`,
+    return (
+      `${this.formatObject(data)}\n` +
+      table(tableDataObj, {
+        border: {
+          topBody: `─`,
+          topJoin: `┬`,
+          topLeft: `┌`,
+          topRight: `┐`,
 
-        bottomBody: `─`,
-        bottomJoin: `┴`,
-        bottomLeft: `└`,
-        bottomRight: `┘`,
+          bottomBody: `─`,
+          bottomJoin: `┴`,
+          bottomLeft: `└`,
+          bottomRight: `┘`,
 
-        bodyLeft: `│`,
-        bodyRight: `│`,
-        bodyJoin: `│`,
+          bodyLeft: `│`,
+          bodyRight: `│`,
+          bodyJoin: `│`,
 
-        joinBody: `─`,
-        joinLeft: `├`,
-        joinRight: `┤`,
-        joinJoin: `┼`,
-      },
-      header: {
-        alignment: 'center',
-        content: 'Answer logs'
-      }
-    });
+          joinBody: `─`,
+          joinLeft: `├`,
+          joinRight: `┤`,
+          joinJoin: `┼`,
+        },
+        header: {
+          alignment: "center",
+          content: "Answer logs",
+        },
+      })
+    );
   }
 
   private async downloadHandler(logContent: string) {
