@@ -54,7 +54,7 @@ export class CogSpeedGame {
     public config: { [key: string]: any },
     private app: Application | null = null,
     private ui: CogSpeedGraphicsHandler | null = null,
-    private sleepData: { [key: string]: any } = {},
+    private sleepData: { [key: string]: any } = {}
   ) {}
 
   /**
@@ -150,7 +150,7 @@ export class CogSpeedGame {
     // 3) More than (roughly 12) correct answers that are less than (roughly 3000ms)
     // But not (roughly 4) correct answers in a row
     const correctAnswers = selfPacedAnswers.filter(
-      (answer) => answer.status === "correct" && answer.timeTaken <= this.config.self_paced.max_correct_duration,
+      (answer) => answer.status === "correct" && answer.timeTaken <= this.config.self_paced.max_correct_duration
     );
     if (correctAnswers.length >= this.config.self_paced.total_correct_count) return this.stop(2);
 
@@ -163,7 +163,7 @@ export class CogSpeedGame {
       this.currentTimeout =
         Math.min(
           lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) / 4,
-          this.config.machine_paced.max_start_duration,
+          this.config.machine_paced.max_start_duration
         ) - this.config.machine_paced.initial_speedup_amount; // Minimim response time (roughly 100ms)
       // Call next round
       return this.machinePacedRound();
@@ -394,10 +394,6 @@ export class CogSpeedGame {
       _time_epoch: timeClicked, // Time of answer
     };
 
-    // if (this.currentRoundType === "machine-paced") {
-    //   data["lastCorrectAnswers"] = `${this.getCorrectAnswers()}/${this.config.machine_paced.rolling_average.mean_size}`;
-    // }
-
     this.previousAnswers.push(data);
     this.nextRound();
   }
@@ -413,6 +409,7 @@ export class CogSpeedGame {
     this.startTime = time === null ? performance.now() : time;
     this.maxTestTimeout = setTimeout(this.stop.bind(this), this.config.timeouts.max_test_duration);
     this.nextRound();
+    this.stop();
   }
 
   /**
@@ -425,7 +422,7 @@ export class CogSpeedGame {
     if (!this.app || !this.ui) return;
 
     clearTimeout(this.maxTestTimeout);
-    clearTimeout(this.currentTimeout);
+    clearTimeout(this.currentRoundTimeout);
 
     const info = this.config.exit_codes[statusCode];
     const status = info.status;
@@ -459,7 +456,7 @@ export class CogSpeedGame {
     const cognitiveProcessingIndex = round(M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100);
 
     const firstMachinePacedRound: { [key: string]: any } | undefined = this.previousAnswers.filter(
-      (answer: { [key: string]: any }) => answer.roundType === 2,
+      (answer: { [key: string]: any }) => answer.roundType === 2
     )[0];
 
     const totalMachinePacedAnswers = filterByRoundType(this.previousAnswers, 2);

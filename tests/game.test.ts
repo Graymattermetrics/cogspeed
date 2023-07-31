@@ -165,14 +165,14 @@ describe("Test game algorithm", () => {
     game.buttonClicked(game.answer, 500); // Right answer (500ms)
     timeout += Math.max(
       (config.machine_paced.correct.x * (500 / timeout) - config.machine_paced.correct.y) * timeout,
-      -config.machine_paced.correct.max_speedup_amount,
+      -config.machine_paced.correct.max_speedup_amount
     );
     expect(game.currentTimeout).toBe(timeout);
 
     game.buttonClicked(game.answer, 1000); // Right answer (500ms + 500ms)
     timeout += Math.max(
       (config.machine_paced.correct.x * (500 / timeout) - config.machine_paced.correct.y) * timeout,
-      -config.machine_paced.correct.max_speedup_amount,
+      -config.machine_paced.correct.max_speedup_amount
     );
     expect(game.currentTimeout).toBe(timeout);
   });
