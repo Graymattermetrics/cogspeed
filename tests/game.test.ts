@@ -208,7 +208,7 @@ describe("Test game algorithm", () => {
 
     const thresholdNumber =
       config.machine_paced.rolling_average.mean_size -
-      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold)
+      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold);
     // Theoretically here we would have roughly 3 wrong answers to enter self paced restart round
     // We will add a no response and a correct from previous to make it supposedly 4/8 which is still less than
     // However it is not 4/8 but 6/8
@@ -230,7 +230,8 @@ describe("Test game algorithm", () => {
 
     const thresholdNumber =
       config.machine_paced.rolling_average.mean_size -
-      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) - 1;
+      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) -
+      1;
     game.buttonClicked(null, 1000);
     game.buttonClicked(-1, 1200); // emulate is incorrect from previous
     expect(game.previousAnswers[game.previousAnswers.length - 1].isCorrectOrIncorrectFromPrevious).toBe("incorrect");
