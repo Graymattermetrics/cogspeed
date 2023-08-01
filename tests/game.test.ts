@@ -199,7 +199,6 @@ describe("Test game algorithm", () => {
     for (let i = 0; i < thresholdNumber; i++) {
       game.buttonClicked(-1); // Wrong answer
     }
-    expect(thresholdNumber).toBe(3);
     expect(game.currentRound).toBe(4);
   });
 
@@ -209,8 +208,7 @@ describe("Test game algorithm", () => {
 
     const thresholdNumber =
       config.machine_paced.rolling_average.mean_size -
-      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) -
-      1;
+      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold)
     // Theoretically here we would have roughly 3 wrong answers to enter self paced restart round
     // We will add a no response and a correct from previous to make it supposedly 4/8 which is still less than
     // However it is not 4/8 but 6/8
@@ -218,11 +216,30 @@ describe("Test game algorithm", () => {
     game.buttonClicked(null, 1000);
     game.buttonClicked(answer, 1200); // emulate is correct from previous
     expect(game.previousAnswers[game.previousAnswers.length - 1].isCorrectOrIncorrectFromPrevious).toBe("correct");
-    for (let i = 0; i < thresholdNumber; i++) {
-      game.buttonClicked(-1, (i + 1) * 1000); // Wrong answer (roughly 3 times)
+    for (let i = 1; i < thresholdNumber; i++) {
+      game.buttonClicked(-1, (i + 1) * 1000); // Wrong answer (roughly 2 times)
     }
-    expect(thresholdNumber).toBe(2);
     expect(game.currentRound).toBe(2);
+    game.buttonClicked(-1, (thresholdNumber + 3) * 1000); // Wrong answer (roughly 2 times)
+    expect(game.currentRound).toBe(4);
+  });
+
+  it("[spr] should not enter self paced restart mode if the roll mean limit is exceeded but there is a incorrect answer from previous", async () => {
+    const game = machinePacedGame();
+    game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;
+
+    const thresholdNumber =
+      config.machine_paced.rolling_average.mean_size -
+      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) - 1;
+    game.buttonClicked(null, 1000);
+    game.buttonClicked(-1, 1200); // emulate is incorrect from previous
+    expect(game.previousAnswers[game.previousAnswers.length - 1].isCorrectOrIncorrectFromPrevious).toBe("incorrect");
+    for (let i = 1; i < thresholdNumber; i++) {
+      game.buttonClicked(-1, (i + 1) * 1000); // Wrong answer (roughly 2 times)
+    }
+    expect(game.currentRound).toBe(2);
+    game.buttonClicked(-1, (thresholdNumber + 3) * 1000); // emulate is incorrect from previous
+    expect(game.currentRound).toBe(4);
   });
 
   it("[pb] should enter post block mode if there are n answers without response", async () => {
