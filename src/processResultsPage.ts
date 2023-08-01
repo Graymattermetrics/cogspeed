@@ -43,9 +43,7 @@ export class ProcessResultsPage {
     for (const response of data["answerLogs"]) {
       const tableAnswer = [];
       for (const key of keys) {
-        let value = response[key[1]];
-        if (typeof value === "number") value = Math.round(value * 100) / 100;
-        tableAnswer.push(value);
+        tableAnswer.push(response[key[1]]);
       }
       tableDataObj.push(tableAnswer);
     }
