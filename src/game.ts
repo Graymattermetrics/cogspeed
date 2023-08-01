@@ -58,25 +58,33 @@ export class CogSpeedGame {
   ) {}
 
   /**
-   * Returns the ratio of correct to incorrect
-   * answers in the rolling mean
+   * Returns the fraction of correct answers in the rolling mean
    */
   getCorrectRollingMean(): number {
-    // Create rolling mean answers of last machine paced answers up to the last post-block round
-    let lastNonMachinePacedRound = this.previousAnswers
-      .slice()
-      .reverse()
-      .findIndex((answer: { [key: string]: any }) => answer.roundType !== 2);
-    if (lastNonMachinePacedRound === -1) lastNonMachinePacedRound = 0;
+    let correctAnswers = 0;
+    let totalAnswers = 0;
 
-    const lastRollingMeanAnswers = this.previousAnswers.slice(-lastNonMachinePacedRound);
-    // Get the correct answers (count answers as correct if the rolling mean is not large enough)
-    const correctAnswers = lastRollingMeanAnswers.filter((answer) => answer.status === "correct").length;
+    let i = this.previousAnswers.length - 1;
+    while (this.config.machine_paced.rolling_average.mean_size > totalAnswers) {
+      const answer = this.previousAnswers[i];
+      if (!answer || answer.roundType !== 2) break;
 
-    return (
-      (correctAnswers + (this.config.machine_paced.rolling_average.mean_size - lastRollingMeanAnswers.length)) /
-      this.config.machine_paced.rolling_average.mean_size
-    );
+      if (answer.isCorrectOrIncorrectFromPrevious) {
+        if (answer.status === "correct") correctAnswers += 1;
+        else if (answer.status === "no response") break;
+        // Skip the no response
+        i --;
+      } 
+      else if (answer.status === "correct") correctAnswers += 1;
+      
+      totalAnswers ++;
+      i --;
+    }
+    // If the rolling mean is not large enough, default the remaining responses to correct
+    if (this.config.machine_paced.rolling_average.mean_size > totalAnswers) {
+      correctAnswers += this.config.machine_paced.rolling_average.mean_size - totalAnswers;
+    }
+    return correctAnswers / this.config.machine_paced.rolling_average.mean_size;
   }
 
   /**
@@ -387,7 +395,7 @@ export class CogSpeedGame {
       answerLocation: answer, // Location of the answer sprite (1-6)
       locationClicked: location, // Location of the click (1-6) - will match answerLocation if correct
       queryNumber: `${this.query["queryNumber"]}:${this.query["numbersOrDots"]}`, // The query number concatinated with the numbers or dots
-      correctRollingMeanRatio: this.getCorrectRollingMean(), // The incorrect rolling mean
+      correctRollingMeanRatio: this.currentRound === 2 ? this.getCorrectRollingMean() : "n/a", // The incorrect rolling mean
       // Current duration (timeout)
       duration: this.currentTimeout,
       roundNumber: this.previousAnswers.length + 1, // Round number

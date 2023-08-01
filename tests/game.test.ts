@@ -199,28 +199,29 @@ describe("Test game algorithm", () => {
     for (let i = 0; i < thresholdNumber; i++) {
       game.buttonClicked(-1); // Wrong answer
     }
+    expect(thresholdNumber).toBe(3);
     expect(game.currentRound).toBe(4);
   });
 
   it("[spr] should not enter self paced restart mode if the roll mean limit is exceeded but there is a correct answer from previous", async () => {
     const game = machinePacedGame();
+    game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;
 
     const thresholdNumber =
       config.machine_paced.rolling_average.mean_size -
-      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) +
-      1;
+      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) - 1
     // Theoretically here we would have roughly 3 wrong answers to enter self paced restart round
-    // We will add a no response and a correct from previous to make it 4/8 which is still less than 0.7
+    // We will add a no response and a correct from previous to make it supposedly 4/8 which is still less than 
+    // However it is not 4/8 but 6/8
+    const answer = game.answer;
+    game.buttonClicked(null, 1000);
+    game.buttonClicked(answer, 1200); // emulate is correct from previous
+    expect(game.previousAnswers[game.previousAnswers.length - 1].isCorrectOrIncorrectFromPrevious).toBe("correct");
     for (let i = 0; i < thresholdNumber; i++) {
-      if (i == 3) {
-        const answer = game.answer;
-        game.buttonClicked(null, (i + 1) * 1000);
-        game.buttonClicked(answer, i + 1 * 1000 + 200); // emulate is correct from previous
-      } else {
-        game.buttonClicked(-1, (i + 1) * 1000); // Wrong answer (roughly 3 times)
-      }
+      game.buttonClicked(-1, (i + 1) * 1000); // Wrong answer (roughly 3 times)
     }
-    expect(game.currentRound).toBe(4);
+    expect(thresholdNumber).toBe(2);
+    expect(game.currentRound).toBe(2);
   });
 
   it("[pb] should enter post block mode if there are n answers without response", async () => {
@@ -267,9 +268,6 @@ describe("Test game algorithm", () => {
     game.buttonClicked(game.answer, 10000); // Right answer (500ms)
     game.buttonClicked(game.answer, 11000); // Right answer (500ms)
   });
-
-  // Uncomment if there is a scenario where it is possible
-  // to speedup or slowdown more than the speedup/slowdown variables
 
   it("[mp] should never speedup more than the speedup variable", () => {
     const game = machinePacedGame();
