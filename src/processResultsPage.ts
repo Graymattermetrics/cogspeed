@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Application, Container, Graphics, Point, Sprite, Text, Texture } from "pixi.js";
+import { Application, Container, Graphics, Point, Sprite, Text } from "pixi.js";
 
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 import { table } from "table";
@@ -43,7 +43,9 @@ export class ProcessResultsPage {
     for (const response of data["answerLogs"]) {
       const tableAnswer = [];
       for (const key of keys) {
-        tableAnswer.push(response[key[1]]);
+        let value = response[key[1]];
+        if (typeof value === "number") value = Math.round(value);
+        tableAnswer.push(value);
       }
       tableDataObj.push(tableAnswer);
     }
