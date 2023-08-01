@@ -199,7 +199,30 @@ describe("Test game algorithm", () => {
     for (let i = 0; i < thresholdNumber; i++) {
       game.buttonClicked(-1); // Wrong answer
     }
+    expect(thresholdNumber).toBe(3);
     expect(game.currentRound).toBe(4);
+  });
+
+  it("[spr] should not enter self paced restart mode if the roll mean limit is exceeded but there is a correct answer from previous", async () => {
+    const game = machinePacedGame();
+    game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;
+
+    const thresholdNumber =
+      config.machine_paced.rolling_average.mean_size -
+      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) -
+      1;
+    // Theoretically here we would have roughly 3 wrong answers to enter self paced restart round
+    // We will add a no response and a correct from previous to make it supposedly 4/8 which is still less than
+    // However it is not 4/8 but 6/8
+    const answer = game.answer;
+    game.buttonClicked(null, 1000);
+    game.buttonClicked(answer, 1200); // emulate is correct from previous
+    expect(game.previousAnswers[game.previousAnswers.length - 1].isCorrectOrIncorrectFromPrevious).toBe("correct");
+    for (let i = 0; i < thresholdNumber; i++) {
+      game.buttonClicked(-1, (i + 1) * 1000); // Wrong answer (roughly 3 times)
+    }
+    expect(thresholdNumber).toBe(2);
+    expect(game.currentRound).toBe(2);
   });
 
   it("[pb] should enter post block mode if there are n answers without response", async () => {
@@ -212,7 +235,7 @@ describe("Test game algorithm", () => {
     const game = postBlockGame();
 
     for (let i = 0; i < config.machine_paced.blocking.min_correct_answers; i++) {
-      game.buttonClicked(game.answer, 100); // Right answer
+      game.buttonClicked(game.answer, (i + 1) * 10000); // Right answer
     }
     expect(game.currentRound).toBe(2);
   });
@@ -221,8 +244,8 @@ describe("Test game algorithm", () => {
     const game = postBlockGame();
 
     for (let i = 0; i < config.machine_paced.blocking.max_wrong_answers; i++) {
-      game.buttonClicked(game.answer); // Right answer
-      game.buttonClicked(-1); // Wrong answer
+      game.buttonClicked(game.answer, (i + 1) * 1000); // Right answer
+      game.buttonClicked(-1, (i + 1) * 2000); // Wrong answer
     }
     expect(game.stop).toHaveBeenCalledTimes(1);
   });
@@ -246,9 +269,6 @@ describe("Test game algorithm", () => {
     game.buttonClicked(game.answer, 10000); // Right answer (500ms)
     game.buttonClicked(game.answer, 11000); // Right answer (500ms)
   });
-
-  // Uncomment if there is a scenario where it is possible
-  // to speedup or slowdown more than the speedup/slowdown variables
 
   it("[mp] should never speedup more than the speedup variable", () => {
     const game = machinePacedGame();
@@ -284,5 +304,35 @@ describe("Test game algorithm", () => {
       expect(game.answer).not.toBe(previousAnswer);
       previousAnswer = game.answer;
     }
+  });
+
+  it("[mp] should be correct from the previous round", () => {
+    const game = machinePacedGame();
+    game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;
+
+    const answer = game.answer;
+
+    game.buttonClicked(null, 100);
+    let lastAnswer = game.previousAnswers[game.previousAnswers.length - 1];
+    expect(lastAnswer.timeTaken).toBe(100);
+    game.buttonClicked(answer, 100 + config.machine_paced.minimum_response_time - 1);
+
+    lastAnswer = game.previousAnswers[game.previousAnswers.length - 1];
+    expect(lastAnswer.status).toBe("correct");
+    expect(lastAnswer.isCorrectOrIncorrectFromPrevious).toBe("correct");
+    expect(lastAnswer.timeTaken).toBe(100 + config.machine_paced.minimum_response_time - 1);
+  });
+
+  it("[mp] should be incorrect from the previous round", () => {
+    const game = machinePacedGame();
+    game.previousAnswers[game.previousAnswers.length - 1]._time_epoch = 0;
+
+    game.buttonClicked(null, 100);
+    game.buttonClicked(-1, 100 + config.machine_paced.minimum_response_time - 1);
+
+    const lastAnswer = game.previousAnswers[game.previousAnswers.length - 1];
+    expect(lastAnswer.status).toBe("incorrect");
+    expect(lastAnswer.isCorrectOrIncorrectFromPrevious).toBe("incorrect");
+    expect(lastAnswer.timeTaken).toBe(100 + config.machine_paced.minimum_response_time - 1);
   });
 });
