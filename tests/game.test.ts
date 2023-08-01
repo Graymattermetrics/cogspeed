@@ -209,9 +209,10 @@ describe("Test game algorithm", () => {
 
     const thresholdNumber =
       config.machine_paced.rolling_average.mean_size -
-      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) - 1
+      Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) -
+      1;
     // Theoretically here we would have roughly 3 wrong answers to enter self paced restart round
-    // We will add a no response and a correct from previous to make it supposedly 4/8 which is still less than 
+    // We will add a no response and a correct from previous to make it supposedly 4/8 which is still less than
     // However it is not 4/8 but 6/8
     const answer = game.answer;
     game.buttonClicked(null, 1000);
