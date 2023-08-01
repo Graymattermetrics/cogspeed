@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Application, Container, Graphics, Point, Sprite, Text, Texture } from "pixi.js";
+import { Application, Container, Graphics, Point, Sprite, Text } from "pixi.js";
 
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 import { table } from "table";
@@ -15,9 +15,9 @@ export class ProcessResultsPage {
 
     let formattedData = ``;
     for (const [key, value] of Object.entries(data)) {
-      if (['answerLogs'].includes(key)) continue;
+      if (["answerLogs"].includes(key)) continue;
       if (typeof value === "object") formattedData += this.formatObject(value);
-      else formattedData += `${key} = ${value}\n`
+      else formattedData += `${key} = ${value}\n`;
     }
     return formattedData;
   }
@@ -43,37 +43,42 @@ export class ProcessResultsPage {
     for (const response of data["answerLogs"]) {
       const tableAnswer = [];
       for (const key of keys) {
-        tableAnswer.push(response[key[1]]);
+        let value = response[key[1]];
+        if (typeof value === "number") value = Math.round(value * 100) / 100;
+        tableAnswer.push(value);
       }
       tableDataObj.push(tableAnswer);
     }
 
-    return `${this.formatObject(data)}\n` + table(tableDataObj, {
-      border: {
-        topBody: `─`,
-        topJoin: `┬`,
-        topLeft: `┌`,
-        topRight: `┐`,
+    return (
+      `${this.formatObject(data)}\n` +
+      table(tableDataObj, {
+        border: {
+          topBody: `─`,
+          topJoin: `┬`,
+          topLeft: `┌`,
+          topRight: `┐`,
 
-        bottomBody: `─`,
-        bottomJoin: `┴`,
-        bottomLeft: `└`,
-        bottomRight: `┘`,
+          bottomBody: `─`,
+          bottomJoin: `┴`,
+          bottomLeft: `└`,
+          bottomRight: `┘`,
 
-        bodyLeft: `│`,
-        bodyRight: `│`,
-        bodyJoin: `│`,
+          bodyLeft: `│`,
+          bodyRight: `│`,
+          bodyJoin: `│`,
 
-        joinBody: `─`,
-        joinLeft: `├`,
-        joinRight: `┤`,
-        joinJoin: `┼`,
-      },
-      header: {
-        alignment: 'center',
-        content: 'Answer logs'
-      }
-    });
+          joinBody: `─`,
+          joinLeft: `├`,
+          joinRight: `┤`,
+          joinJoin: `┼`,
+        },
+        header: {
+          alignment: "center",
+          content: "Answer logs",
+        },
+      })
+    );
   }
 
   private async downloadHandler(logContent: string) {

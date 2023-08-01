@@ -1,4 +1,4 @@
-import { Application, Container, Graphics, Point, Sprite, Text, Texture } from "pixi.js";
+import { Application, Container, Graphics, Point, Sprite, Text } from "pixi.js";
 
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 
