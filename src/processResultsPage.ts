@@ -1,7 +1,8 @@
 import axios from "axios";
-import { Application, Container, Graphics, Point, Sprite, Text, Texture } from "pixi.js";
+import { Application, Container, Graphics, Point, Sprite, Text } from "pixi.js";
 
 import { CogSpeedGraphicsHandler } from "./ui/handler";
+import { table } from "table";
 
 export class ProcessResultsPage {
   constructor(
@@ -9,23 +10,90 @@ export class ProcessResultsPage {
     private ui: CogSpeedGraphicsHandler,
   ) {}
 
-  private downloadHandler(data: object) {
-    // Generate the log file content (replace this with your own logic)
-    const logContent = JSON.stringify(data);
+  private formatObject(data: object): string {
+    if (!data) return ``;
 
+    let formattedData = ``;
+    for (const [key, value] of Object.entries(data)) {
+      if (["answerLogs"].includes(key)) continue;
+      if (typeof value === "object") formattedData += this.formatObject(value);
+      else formattedData += `${key} = ${value}\n`;
+    }
+    return formattedData;
+  }
+
+  private formatData(data: { [key: string]: any }): string {
+    const keys = [
+      ["Round number", "roundNumber"],
+      ["Type", "roundType"],
+      ["Round Duration", "duration"],
+      ["Status", "status"],
+      ["Response time", "timeTaken"],
+      ["Ratio", "ratio"],
+      ["Rolling mean", "correctRollingMeanRatio"],
+      ["Answer location", "answerLocation"],
+      ["Location clicked", "locationClicked"],
+      ["Query number", "queryNumber"],
+      ["Is correct from previous", "isCorrectFromPrevious"],
+      ["Time epoch", "_time_epoch"],
+    ];
+
+    const tableDataObj = [];
+    tableDataObj.push(keys.map((k) => k[0]));
+    for (const response of data["answerLogs"]) {
+      const tableAnswer = [];
+      for (const key of keys) {
+        let value = response[key[1]];
+        if (typeof value === "number") value = Math.round(value * 100) / 100;
+        tableAnswer.push(value);
+      }
+      tableDataObj.push(tableAnswer);
+    }
+
+    return (
+      `${this.formatObject(data)}\n` +
+      table(tableDataObj, {
+        border: {
+          topBody: `─`,
+          topJoin: `┬`,
+          topLeft: `┌`,
+          topRight: `┐`,
+
+          bottomBody: `─`,
+          bottomJoin: `┴`,
+          bottomLeft: `└`,
+          bottomRight: `┘`,
+
+          bodyLeft: `│`,
+          bodyRight: `│`,
+          bodyJoin: `│`,
+
+          joinBody: `─`,
+          joinLeft: `├`,
+          joinRight: `┤`,
+          joinJoin: `┼`,
+        },
+        header: {
+          alignment: "center",
+          content: "Answer logs",
+        },
+      })
+    );
+  }
+
+  private async downloadHandler(logContent: string) {
     // Create a blob from the log content
-    const blob = new Blob([logContent], { type: "text/plain" });
+    const blob = new Blob([logContent], { type: "text/plain;charset=utf-8" });
 
     // Create a temporary URL for the blob
     const url = URL.createObjectURL(blob);
 
-    // Create a temporary link element
     const link = document.createElement("a");
     link.href = url;
-    link.download = "log.txt"; // Specify the filename
+    link.download = "log.txt";
 
     // Trigger the download
-    document.body.appendChild(link); // Required for Firefox
+    document.body.appendChild(link);
     link.click();
 
     // Clean up the temporary URL and link
@@ -120,9 +188,10 @@ export class ProcessResultsPage {
     text.x = 5;
     text.y = 5;
     text.eventMode = "dynamic";
-    text.on("pointerdown", this.downloadHandler.bind(this, data));
+    text.on("pointerdown", this.downloadHandler.bind(this, this.formatData(data)));
 
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    const loadingTime = process.env.NODE_ENV === "development" ? 100 : 5000;
+    await new Promise((resolve) => setTimeout(resolve, loadingTime));
 
     loadingContainer.destroy();
     this.app.stage.addChild(text);

@@ -394,10 +394,6 @@ export class CogSpeedGame {
       _time_epoch: timeClicked, // Time of answer
     };
 
-    // if (this.currentRoundType === "machine-paced") {
-    //   data["lastCorrectAnswers"] = `${this.getCorrectAnswers()}/${this.config.machine_paced.rolling_average.mean_size}`;
-    // }
-
     this.previousAnswers.push(data);
     this.nextRound();
   }
@@ -425,7 +421,7 @@ export class CogSpeedGame {
     if (!this.app || !this.ui) return;
 
     clearTimeout(this.maxTestTimeout);
-    clearTimeout(this.currentTimeout);
+    clearTimeout(this.currentRoundTimeout);
 
     const info = this.config.exit_codes[statusCode];
     const status = info.status;
