@@ -73,12 +73,11 @@ export class CogSpeedGame {
         if (answer.status === "correct") correctAnswers += 1;
         else if (answer.status === "no response") break;
         // Skip the no response
-        i --;
-      } 
-      else if (answer.status === "correct") correctAnswers += 1;
-      
-      totalAnswers ++;
-      i --;
+        i--;
+      } else if (answer.status === "correct") correctAnswers += 1;
+
+      totalAnswers++;
+      i--;
     }
     // If the rolling mean is not large enough, default the remaining responses to correct
     if (this.config.machine_paced.rolling_average.mean_size > totalAnswers) {
