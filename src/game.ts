@@ -410,7 +410,7 @@ export class CogSpeedGame {
     if (this.currentRound === 2) {
       this.previousAnswers[this.previousAnswers.length - 1].correctRollingMeanRatio = this.getCorrectRollingMean();
     }
-  
+
     this.nextRound();
   }
 
