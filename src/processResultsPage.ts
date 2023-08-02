@@ -3,6 +3,8 @@ import { Application, Container, Graphics, Point, Sprite, Text } from "pixi.js";
 
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 import { table } from "table";
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+
 
 export class ProcessResultsPage {
   constructor(
@@ -24,18 +26,17 @@ export class ProcessResultsPage {
 
   private formatData(data: { [key: string]: any }): string {
     const keys = [
-      ["Round number", "roundNumber"],
+      ["Num", "roundNumber"],
       ["Type", "roundType"],
-      ["Round Duration", "duration"],
+      ["Duration", "duration"],
+      ["Response", "timeTaken"],
       ["Status", "status"],
-      ["Response time", "timeTaken"],
       ["Ratio", "ratio"],
-      ["Rolling mean", "correctRollingMeanRatio"],
-      ["Answer location", "answerLocation"],
-      ["Location clicked", "locationClicked"],
-      ["Query number", "queryNumber"],
-      ["Is correct from previous", "isCorrectFromPrevious"],
-      ["Time epoch", "_time_epoch"],
+      ["Rm", "correctRollingMeanRatio"],
+      ["Query", "queryNumber"],
+      ["Location", "answerLocation"],
+      ["Clicked", "locationClicked"],
+      ["Previous", "isCorrectOrIncorrectFromPrevious"],
     ];
 
     const tableDataObj = [];
@@ -54,49 +55,68 @@ export class ProcessResultsPage {
       `${this.formatObject(data)}\n` +
       table(tableDataObj, {
         border: {
-          topBody: `─`,
-          topJoin: `┬`,
-          topLeft: `┌`,
-          topRight: `┐`,
+          topBody: `-`,
+          topJoin: `-`,
+          topLeft: `-`,
+          topRight: `-`,
 
-          bottomBody: `─`,
-          bottomJoin: `┴`,
-          bottomLeft: `└`,
-          bottomRight: `┘`,
+          bottomBody: `-`,
+          bottomJoin: `-`,
+          bottomLeft: `-`,
+          bottomRight: `-`,
 
-          bodyLeft: `│`,
-          bodyRight: `│`,
-          bodyJoin: `│`,
+          bodyLeft: `|`,
+          bodyRight: `|`,
+          bodyJoin: `|`,
 
-          joinBody: `─`,
-          joinLeft: `├`,
-          joinRight: `┤`,
-          joinJoin: `┼`,
+          joinMiddleUp: `|`,
+          joinMiddleDown: `|`,
+          joinMiddleLeft: `|`,
+          joinMiddleRight: `|`,
+          
+          joinBody: `-`,
+          joinLeft: `|`,
+          joinRight: `|`,
+          joinJoin: `|`,
         },
         header: {
           alignment: "center",
-          content: "Answer logs",
+          content: "Answer logs\n(Rm = rolling mean average)",
         },
       })
     );
   }
 
-  private async downloadHandler(logContent: string) {
-    // Create a blob from the log content
-    const blob = new Blob([logContent], { type: "text/plain;charset=utf-8" });
-
-    // Create a temporary URL for the blob
+  private async downloadHandler(logContent: string, height: number) {
+    const pdfDoc = await PDFDocument.create();
+    const font = await pdfDoc.embedFont(StandardFonts.Courier);
+  
+    const page = pdfDoc.addPage([1150, height]);
+  
+    const fontSize = 17;
+    const textHeight = font.heightAtSize(fontSize);
+    
+    page.drawText(logContent, {
+      x: 35,
+      y: page.getHeight() - 50 - textHeight, // Align at the top of the page
+      size: fontSize,
+      font,
+      color: rgb(0, 0, 0),
+    });
+  
+    const pdfBytes = await pdfDoc.save();
+  
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+  
     const url = URL.createObjectURL(blob);
-
+  
     const link = document.createElement("a");
     link.href = url;
-    link.download = "log.txt";
-
-    // Trigger the download
+    link.download = "log.pdf";
+  
     document.body.appendChild(link);
     link.click();
-
-    // Clean up the temporary URL and link
+  
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }
@@ -188,7 +208,7 @@ export class ProcessResultsPage {
     text.x = 5;
     text.y = 5;
     text.eventMode = "dynamic";
-    text.on("pointerdown", this.downloadHandler.bind(this, this.formatData(data)));
+    text.on("pointerdown", this.downloadHandler.bind(this, this.formatData(data), 850 + (data.answerLogs.length * 50)));
 
     const loadingTime = process.env.NODE_ENV === "development" ? 100 : 5000;
     await new Promise((resolve) => setTimeout(resolve, loadingTime));

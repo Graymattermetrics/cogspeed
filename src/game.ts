@@ -393,7 +393,7 @@ export class CogSpeedGame {
       roundTypeNormalized: normalizeRounds[this.currentRound],
       answerLocation: answer, // Location of the answer sprite (1-6)
       locationClicked: location, // Location of the click (1-6) - will match answerLocation if correct
-      queryNumber: `${this.query["queryNumber"]}:${this.query["numbersOrDots"]}`, // The query number concatinated with the numbers or dots
+      queryNumber: `${this.query["queryNumber"]}${this.query["numbersOrDots"].slice(0, 1)}`, // The query number concatinated with the numbers or dots
       correctRollingMeanRatio: this.currentRound === 2 ? this.getCorrectRollingMean() : "n/a", // The incorrect rolling mean
       // Current duration (timeout)
       duration: this.currentTimeout,
@@ -434,7 +434,6 @@ export class CogSpeedGame {
 
     clearTimeout(this.maxTestTimeout);
     clearTimeout(this.currentRoundTimeout);
-
     const info = this.config.exit_codes[statusCode];
     const status = info.status;
     const message = info.message;
@@ -467,8 +466,8 @@ export class CogSpeedGame {
     const cognitiveProcessingIndex = round(M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100);
 
     const blockCount = this.previousBlockTimeouts.length - 1;
-    const lowestBlockTime = Math.min(this.previousBlockTimeouts.slice(1, blockCount));
-    const highestBlockTime = Math.max(this.previousBlockTimeouts.slice(1, blockCount));
+    const lowestBlockTime = Math.min(...this.previousBlockTimeouts.slice(1, blockCount + 1));
+    const highestBlockTime = Math.max(...this.previousBlockTimeouts.slice(1, blockCount + 1));
 
     const firstMachinePacedRound: { [key: string]: any } | undefined = this.previousAnswers.filter(
       (answer: { [key: string]: any }) => answer.roundType === 2,
@@ -499,9 +498,9 @@ export class CogSpeedGame {
       cognitiveProcessingIndex,
       machinePacedBaseline: firstMachinePacedRound?.duration,
       version: this.config.version,
-      sleepData: { ...this.sleepData },
+      sleepData: this.sleepData,
       numberOfRollMeanLimitExceedences: this.numberOfRollMeanLimitExceedences,
-      finalRatio: this.previousAnswers[blockCount]?.timeTaken / blockingRoundDuration,
+      finalRatio: this.previousAnswers[this.previousAnswers.length - 1]?.timeTaken / blockingRoundDuration,
       blocking: {
         blockCount,
         lowestBlockTime,
