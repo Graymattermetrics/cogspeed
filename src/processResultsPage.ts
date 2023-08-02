@@ -3,8 +3,7 @@ import { Application, Container, Graphics, Point, Sprite, Text } from "pixi.js";
 
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 import { table } from "table";
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 export class ProcessResultsPage {
   constructor(
@@ -73,7 +72,7 @@ export class ProcessResultsPage {
           joinMiddleDown: `|`,
           joinMiddleLeft: `|`,
           joinMiddleRight: `|`,
-          
+
           joinBody: `-`,
           joinLeft: `|`,
           joinRight: `|`,
@@ -90,12 +89,12 @@ export class ProcessResultsPage {
   private async downloadHandler(logContent: string, height: number) {
     const pdfDoc = await PDFDocument.create();
     const font = await pdfDoc.embedFont(StandardFonts.Courier);
-  
+
     const page = pdfDoc.addPage([1150, height]);
-  
+
     const fontSize = 17;
     const textHeight = font.heightAtSize(fontSize);
-    
+
     page.drawText(logContent, {
       x: 35,
       y: page.getHeight() - 50 - textHeight, // Align at the top of the page
@@ -103,20 +102,20 @@ export class ProcessResultsPage {
       font,
       color: rgb(0, 0, 0),
     });
-  
+
     const pdfBytes = await pdfDoc.save();
-  
+
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
-  
+
     const url = URL.createObjectURL(blob);
-  
+
     const link = document.createElement("a");
     link.href = url;
     link.download = "log.pdf";
-  
+
     document.body.appendChild(link);
     link.click();
-  
+
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   }
@@ -208,7 +207,7 @@ export class ProcessResultsPage {
     text.x = 5;
     text.y = 5;
     text.eventMode = "dynamic";
-    text.on("pointerdown", this.downloadHandler.bind(this, this.formatData(data), 850 + (data.answerLogs.length * 50)));
+    text.on("pointerdown", this.downloadHandler.bind(this, this.formatData(data), 850 + data.answerLogs.length * 50));
 
     const loadingTime = process.env.NODE_ENV === "development" ? 100 : 5000;
     await new Promise((resolve) => setTimeout(resolve, loadingTime));
