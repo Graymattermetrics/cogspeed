@@ -393,10 +393,10 @@ export class CogSpeedGame {
       roundTypeNormalized: normalizeRounds[this.currentRound],
       answerLocation: answer, // Location of the answer sprite (1-6)
       locationClicked: location, // Location of the click (1-6) - will match answerLocation if correct
-      queryNumber: `${this.query["queryNumber"]}:${this.query["numbersOrDots"]}`, // The query number concatinated with the numbers or dots
-      correctRollingMeanRatio: this.currentRound === 2 ? this.getCorrectRollingMean() : "n/a", // The incorrect rolling mean
+      queryNumber: `${this.query["queryNumber"]}${this.query["numbersOrDots"].slice(0, 3)}`, // The query number concatinated with the numbers or dots
       // Current duration (timeout)
       duration: this.currentTimeout,
+      correctRollingMeanRatio: "n/a", // The incorrect rolling mean
       roundNumber: this.previousAnswers.length + 1, // Round number
       roundType: this.currentRound, // Round type
       timeTaken, // Time delta between previous answer
@@ -407,6 +407,10 @@ export class CogSpeedGame {
     };
 
     this.previousAnswers.push(data);
+    if (this.currentRound === 2) {
+      this.previousAnswers[this.previousAnswers.length - 1].correctRollingMeanRatio = this.getCorrectRollingMean();
+    }
+
     this.nextRound();
   }
 
@@ -434,7 +438,6 @@ export class CogSpeedGame {
 
     clearTimeout(this.maxTestTimeout);
     clearTimeout(this.currentRoundTimeout);
-
     const info = this.config.exit_codes[statusCode];
     const status = info.status;
     const message = info.message;
@@ -466,6 +469,10 @@ export class CogSpeedGame {
     // M(BRD - CPImin) + 100
     const cognitiveProcessingIndex = round(M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100);
 
+    const blockCount = this.previousBlockTimeouts.length - 1;
+    const lowestBlockTime = Math.min(...this.previousBlockTimeouts.slice(1, blockCount + 1));
+    const highestBlockTime = Math.max(...this.previousBlockTimeouts.slice(1, blockCount + 1));
+
     const firstMachinePacedRound: { [key: string]: any } | undefined = this.previousAnswers.filter(
       (answer: { [key: string]: any }) => answer.roundType === 2,
     )[0];
@@ -493,12 +500,18 @@ export class CogSpeedGame {
       numberOfRounds: this.previousAnswers.length,
       blockingRoundDuration,
       cognitiveProcessingIndex,
-      blockCount: this.previousBlockTimeouts.length - 1,
       machinePacedBaseline: firstMachinePacedRound?.duration,
       version: this.config.version,
-      sleepData: { ...this.sleepData },
+      sleepData: this.sleepData,
       numberOfRollMeanLimitExceedences: this.numberOfRollMeanLimitExceedences,
       finalRatio: this.previousAnswers[this.previousAnswers.length - 1]?.timeTaken / blockingRoundDuration,
+      blocking: {
+        blockCount,
+        lowestBlockTime,
+        highestBlockTime,
+        blockRange: highestBlockTime - lowestBlockTime,
+        finalBlockDiff: Math.abs(this.previousBlockTimeouts[blockCount] - this.previousBlockTimeouts[blockCount - 1]),
+      },
       answers: {
         totalMachinePacedAnswers: totalMachinePacedAnswers.length,
         totalMachinePacedCorrectAnswers: correctMachinePacedAnswers.length,
