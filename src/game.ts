@@ -458,7 +458,7 @@ export class CogSpeedGame {
 
     const sumOfLastTwoBlocks = this.previousBlockTimeouts.slice(-2).reduce((a, b) => a + b, 0);
     const blockingRoundDuration = round(sumOfLastTwoBlocks / 2);
-
+    
     // CPImax - CPImin/BRDmin - BRDmax
     const M =
       (this.config.cpi_calculation.cpi_max - this.config.cpi_calculation.cpi_min) /
@@ -466,6 +466,10 @@ export class CogSpeedGame {
     // M(BRD - CPImin) + 100
     const cognitiveProcessingIndex = round(M * (blockingRoundDuration - this.config.cpi_calculation.brd_min) + 100);
 
+    const blockCount = this.previousBlockTimeouts.length - 1;
+    const lowestBlockTime = Math.min(this.previousBlockTimeouts.slice(1, blockCount));
+    const highestBlockTime = Math.max(this.previousBlockTimeouts.slice(1, blockCount));
+    
     const firstMachinePacedRound: { [key: string]: any } | undefined = this.previousAnswers.filter(
       (answer: { [key: string]: any }) => answer.roundType === 2,
     )[0];
@@ -493,12 +497,18 @@ export class CogSpeedGame {
       numberOfRounds: this.previousAnswers.length,
       blockingRoundDuration,
       cognitiveProcessingIndex,
-      blockCount: this.previousBlockTimeouts.length - 1,
       machinePacedBaseline: firstMachinePacedRound?.duration,
       version: this.config.version,
       sleepData: { ...this.sleepData },
       numberOfRollMeanLimitExceedences: this.numberOfRollMeanLimitExceedences,
-      finalRatio: this.previousAnswers[this.previousAnswers.length - 1]?.timeTaken / blockingRoundDuration,
+      finalRatio: this.previousAnswers[blockCount]?.timeTaken / blockingRoundDuration,
+      blocking: {
+        blockCount,
+        lowestBlockTime,
+        highestBlockTime,
+        blockRange: highestBlockTime - lowestBlockTime,
+        finalBlockDiff: Math.abs(this.previousBlockTimeouts[blockCount] - this.previousBlockTimeouts[blockCount - 1])
+      },
       answers: {
         totalMachinePacedAnswers: totalMachinePacedAnswers.length,
         totalMachinePacedCorrectAnswers: correctMachinePacedAnswers.length,
