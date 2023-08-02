@@ -393,10 +393,10 @@ export class CogSpeedGame {
       roundTypeNormalized: normalizeRounds[this.currentRound],
       answerLocation: answer, // Location of the answer sprite (1-6)
       locationClicked: location, // Location of the click (1-6) - will match answerLocation if correct
-      queryNumber: `${this.query["queryNumber"]}${this.query["numbersOrDots"].slice(0, 1)}`, // The query number concatinated with the numbers or dots
-      correctRollingMeanRatio: this.currentRound === 2 ? this.getCorrectRollingMean() : "n/a", // The incorrect rolling mean
+      queryNumber: `${this.query["queryNumber"]}${this.query["numbersOrDots"].slice(0, 3)}`, // The query number concatinated with the numbers or dots
       // Current duration (timeout)
       duration: this.currentTimeout,
+      correctRollingMeanRatio: "n/a", // The incorrect rolling mean
       roundNumber: this.previousAnswers.length + 1, // Round number
       roundType: this.currentRound, // Round type
       timeTaken, // Time delta between previous answer
@@ -407,6 +407,10 @@ export class CogSpeedGame {
     };
 
     this.previousAnswers.push(data);
+    if (this.currentRound === 2) {
+      this.previousAnswers[this.previousAnswers.length - 1].correctRollingMeanRatio = this.getCorrectRollingMean();
+    }
+  
     this.nextRound();
   }
 
