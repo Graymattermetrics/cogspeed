@@ -89,7 +89,8 @@ function resizeCanvas(): void {
   const resize = () => {
     window.location.reload(); // TODO: Implement auto resize
   };
-  window.addEventListener("resize", resize);
+  // Test: may be breaking test when downloading logs on mobile
+  // window.addEventListener("resize", resize);
 }
 
 window.onload = main;
