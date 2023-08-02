@@ -207,7 +207,7 @@ export class ProcessResultsPage {
     text.x = 5;
     text.y = 5;
     text.eventMode = "dynamic";
-    text.on("pointerdown", this.downloadHandler.bind(this, this.formatData(data), 850 + data.answerLogs.length * 50));
+    text.on("pointerdown", this.downloadHandler.bind(this, this.formatData(data), 850 + data.answerLogs.length * 75));
 
     const loadingTime = process.env.NODE_ENV === "development" ? 100 : 5000;
     await new Promise((resolve) => setTimeout(resolve, loadingTime));
