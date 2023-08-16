@@ -5,6 +5,7 @@ import { CogSpeedGame } from "./game";
 import { StartPage } from "./startPage";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 import axios from "axios";
+import MakeGMMLogo from "./drawGMMLogo";
 
 const gameWidth = window.innerWidth;
 const gameHeight = window.innerHeight;
@@ -36,49 +37,39 @@ async function loadConfig(): Promise<{ [key: string]: any }> {
  * Loads initial page
  */
 async function main(): Promise<void> {
-  const config = await loadConfig();
-
+  // const config = await loadConfig();
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  
   const appDiv = document.querySelector(".App");
   if (!appDiv) throw new Error("No app div found");
   appDiv.appendChild(app.view);
 
   resizeCanvas(); // TODO
 
-  if (config.error) throw new Error(config.reason);
+  // if (config.error) throw new Error(config.reason);
 
   // Show GMM Logo while loading all textures
-  // Temp text instead of logo for now
-  const loadingText = new Text("Loading", {
-    fontFamily: "Arial",
-    fontSize: 24,
-    fill: 0xffffff,
-    align: "center",
-  });
-  loadingText.anchor.set(0.5);
-  loadingText.position.set(gameWidth / 2, gameHeight / 2);
-  app.stage.addChild(loadingText);
-  app.ticker.add((delta) => {
-    loadingText.text = "Loading" + ".".repeat((Math.floor(app.ticker.lastTime / 1000) % 3) + 1);
-  });
+  const gmmLogoMaker = new MakeGMMLogo(app);
 
-  const graphicsManager = new CogSpeedGraphicsHandler(app);
 
-  // Emulate loading time
-  const loadingTime = process.env.NODE_ENV === "development" ? 100 : 3000;
-  await new Promise((resolve) => setTimeout(resolve, loadingTime));
+  // const graphicsManager = new CogSpeedGraphicsHandler(app);
 
-  app.stage.removeChild(loadingText);
-  graphicsManager.setBackground("carbon");
+  // // Emulate loading time
+  // const loadingTime = process.env.NODE_ENV === "development" ? 100 : 3000;
+  // await new Promise((resolve) => setTimeout(resolve, loadingTime));
 
-  const startPage = new StartPage(app, graphicsManager);
-  // Initiate before displaying to load config
-  // Display start page
-  const sleepData = await startPage.start();
-  if (!sleepData) throw new Error("No sleep data");
+  // app.stage.removeChild(loadingText);
+  // graphicsManager.setBackground("carbon");
 
-  // Game phase - called after start button is clicked
-  const game = new CogSpeedGame(config, app, graphicsManager, sleepData);
-  game.start();
+  // const startPage = new StartPage(app, graphicsManager);
+  // // Initiate before displaying to load config
+  // // Display start page
+  // const sleepData = await startPage.start();
+  // if (!sleepData) throw new Error("No sleep data");
+
+  // // Game phase - called after start button is clicked
+  // const game = new CogSpeedGame(config, app, graphicsManager, sleepData);
+  // game.start();
 }
 
 /**

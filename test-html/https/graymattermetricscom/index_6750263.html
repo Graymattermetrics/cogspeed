@@ -1,0 +1,2799 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gray Matter Metrics</title>
+    <link rel="pingback" href="https://graymattermetrics.com/xmlrpc.php" />
+
+    <!-- Google Webfonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:r,i,b,bi|Playfair+Display"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <meta name="robots" content="max-image-preview:large" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Gray Matter Metrics &raquo; Feed"
+      href="https://graymattermetrics.com/feed/"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Gray Matter Metrics &raquo; Comments Feed"
+      href="https://graymattermetrics.com/comments/feed/"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Gray Matter Metrics &raquo; Welcome to CogSpeed Comments Feed"
+      href="https://graymattermetrics.com/home-3/feed/"
+    />
+    <script type="text/javascript">
+      window._wpemojiSettings = {
+        baseUrl: "https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/72x72\/",
+        ext: ".png",
+        svgUrl: "https:\/\/s.w.org\/images\/core\/emoji\/14.0.0\/svg\/",
+        svgExt: ".svg",
+        source: {
+          concatemoji:
+            "https:\/\/graymattermetrics.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=6.3",
+        },
+      };
+      /*! This file is auto-generated */
+      !(function (i, n) {
+        var o, s, e;
+        function c(e) {
+          try {
+            var t = { supportTests: e, timestamp: new Date().valueOf() };
+            sessionStorage.setItem(o, JSON.stringify(t));
+          } catch (e) {}
+        }
+        function p(e, t, n) {
+          e.clearRect(0, 0, e.canvas.width, e.canvas.height),
+            e.fillText(t, 0, 0);
+          var t = new Uint32Array(
+              e.getImageData(0, 0, e.canvas.width, e.canvas.height).data
+            ),
+            r =
+              (e.clearRect(0, 0, e.canvas.width, e.canvas.height),
+              e.fillText(n, 0, 0),
+              new Uint32Array(
+                e.getImageData(0, 0, e.canvas.width, e.canvas.height).data
+              ));
+          return t.every(function (e, t) {
+            return e === r[t];
+          });
+        }
+        function u(e, t, n) {
+          switch (t) {
+            case "flag":
+              return n(
+                e,
+                "\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f",
+                "\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f"
+              )
+                ? !1
+                : !n(
+                    e,
+                    "\ud83c\uddfa\ud83c\uddf3",
+                    "\ud83c\uddfa\u200b\ud83c\uddf3"
+                  ) &&
+                    !n(
+                      e,
+                      "\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f",
+                      "\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f"
+                    );
+            case "emoji":
+              return !n(
+                e,
+                "\ud83e\udef1\ud83c\udffb\u200d\ud83e\udef2\ud83c\udfff",
+                "\ud83e\udef1\ud83c\udffb\u200b\ud83e\udef2\ud83c\udfff"
+              );
+          }
+          return !1;
+        }
+        function f(e, t, n) {
+          var r =
+              "undefined" != typeof WorkerGlobalScope &&
+              self instanceof WorkerGlobalScope
+                ? new OffscreenCanvas(300, 150)
+                : i.createElement("canvas"),
+            a = r.getContext("2d", { willReadFrequently: !0 }),
+            o = ((a.textBaseline = "top"), (a.font = "600 32px Arial"), {});
+          return (
+            e.forEach(function (e) {
+              o[e] = t(a, e, n);
+            }),
+            o
+          );
+        }
+        function t(e) {
+          var t = i.createElement("script");
+          (t.src = e), (t.defer = !0), i.head.appendChild(t);
+        }
+        "undefined" != typeof Promise &&
+          ((o = "wpEmojiSettingsSupports"),
+          (s = ["flag", "emoji"]),
+          (n.supports = { everything: !0, everythingExceptFlag: !0 }),
+          (e = new Promise(function (e) {
+            i.addEventListener("DOMContentLoaded", e, { once: !0 });
+          })),
+          new Promise(function (t) {
+            var n = (function () {
+              try {
+                var e = JSON.parse(sessionStorage.getItem(o));
+                if (
+                  "object" == typeof e &&
+                  "number" == typeof e.timestamp &&
+                  new Date().valueOf() < e.timestamp + 604800 &&
+                  "object" == typeof e.supportTests
+                )
+                  return e.supportTests;
+              } catch (e) {}
+              return null;
+            })();
+            if (!n) {
+              if (
+                "undefined" != typeof Worker &&
+                "undefined" != typeof OffscreenCanvas &&
+                "undefined" != typeof URL &&
+                URL.createObjectURL &&
+                "undefined" != typeof Blob
+              )
+                try {
+                  var e =
+                      "postMessage(" +
+                      f.toString() +
+                      "(" +
+                      [JSON.stringify(s), u.toString(), p.toString()].join(
+                        ","
+                      ) +
+                      "));",
+                    r = new Blob([e], { type: "text/javascript" }),
+                    a = new Worker(URL.createObjectURL(r), {
+                      name: "wpTestEmojiSupports",
+                    });
+                  return void (a.onmessage = function (e) {
+                    c((n = e.data)), a.terminate(), t(n);
+                  });
+                } catch (e) {}
+              c((n = f(s, u, p)));
+            }
+            t(n);
+          })
+            .then(function (e) {
+              for (var t in e)
+                (n.supports[t] = e[t]),
+                  (n.supports.everything =
+                    n.supports.everything && n.supports[t]),
+                  "flag" !== t &&
+                    (n.supports.everythingExceptFlag =
+                      n.supports.everythingExceptFlag && n.supports[t]);
+              (n.supports.everythingExceptFlag =
+                n.supports.everythingExceptFlag && !n.supports.flag),
+                (n.DOMReady = !1),
+                (n.readyCallback = function () {
+                  n.DOMReady = !0;
+                });
+            })
+            .then(function () {
+              return e;
+            })
+            .then(function () {
+              var e;
+              n.supports.everything ||
+                (n.readyCallback(),
+                (e = n.source || {}).concatemoji
+                  ? t(e.concatemoji)
+                  : e.wpemoji && e.twemoji && (t(e.twemoji), t(e.wpemoji)));
+            }));
+      })((window, document), window._wpemojiSettings);
+    </script>
+    <style type="text/css">
+      img.wp-smiley,
+      img.emoji {
+        display: inline !important;
+        border: none !important;
+        box-shadow: none !important;
+        height: 1em !important;
+        width: 1em !important;
+        margin: 0 0.07em !important;
+        vertical-align: -0.1em !important;
+        background: none !important;
+        padding: 0 !important;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      id="twb-open-sans-css"
+      href="https://fonts.googleapis.com/css?family=Open+Sans%3A300%2C400%2C500%2C600%2C700%2C800&#038;display=swap&#038;ver=6.3"
+      type="text/css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      id="twb-global-css"
+      href="https://graymattermetrics.com/wp-content/plugins/form-maker/booster/assets/css/global.css?ver=1.0.0"
+      type="text/css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      id="codepeople-loading-page-style-css"
+      href="https://graymattermetrics.com/wp-content/plugins/loading-page/css/loading-page.css?ver=free-1.0.96"
+      type="text/css"
+      media=""
+    />
+    <link
+      rel="stylesheet"
+      id="codepeople-loading-page-style-effect-css"
+      href="https://graymattermetrics.com/wp-content/plugins/loading-page/css/loading-page.css?ver=free-1.0.96"
+      type="text/css"
+      media=""
+    />
+    <link
+      rel="stylesheet"
+      id="wp-block-library-css"
+      href="https://graymattermetrics.com/wp-includes/css/dist/block-library/style.min.css?ver=6.3"
+      type="text/css"
+      media="all"
+    />
+    <style id="classic-theme-styles-inline-css" type="text/css">
+      /*! This file is auto-generated */
+      .wp-block-button__link {
+        color: #fff;
+        background-color: #32373c;
+        border-radius: 9999px;
+        box-shadow: none;
+        text-decoration: none;
+        padding: calc(0.667em + 2px) calc(1.333em + 2px);
+        font-size: 1.125em;
+      }
+      .wp-block-file__button {
+        background: #32373c;
+        color: #fff;
+        text-decoration: none;
+      }
+    </style>
+    <style id="global-styles-inline-css" type="text/css">
+      body {
+        --wp--preset--color--black: #000000;
+        --wp--preset--color--cyan-bluish-gray: #abb8c3;
+        --wp--preset--color--white: #ffffff;
+        --wp--preset--color--pale-pink: #f78da7;
+        --wp--preset--color--vivid-red: #cf2e2e;
+        --wp--preset--color--luminous-vivid-orange: #ff6900;
+        --wp--preset--color--luminous-vivid-amber: #fcb900;
+        --wp--preset--color--light-green-cyan: #7bdcb5;
+        --wp--preset--color--vivid-green-cyan: #00d084;
+        --wp--preset--color--pale-cyan-blue: #8ed1fc;
+        --wp--preset--color--vivid-cyan-blue: #0693e3;
+        --wp--preset--color--vivid-purple: #9b51e0;
+        --wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(
+          135deg,
+          rgba(6, 147, 227, 1) 0%,
+          rgb(155, 81, 224) 100%
+        );
+        --wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(
+          135deg,
+          rgb(122, 220, 180) 0%,
+          rgb(0, 208, 130) 100%
+        );
+        --wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(
+          135deg,
+          rgba(252, 185, 0, 1) 0%,
+          rgba(255, 105, 0, 1) 100%
+        );
+        --wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(
+          135deg,
+          rgba(255, 105, 0, 1) 0%,
+          rgb(207, 46, 46) 100%
+        );
+        --wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(
+          135deg,
+          rgb(238, 238, 238) 0%,
+          rgb(169, 184, 195) 100%
+        );
+        --wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(
+          135deg,
+          rgb(74, 234, 220) 0%,
+          rgb(151, 120, 209) 20%,
+          rgb(207, 42, 186) 40%,
+          rgb(238, 44, 130) 60%,
+          rgb(251, 105, 98) 80%,
+          rgb(254, 248, 76) 100%
+        );
+        --wp--preset--gradient--blush-light-purple: linear-gradient(
+          135deg,
+          rgb(255, 206, 236) 0%,
+          rgb(152, 150, 240) 100%
+        );
+        --wp--preset--gradient--blush-bordeaux: linear-gradient(
+          135deg,
+          rgb(254, 205, 165) 0%,
+          rgb(254, 45, 45) 50%,
+          rgb(107, 0, 62) 100%
+        );
+        --wp--preset--gradient--luminous-dusk: linear-gradient(
+          135deg,
+          rgb(255, 203, 112) 0%,
+          rgb(199, 81, 192) 50%,
+          rgb(65, 88, 208) 100%
+        );
+        --wp--preset--gradient--pale-ocean: linear-gradient(
+          135deg,
+          rgb(255, 245, 203) 0%,
+          rgb(182, 227, 212) 50%,
+          rgb(51, 167, 181) 100%
+        );
+        --wp--preset--gradient--electric-grass: linear-gradient(
+          135deg,
+          rgb(202, 248, 128) 0%,
+          rgb(113, 206, 126) 100%
+        );
+        --wp--preset--gradient--midnight: linear-gradient(
+          135deg,
+          rgb(2, 3, 129) 0%,
+          rgb(40, 116, 252) 100%
+        );
+        --wp--preset--font-size--small: 13px;
+        --wp--preset--font-size--medium: 20px;
+        --wp--preset--font-size--large: 36px;
+        --wp--preset--font-size--x-large: 42px;
+        --wp--preset--spacing--20: 0.44rem;
+        --wp--preset--spacing--30: 0.67rem;
+        --wp--preset--spacing--40: 1rem;
+        --wp--preset--spacing--50: 1.5rem;
+        --wp--preset--spacing--60: 2.25rem;
+        --wp--preset--spacing--70: 3.38rem;
+        --wp--preset--spacing--80: 5.06rem;
+        --wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);
+        --wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);
+        --wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);
+        --wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1),
+          6px 6px rgba(0, 0, 0, 1);
+        --wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);
+      }
+      :where(.is-layout-flex) {
+        gap: 0.5em;
+      }
+      :where(.is-layout-grid) {
+        gap: 0.5em;
+      }
+      body .is-layout-flow > .alignleft {
+        float: left;
+        margin-inline-start: 0;
+        margin-inline-end: 2em;
+      }
+      body .is-layout-flow > .alignright {
+        float: right;
+        margin-inline-start: 2em;
+        margin-inline-end: 0;
+      }
+      body .is-layout-flow > .aligncenter {
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+      body .is-layout-constrained > .alignleft {
+        float: left;
+        margin-inline-start: 0;
+        margin-inline-end: 2em;
+      }
+      body .is-layout-constrained > .alignright {
+        float: right;
+        margin-inline-start: 2em;
+        margin-inline-end: 0;
+      }
+      body .is-layout-constrained > .aligncenter {
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+      body
+        .is-layout-constrained
+        > :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+        max-width: var(--wp--style--global--content-size);
+        margin-left: auto !important;
+        margin-right: auto !important;
+      }
+      body .is-layout-constrained > .alignwide {
+        max-width: var(--wp--style--global--wide-size);
+      }
+      body .is-layout-flex {
+        display: flex;
+      }
+      body .is-layout-flex {
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      body .is-layout-flex > * {
+        margin: 0;
+      }
+      body .is-layout-grid {
+        display: grid;
+      }
+      body .is-layout-grid > * {
+        margin: 0;
+      }
+      :where(.wp-block-columns.is-layout-flex) {
+        gap: 2em;
+      }
+      :where(.wp-block-columns.is-layout-grid) {
+        gap: 2em;
+      }
+      :where(.wp-block-post-template.is-layout-flex) {
+        gap: 1.25em;
+      }
+      :where(.wp-block-post-template.is-layout-grid) {
+        gap: 1.25em;
+      }
+      .has-black-color {
+        color: var(--wp--preset--color--black) !important;
+      }
+      .has-cyan-bluish-gray-color {
+        color: var(--wp--preset--color--cyan-bluish-gray) !important;
+      }
+      .has-white-color {
+        color: var(--wp--preset--color--white) !important;
+      }
+      .has-pale-pink-color {
+        color: var(--wp--preset--color--pale-pink) !important;
+      }
+      .has-vivid-red-color {
+        color: var(--wp--preset--color--vivid-red) !important;
+      }
+      .has-luminous-vivid-orange-color {
+        color: var(--wp--preset--color--luminous-vivid-orange) !important;
+      }
+      .has-luminous-vivid-amber-color {
+        color: var(--wp--preset--color--luminous-vivid-amber) !important;
+      }
+      .has-light-green-cyan-color {
+        color: var(--wp--preset--color--light-green-cyan) !important;
+      }
+      .has-vivid-green-cyan-color {
+        color: var(--wp--preset--color--vivid-green-cyan) !important;
+      }
+      .has-pale-cyan-blue-color {
+        color: var(--wp--preset--color--pale-cyan-blue) !important;
+      }
+      .has-vivid-cyan-blue-color {
+        color: var(--wp--preset--color--vivid-cyan-blue) !important;
+      }
+      .has-vivid-purple-color {
+        color: var(--wp--preset--color--vivid-purple) !important;
+      }
+      .has-black-background-color {
+        background-color: var(--wp--preset--color--black) !important;
+      }
+      .has-cyan-bluish-gray-background-color {
+        background-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+      }
+      .has-white-background-color {
+        background-color: var(--wp--preset--color--white) !important;
+      }
+      .has-pale-pink-background-color {
+        background-color: var(--wp--preset--color--pale-pink) !important;
+      }
+      .has-vivid-red-background-color {
+        background-color: var(--wp--preset--color--vivid-red) !important;
+      }
+      .has-luminous-vivid-orange-background-color {
+        background-color: var(
+          --wp--preset--color--luminous-vivid-orange
+        ) !important;
+      }
+      .has-luminous-vivid-amber-background-color {
+        background-color: var(
+          --wp--preset--color--luminous-vivid-amber
+        ) !important;
+      }
+      .has-light-green-cyan-background-color {
+        background-color: var(--wp--preset--color--light-green-cyan) !important;
+      }
+      .has-vivid-green-cyan-background-color {
+        background-color: var(--wp--preset--color--vivid-green-cyan) !important;
+      }
+      .has-pale-cyan-blue-background-color {
+        background-color: var(--wp--preset--color--pale-cyan-blue) !important;
+      }
+      .has-vivid-cyan-blue-background-color {
+        background-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+      }
+      .has-vivid-purple-background-color {
+        background-color: var(--wp--preset--color--vivid-purple) !important;
+      }
+      .has-black-border-color {
+        border-color: var(--wp--preset--color--black) !important;
+      }
+      .has-cyan-bluish-gray-border-color {
+        border-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+      }
+      .has-white-border-color {
+        border-color: var(--wp--preset--color--white) !important;
+      }
+      .has-pale-pink-border-color {
+        border-color: var(--wp--preset--color--pale-pink) !important;
+      }
+      .has-vivid-red-border-color {
+        border-color: var(--wp--preset--color--vivid-red) !important;
+      }
+      .has-luminous-vivid-orange-border-color {
+        border-color: var(
+          --wp--preset--color--luminous-vivid-orange
+        ) !important;
+      }
+      .has-luminous-vivid-amber-border-color {
+        border-color: var(--wp--preset--color--luminous-vivid-amber) !important;
+      }
+      .has-light-green-cyan-border-color {
+        border-color: var(--wp--preset--color--light-green-cyan) !important;
+      }
+      .has-vivid-green-cyan-border-color {
+        border-color: var(--wp--preset--color--vivid-green-cyan) !important;
+      }
+      .has-pale-cyan-blue-border-color {
+        border-color: var(--wp--preset--color--pale-cyan-blue) !important;
+      }
+      .has-vivid-cyan-blue-border-color {
+        border-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+      }
+      .has-vivid-purple-border-color {
+        border-color: var(--wp--preset--color--vivid-purple) !important;
+      }
+      .has-vivid-cyan-blue-to-vivid-purple-gradient-background {
+        background: var(
+          --wp--preset--gradient--vivid-cyan-blue-to-vivid-purple
+        ) !important;
+      }
+      .has-light-green-cyan-to-vivid-green-cyan-gradient-background {
+        background: var(
+          --wp--preset--gradient--light-green-cyan-to-vivid-green-cyan
+        ) !important;
+      }
+      .has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background {
+        background: var(
+          --wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange
+        ) !important;
+      }
+      .has-luminous-vivid-orange-to-vivid-red-gradient-background {
+        background: var(
+          --wp--preset--gradient--luminous-vivid-orange-to-vivid-red
+        ) !important;
+      }
+      .has-very-light-gray-to-cyan-bluish-gray-gradient-background {
+        background: var(
+          --wp--preset--gradient--very-light-gray-to-cyan-bluish-gray
+        ) !important;
+      }
+      .has-cool-to-warm-spectrum-gradient-background {
+        background: var(
+          --wp--preset--gradient--cool-to-warm-spectrum
+        ) !important;
+      }
+      .has-blush-light-purple-gradient-background {
+        background: var(--wp--preset--gradient--blush-light-purple) !important;
+      }
+      .has-blush-bordeaux-gradient-background {
+        background: var(--wp--preset--gradient--blush-bordeaux) !important;
+      }
+      .has-luminous-dusk-gradient-background {
+        background: var(--wp--preset--gradient--luminous-dusk) !important;
+      }
+      .has-pale-ocean-gradient-background {
+        background: var(--wp--preset--gradient--pale-ocean) !important;
+      }
+      .has-electric-grass-gradient-background {
+        background: var(--wp--preset--gradient--electric-grass) !important;
+      }
+      .has-midnight-gradient-background {
+        background: var(--wp--preset--gradient--midnight) !important;
+      }
+      .has-small-font-size {
+        font-size: var(--wp--preset--font-size--small) !important;
+      }
+      .has-medium-font-size {
+        font-size: var(--wp--preset--font-size--medium) !important;
+      }
+      .has-large-font-size {
+        font-size: var(--wp--preset--font-size--large) !important;
+      }
+      .has-x-large-font-size {
+        font-size: var(--wp--preset--font-size--x-large) !important;
+      }
+      .wp-block-navigation a:where(:not(.wp-element-button)) {
+        color: inherit;
+      }
+      :where(.wp-block-post-template.is-layout-flex) {
+        gap: 1.25em;
+      }
+      :where(.wp-block-post-template.is-layout-grid) {
+        gap: 1.25em;
+      }
+      :where(.wp-block-columns.is-layout-flex) {
+        gap: 2em;
+      }
+      :where(.wp-block-columns.is-layout-grid) {
+        gap: 2em;
+      }
+      .wp-block-pullquote {
+        font-size: 1.5em;
+        line-height: 1.6;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      id="contact-form-7-css"
+      href="https://graymattermetrics.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.8"
+      type="text/css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      id="SFSIPLUSmainCss-css"
+      href="https://graymattermetrics.com/wp-content/plugins/ultimate-social-media-plus/css/sfsi-style.css?ver=3.5.8"
+      type="text/css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      id="nfd-wonder-blocks-utilities-css"
+      href="https://graymattermetrics.com/wp-content/plugins/bluehost-wordpress-plugin/vendor/newfold-labs/wp-module-patterns/assets/styles/utilities.css?ver=0.1.3"
+      type="text/css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      id="theme-stylesheet-css"
+      href="https://graymattermetrics.com/wp-content/themes/labomba/style.css?ver=1.0.0"
+      type="text/css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      id="responsive-media-css"
+      href="https://graymattermetrics.com/wp-content/themes/labomba/css/responsive.css?ver=6.3"
+      type="text/css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      id="woo-layout-css"
+      href="https://graymattermetrics.com/wp-content/themes/labomba/css/layout.css?ver=6.3"
+      type="text/css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      id="wppt-style-css"
+      href="https://graymattermetrics.com/wp-content/plugins/wp-pricing-table/css/wppt_style.css?ver=6.3"
+      type="text/css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      id="prettyPhoto-css"
+      href="https://graymattermetrics.com/wp-content/themes/labomba/includes/css/prettyPhoto.css?ver=6.3"
+      type="text/css"
+      media="all"
+    />
+    <link
+      rel="stylesheet"
+      id="owlcarousel-css"
+      href="https://graymattermetrics.com/wp-content/themes/labomba/includes/css/owl.carousel.css?ver=6.3"
+      type="text/css"
+      media="all"
+    />
+    <!--[if lt IE 9]>
+      <link
+        href="https://graymattermetrics.com/wp-content/themes/labomba/css/non-responsive.css"
+        rel="stylesheet"
+        type="text/css"
+      />
+      <style type="text/css">
+        .col-full,
+        #wrapper {
+          width: 980px;
+          max-width: 980px;
+        }
+        #inner-wrapper {
+          padding: 0;
+        }
+        body.full-width #header,
+        #nav-container,
+        body.full-width #content,
+        body.full-width #footer-widgets,
+        body.full-width #footer {
+          padding-left: 0;
+          padding-right: 0;
+        }
+        body.fixed-mobile #top,
+        body.fixed-mobile #header-container,
+        body.fixed-mobile #footer-container,
+        body.fixed-mobile #nav-container,
+        body.fixed-mobile #footer-widgets-container {
+          min-width: 980px;
+          padding: 0 1em;
+        }
+        body.full-width #content {
+          width: auto;
+          padding: 0 1em;
+        }
+      </style>
+    <![endif]-->
+    <script type="text/javascript">
+      window._nslDOMReady = function (callback) {
+        if (
+          document.readyState === "complete" ||
+          document.readyState === "interactive"
+        ) {
+          callback();
+        } else {
+          document.addEventListener("DOMContentLoaded", callback);
+        }
+      };
+    </script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-includes/js/jquery/jquery.min.js?ver=3.7.0"
+      id="jquery-core-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1"
+      id="jquery-migrate-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/plugins/form-maker/booster/assets/js/circle-progress.js?ver=1.2.2"
+      id="twb-circle-js"
+    ></script>
+    <script type="text/javascript" id="twb-global-js-extra">
+      /* <![CDATA[ */
+      var twb = {
+        nonce: "ade1cb300a",
+        ajax_url: "https:\/\/graymattermetrics.com\/wp-admin\/admin-ajax.php",
+        plugin_url:
+          "https:\/\/graymattermetrics.com\/wp-content\/plugins\/form-maker\/booster",
+        href: "https:\/\/graymattermetrics.com\/wp-admin\/admin.php?page=twb_form-maker",
+      };
+      var twb = {
+        nonce: "ade1cb300a",
+        ajax_url: "https:\/\/graymattermetrics.com\/wp-admin\/admin-ajax.php",
+        plugin_url:
+          "https:\/\/graymattermetrics.com\/wp-content\/plugins\/form-maker\/booster",
+        href: "https:\/\/graymattermetrics.com\/wp-admin\/admin.php?page=twb_form-maker",
+      };
+      /* ]]> */
+    </script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/plugins/form-maker/booster/assets/js/global.js?ver=1.0.0"
+      id="twb-global-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/plugins/loading-page/loading-screens/bar/loading-bar.js?ver=free-1.0.96"
+      id="codepeople-loading-page-script-bar-js"
+    ></script>
+    <script
+      id="codepeople-loading-page-script-js-before"
+      type="text/javascript"
+    >
+      loading_page_settings = {
+        loadingScreen: 1,
+        closeBtn: true,
+        removeInOnLoad: false,
+        codeblock: "",
+        backgroundColor: "rgba(255,255,255,.8)",
+        foregroundColor: "#000000",
+        backgroundImage:
+          "https:\/\/graymattermetrics.com\/wp-content\/uploads\/2014\/11\/gmmlogo1.jpg",
+        additionalSeconds: 0,
+        pageEffect: "none",
+        backgroundRepeat: "no-repeat",
+        fullscreen: 0,
+        graphic: "bar",
+        text: true,
+        lp_ls: 0,
+        screen_size: "all",
+        screen_width: 0,
+        deepSearch: 0,
+        modifyDisplayRule: 0,
+        triggerLinkScreenNeverClose: 0,
+        triggerLinkScreenCloseAfter: 4,
+      };
+    </script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/plugins/loading-page/js/loading-page.min.js?ver=free-1.0.96"
+      id="codepeople-loading-page-script-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/themes/labomba/includes/js/modernizr.js?ver=2.7.0"
+      id="modernizr-js"
+    ></script>
+    <link
+      rel="https://api.w.org/"
+      href="https://graymattermetrics.com/wp-json/"
+    />
+    <link
+      rel="alternate"
+      type="application/json"
+      href="https://graymattermetrics.com/wp-json/wp/v2/pages/7768"
+    />
+    <link
+      rel="EditURI"
+      type="application/rsd+xml"
+      title="RSD"
+      href="https://graymattermetrics.com/xmlrpc.php?rsd"
+    />
+    <meta name="generator" content="WordPress 6.3" />
+    <link rel="canonical" href="https://graymattermetrics.com/" />
+    <link rel="shortlink" href="https://graymattermetrics.com/" />
+    <link
+      rel="alternate"
+      type="application/json+oembed"
+      href="https://graymattermetrics.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fgraymattermetrics.com%2F"
+    />
+    <link
+      rel="alternate"
+      type="text/xml+oembed"
+      href="https://graymattermetrics.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fgraymattermetrics.com%2F&#038;format=xml"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="https://graymattermetrics.com/wp-content/plugins/social-widget/style.css"
+    />
+    <script>
+      window.addEventListener("sfsi_plus_functions_loaded", function () {
+        var body = document.getElementsByTagName("body")[0];
+        // console.log(body);
+        body.classList.add("sfsi_plus_3.53");
+      });
+      // window.addEventListener('sfsi_plus_functions_loaded',function(e) {
+      // 	jQuery("body").addClass("sfsi_plus_3.53")
+      // });
+      jQuery(document).ready(function (e) {
+        jQuery("body").addClass("sfsi_plus_3.53");
+      });
+
+      function sfsi_plus_processfurther(ref) {
+        var feed_id =
+          "aGhNTTQ2Q0plNEZqZkp6RTNhNCtKL0xYVVJwaGtyRm9EZGVaUkgvNVZhRlh2UFVLSHF5VGRjb0U3RlNQdjFHakhQaFpLVEk2ZzNEcTBaYXVKcmFieElrejR5eGpQdS8wS3NCNDdqZCtDVnRZOVFWejVTRVFRbGhtZ0lqbzE2eGF8aGxMZkdadmtibmRsdzRpV0R6cEVvSjBNd1VPeDlrTzFtS3BzSjUxVWNUcz0=";
+        var feedtype = 8;
+        var email = jQuery(ref).find('input[name="email"]').val();
+        var filter =
+          /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        if (email != "Enter your email" && filter.test(email)) {
+          if (feedtype == "8") {
+            var url =
+              "https://api.follow.it/subscription-form/" +
+              feed_id +
+              "/" +
+              feedtype;
+            window.open(
+              url,
+              "popupwindow",
+              "scrollbars=yes,width=1080,height=760"
+            );
+            return true;
+          }
+        } else {
+          alert("Please enter email address");
+          jQuery(ref).find('input[name="email"]').focus();
+          return false;
+        }
+      }
+    </script>
+    <style>
+      .sfsi_plus_subscribe_Popinner {
+        width: 100% !important;
+        height: auto !important;
+        border: 1px solid #b5b5b5 !important;
+        padding: 18px 0px !important;
+        background-color: #ffffff !important;
+      }
+
+      .sfsi_plus_subscribe_Popinner form {
+        margin: 0 20px !important;
+      }
+
+      .sfsi_plus_subscribe_Popinner h5 {
+        font-family: Helvetica, Arial, sans-serif !important;
+
+        font-weight: bold !important;
+        color: #000000 !important;
+        font-size: 16px !important;
+        text-align: center !important;
+        margin: 0 0 10px !important;
+        padding: 0 !important;
+      }
+
+      .sfsi_plus_subscription_form_field {
+        margin: 5px 0 !important;
+        width: 100% !important;
+        display: inline-flex;
+        display: -webkit-inline-flex;
+      }
+
+      .sfsi_plus_subscription_form_field input {
+        width: 100% !important;
+        padding: 10px 0px !important;
+      }
+
+      .sfsi_plus_subscribe_Popinner input[type="email"] {
+        font-family: Helvetica, Arial, sans-serif !important;
+
+        font-style: normal !important;
+        color: #000000 !important;
+        font-size: 14px !important;
+        text-align: center !important;
+      }
+
+      .sfsi_plus_subscribe_Popinner
+        input[type="email"]::-webkit-input-placeholder {
+        font-family: Helvetica, Arial, sans-serif !important;
+
+        font-style: normal !important;
+        color: #000000 !important;
+        font-size: 14px !important;
+        text-align: center !important;
+      }
+
+      .sfsi_plus_subscribe_Popinner input[type="email"]:-moz-placeholder {
+        /* Firefox 18- */
+        font-family: Helvetica, Arial, sans-serif !important;
+
+        font-style: normal !important;
+        color: #000000 !important;
+        font-size: 14px !important;
+        text-align: center !important;
+      }
+
+      .sfsi_plus_subscribe_Popinner input[type="email"]::-moz-placeholder {
+        /* Firefox 19+ */
+        font-family: Helvetica, Arial, sans-serif !important;
+
+        font-style: normal !important;
+        color: #000000 !important;
+        font-size: 14px !important;
+        text-align: center !important;
+      }
+
+      .sfsi_plus_subscribe_Popinner input[type="email"]:-ms-input-placeholder {
+        font-family: Helvetica, Arial, sans-serif !important;
+
+        font-style: normal !important;
+        color: #000000 !important;
+        font-size: 14px !important;
+        text-align: center !important;
+      }
+
+      .sfsi_plus_subscribe_Popinner input[type="submit"] {
+        font-family: Helvetica, Arial, sans-serif !important;
+
+        font-weight: bold !important;
+        color: #000000 !important;
+        font-size: 16px !important;
+        text-align: center !important;
+        background-color: #dedede !important;
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Theme version -->
+    <meta name="generator" content=" 1.3" />
+    <meta name="generator" content="WooFramework 5.5.5" />
+
+    <!-- Custom CSS Styling -->
+    <style type="text/css">
+      #logo .site-title,
+      #logo .site-description {
+        display: none;
+      }
+    </style>
+
+    <!-- Custom Favicon -->
+    <link
+      rel="shortcut icon"
+      href="https://graymattermetrics.com/wp-content/uploads/2013/10/Cogfavicon.png"
+    />
+
+    <!-- Custom Stylesheet -->
+    <link
+      href="https://graymattermetrics.com/wp-content/themes/labomba/custom.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script>
+      (function (i, s, o, g, r, a, m) {
+        i["GoogleAnalyticsObject"] = r;
+        (i[r] =
+          i[r] ||
+          function () {
+            (i[r].q = i[r].q || []).push(arguments);
+          }),
+          (i[r].l = 1 * new Date());
+        (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m);
+      })(
+        window,
+        document,
+        "script",
+        "//www.google-analytics.com/analytics.js",
+        "ga"
+      );
+
+      ga("create", "UA-62082516-1", "auto");
+      ga("send", "pageview");
+    </script>
+    <script type="text/javascript">
+      var ajaxurl = "https://graymattermetrics.com/wp-admin/admin-ajax.php";
+    </script>
+    <!-- Google Webfonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:r,i,b,bi|Playfair+Display"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <!--  Mobile viewport scale -->
+    <meta
+      content="initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
+      name="viewport"
+    />
+
+    <!-- Custom Retina Favicon -->
+    <link
+      rel="apple-touch-icon"
+      href=" https://graymattermetrics.com/wp-content/uploads/2013/10/Cogfavicon57.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="114x114"
+      href=" https://graymattermetrics.com/wp-content/uploads/2013/10/Cogfavicon114.png "
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="72x72"
+      href="https://graymattermetrics.com/wp-content/uploads/2013/10/Cogfavicon72.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="144x144"
+      href="https://graymattermetrics.com/wp-content/uploads/2013/10/cogfavicon144.png"
+    />
+
+    <!-- Woo Custom Shortcodes CSS -->
+    <link
+      href="https://graymattermetrics.com/wp-content/themes/labomba/pbuilder/js_composer/composer/lib/shortcodes/labomba-shortcodes/shortcodes.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <script>
+      jQuery(window).load(function ($) {
+        var mycontainer = jQuery(".port_mason");
+        mycontainer.isotope({
+          itemSelector: ".portfolio",
+        });
+
+        // filter items when filter link is clicked
+        jQuery("#options a").click(function () {
+          var selector = jQuery(this).attr("data-filter");
+          mycontainer.isotope({ filter: selector });
+          return false;
+        });
+
+        var $links = jQuery("a");
+        $links.click(function () {
+          $links.removeClass("current").addClass("link");
+          jQuery(this).removeClass("link").addClass("current");
+
+          var divname = this.name;
+          jQuery("#" + divname)
+            .show("fast")
+            .siblings()
+            .hide("fast");
+        });
+      });
+    </script>
+    <style id="loading-page-inline-style">
+      body {
+        visibility: hidden;
+      }
+    </style>
+    <noscript
+      ><style>
+        body {
+          visibility: visible;
+        }
+      </style></noscript
+    >
+    <style id="egf-frontend-styles" type="text/css">
+      p {
+      }
+      h1 {
+      }
+      h2 {
+      }
+      h3 {
+      }
+      h4 {
+      }
+      h5 {
+      }
+      h6 {
+      }
+    </style>
+  </head>
+  <body
+    id="body"
+    class="home page-template-default page page-id-7768 page-parent sfsi_plus_actvite_theme_flat unknown alt-style-default one-col width-980 one-col-980 full-width full-header full-footer wpb-js-composer js-comp-ver-3.6.13 vc_responsive lp_loading_screen_body"
+  >
+    <div class="top-header-3">
+      <div class="universe-search" style="position: fixed">
+        <div class="universe-search-close ent-text"></div>
+        <div class="col-full">
+          <!-- <div class="universe-search-help"><span class="universe-search-help-count">0</span> results. <br>How about another try?</div> -->
+          <div class="universe-search-form">
+            <span class="universe-search-icon ent-text"></span>
+            <div style="position: relative; padding-bottom: 1em">
+              <input
+                type="text"
+                id="searchfrm"
+                name="search"
+                class="universe-search-input"
+                placeholder="Start typing to get your search on..."
+                value=""
+                style="
+                  background-color: transparent;
+                  background-position: initial initial;
+                  background-repeat: initial initial;
+                "
+                autocomplete="off"
+                spellcheck="false"
+                dir="ltr"
+              />
+              <div
+                style="
+                  position: absolute;
+                  height: 0px;
+                  width: 740px;
+                  top: 0px;
+                  left: 55px;
+                  padding: 15px 0px 0px;
+                  margin: 0px 0px 0px 30px;
+                  font-family: DNRL;
+                  font-size: 40px;
+                  font-style: normal;
+                  line-height: normal;
+                  font-weight: normal;
+                  letter-spacing: -3px;
+                  background-color: rgb(255, 255, 255);
+                  color: rgb(204, 204, 204);
+                "
+              ></div>
+              <span
+                class="suggest-more"
+                style="
+                  position: absolute;
+                  top: 20px;
+                  left: 740px;
+                  display: none;
+                  font-size: 40px;
+                  font-family: DNRL;
+                  color: rgb(204, 204, 204);
+                "
+              ></span>
+            </div>
+          </div>
+          <div id="jp-container-search" class="jp-container-search">
+            <div class="universe-search-results"></div>
+          </div>
+
+          <div class="universe-search-pagination" style="display: none">
+            <ol class="universe-search-pagination-list"></ol>
+          </div>
+        </div>
+      </div>
+
+      <div id="top">
+        <div class="col-full">
+          <div class="fl"></div>
+
+          <div class="fr">
+            <ul class="wishlist-contents fr"></ul>
+            <div class="search-contents fr">
+              <div class="icon-search"></div>
+            </div>
+
+            <h3 class="top-menu">Resources and References</h3>
+            <ul id="top-nav" class="nav top-navigation fr">
+              <li
+                id="menu-item-8256"
+                class="menu-item menu-item-type-post_type menu-item-object-page menu-item-8256"
+              >
+                <a
+                  href="https://graymattermetrics.com/home-3/resources-and-references/"
+                  >Resources and References</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- /#top -->
+
+      <div class="div-nav-toggle">
+        <h3 class="nav-toggle icon"><a href="#navigation"> Navigation</a></h3>
+      </div>
+    </div>
+
+    <div id="wrapper">
+      <div id="inner-wrapper">
+        <!--#header-container-->
+        <div id="header-container">
+          <div id="custom-header" class="header-3">
+            <div class="col-full">
+              <header id="header" class="col-left">
+                <div id="logo">
+                  <a href="https://graymattermetrics.com/" title="Think Fast!"
+                    ><img
+                      src="https://graymattermetrics.com/wp-content/uploads/2014/11/gmmlogo1-150x72.jpg"
+                      alt="Gray Matter Metrics"
+                      class="logo-normal"
+                  /></a>
+                  <h1 class="site-title">
+                    <a href="https://graymattermetrics.com/"
+                      >Gray Matter Metrics</a
+                    >
+                  </h1>
+                  <span class="site-description">Think Fast!</span>
+                </div>
+              </header>
+
+              <!--#nav-container-->
+              <div id="nav-container">
+                <nav id="navigation" class="col-left" role="navigation">
+                  <div id="jp-container-nav" class="jp-container-nav">
+                    <section class="menus">
+                      <form
+                        role="search"
+                        method="get"
+                        id="searchform"
+                        action="https://graymattermetrics.com/"
+                        class="search_mobile"
+                      >
+                        <div class="search_mobile_input">
+                          <input
+                            type="text"
+                            value=""
+                            name="s"
+                            id="s"
+                            placeholder="Search"
+                            style="
+                              background-color: transparent;
+                              background-position: initial initial;
+                              background-repeat: initial initial;
+                            "
+                            autocomplete="off"
+                            spellcheck="false"
+                          />
+                        </div>
+                      </form>
+
+                      <a href="https://graymattermetrics.com" class="nav-home"
+                        ><span>Home</span></a
+                      >
+
+                      <h3>Landing</h3>
+                      <ul id="main-nav" class="nav fr">
+                        <li
+                          id="menu-item-6889"
+                          class="menu-item menu-item-type-post_type menu-item-object-page"
+                        >
+                          <a href="https://graymattermetrics.com/about/"
+                            >About</a
+                          >
+                        </li>
+                        <li
+                          id="menu-item-7473"
+                          class="menu-item menu-item-type-post_type menu-item-object-page"
+                        >
+                          <a href="https://graymattermetrics.com/blog/">Blog</a>
+                        </li>
+                        <li
+                          id="menu-item-7006"
+                          class="menu-item menu-item-type-post_type menu-item-object-page"
+                        >
+                          <a href="https://graymattermetrics.com/contact/"
+                            >Contact</a
+                          >
+                        </li>
+                        <li
+                          id="menu-item-8096"
+                          class="menu-item menu-item-type-post_type menu-item-object-page"
+                        >
+                          <a
+                            href="https://graymattermetrics.com/home-3/resources-and-references/"
+                            >Resources and References</a
+                          >
+                        </li>
+                        <li
+                          id="menu-item-8130"
+                          class="menu-item menu-item-type-post_type menu-item-object-page"
+                        >
+                          <a
+                            href="https://graymattermetrics.com/home-3/resources-and-references/cogspeed-presentations/"
+                            >CogSpeed Presentations and Info</a
+                          >
+                        </li>
+                        <li
+                          id="menu-item-8033"
+                          class="menu-item menu-item-type-custom menu-item-object-custom"
+                        >
+                          <a href="http://www.cogspeed.com">CogSpeed Portal</a>
+                        </li>
+                        <li
+                          id="menu-item-8194"
+                          class="menu-item menu-item-type-post_type menu-item-object-page"
+                        >
+                          <a
+                            href="https://graymattermetrics.com/home-v23/faqs-everything-you-wanted-to-know-about-cogspeed-and-then-some/"
+                            >FAQs – EVERYTHING YOU WANTED TO KNOW ABOUT CogSpeed
+                            – AND THEN SOME!</a
+                          >
+                        </li>
+                        <li
+                          id="menu-item-8206"
+                          class="menu-item menu-item-type-post_type menu-item-object-page"
+                        >
+                          <a
+                            href="https://graymattermetrics.com/home-2/how-to-take-the-cogspeed-test/"
+                            >HOW TO TAKE THE CogSpeed TEST</a
+                          >
+                        </li>
+                        <li
+                          id="menu-item-8245"
+                          class="menu-item menu-item-type-post_type menu-item-object-page"
+                        >
+                          <a
+                            href="https://graymattermetrics.com/home-2/download-cogspeed/"
+                            >Download CogSpeed</a
+                          >
+                        </li>
+                        <li
+                          id="menu-item-8371"
+                          class="menu-item menu-item-type-post_type menu-item-object-page"
+                        >
+                          <a
+                            href="https://graymattermetrics.com/home-3/resources-and-references/energy-level-self-report-elsr/"
+                            >ENERGY LEVEL SELF REPORT (ELSR)</a
+                          >
+                        </li>
+                        <li
+                          id="menu-item-8392"
+                          class="menu-item menu-item-type-post_type menu-item-object-page"
+                        >
+                          <a
+                            href="https://graymattermetrics.com/pain-level-self-report/"
+                            >PAIN LEVEL SELF REPORT (PLSR)</a
+                          >
+                        </li>
+                      </ul>
+                    </section>
+                    <!-- /.menus -->
+
+                    <a href="#top" class="nav-close"
+                      ><span>Return to Content</span></a
+                    >
+                  </div>
+                </nav>
+              </div>
+              <!--/#nav-container-->
+            </div>
+            <!--/#header-container-->
+          </div>
+        </div>
+        <!-- //.header-3 -->
+        <!-- #content Starts -->
+        <div id="content" class="col-full">
+          <div id="main-sidebar-container">
+            <!-- #main Starts -->
+            <section id="main">
+              <article class="post-7768 page type-page status-publish hentry">
+                <header>
+                  <h2 class="title">Welcome to CogSpeed</h2>
+                </header>
+
+                <section class="entry">
+                  <p class="has-large-font-size">
+                    <strong> Get To Know Us</strong>
+                  </p>
+
+                  <div class="wpb_row vc_row-fluid">
+                    <div class="vc_span12 wpb_column column_container">
+                      <div class="wpb_wrapper">
+                        <div class="wpb_row vc_row-fluid">
+                          <div class="vc_span12 wpb_column column_container">
+                            <div class="wpb_wrapper"></div>
+                          </div>
+                        </div>
+                        <div class="wpb_row vc_row-fluid">
+                          <script>
+                            jQuery(document).ready(function ($) {
+                              var fullscreenPar = jQuery(
+                                  ".one-col #parallax .parallax_out"
+                                ),
+                                containerPar = jQuery("#main, #main-shop"),
+                                ParOffsetl = containerPar.offset().left,
+                                containerPar2 = jQuery(
+                                  "#parallax .parallax_content "
+                                ),
+                                windowWidth = jQuery(window).width(),
+                                containerPar3 = jQuery("#main").width(),
+                                containerInPar = jQuery(
+                                  ".one-col #parallax .parallax_in"
+                                ),
+                                containerSecpar = jQuery(
+                                  ".one-col #parallax .parallax_sec"
+                                );
+
+                              if (windowWidth > 900) {
+                                $(".rtn").parallax("50%", "0.15");
+                                $(".rtn_1").parallax("50%", "0.5");
+                              }
+
+                              if (windowWidth > 900) {
+                                totwidthl = ParOffsetl + 980 * 0.0285715;
+
+                                fullscreenPar
+                                  .find(".one-col #parallax .parallax_out")
+                                  .css("width", windowWidth);
+
+                                fullscreenPar.css(
+                                  "margin-left",
+                                  "-" + totwidthl + "px"
+                                );
+                                fullscreenPar.css(
+                                  "padding-right",
+                                  function (index) {
+                                    totwidth = ParOffsetl + ParOffsetl;
+                                    return totwidth;
+                                  }
+                                );
+                                containerPar2.css("padding-left", ParOffsetl);
+                              } else if (windowWidth > 799) {
+                                totwidthl = ParOffsetl + 980 * 0.0285715;
+                                widthInPar =
+                                  containerPar3 - containerPar3 * 0.0285715;
+                                widthSecPar =
+                                  containerPar3 - containerPar3 * 0.4;
+                                heightSecPar =
+                                  containerPar3 - containerPar3 * 0.5;
+                                LeftSecPar = containerPar3 / 3;
+
+                                fullscreenPar
+                                  .find(".one-col #parallax .parallax_out")
+                                  .css("width", windowWidth);
+
+                                fullscreenPar.css(
+                                  "margin-left",
+                                  "-" + totwidthl + "px"
+                                );
+                                fullscreenPar.css(
+                                  "padding-right",
+                                  function (index) {
+                                    totwidth = ParOffsetl + ParOffsetl;
+                                    return totwidth;
+                                  }
+                                );
+                                containerInPar.css("width", "auto");
+                                containerSecpar.css(
+                                  "width",
+                                  widthSecPar + "px"
+                                );
+                                containerSecpar.css(
+                                  "height",
+                                  heightSecPar + "px"
+                                );
+                                containerSecpar.css("left", LeftSecPar + "px");
+                                containerPar2.css("padding-left", ParOffsetl);
+                              } else {
+                                totwidth3 =
+                                  ParOffsetl + containerPar3 * 0.0285715;
+
+                                widthInPar =
+                                  containerPar3 - containerPar3 * 0.0285715;
+                                widthSecPar =
+                                  containerPar3 - containerPar3 * 0.3;
+                                heightSecPar =
+                                  containerPar3 - containerPar3 * 0.3;
+                                LeftSecPar = containerPar3 / 25;
+
+                                fullscreenPar
+                                  .find(".one-col #parallax .parallax_out")
+                                  .css("width", windowWidth);
+                                fullscreenPar.css(
+                                  "margin-left",
+                                  "-" + totwidth3 + "px"
+                                );
+                                containerInPar.css("width", widthInPar + "px");
+                                containerSecpar.css("width", widthInPar + "px");
+                                containerSecpar.css("left", LeftSecPar + "px");
+
+                                if (windowWidth > 501) {
+                                  containerSecpar.css(
+                                    "height",
+                                    heightSecPar + "px"
+                                  );
+                                } else if (
+                                  windowWidth <= 500 &&
+                                  windowWidth > 400
+                                ) {
+                                  heightSecPar = heightSecPar + 75;
+                                  containerSecpar.css(
+                                    "height",
+                                    heightSecPar + "px"
+                                  );
+                                } else if (
+                                  windowWidth <= 400 &&
+                                  windowWidth > 321
+                                ) {
+                                  containerSecpar.css("width", 300 + "px");
+                                  containerSecpar.css(
+                                    "background-size",
+                                    "contain"
+                                  );
+                                  containerSecpar.css(
+                                    "height",
+                                    heightSecPar + "px"
+                                  );
+                                } else if (windowWidth <= 320) {
+                                  containerSecpar.css("width", 300 + "px");
+                                  containerSecpar.css(
+                                    "background-size",
+                                    "contain"
+                                  );
+                                  containerSecpar.css(
+                                    "height",
+                                    heightSecPar + "px"
+                                  );
+                                }
+                              }
+                            });
+                          </script>
+
+                          <div class="vc_span12 wpb_column column_container">
+                            <div class="wpb_wrapper">
+                              <div id="parallax">
+                                <div
+                                  class="parallax_out rtn"
+                                  style="
+                                    background: url() 50% 0 no-repeat fixed;
+                                    margin: ;
+                                    height: 800 px;
+                                  "
+                                >
+                                  <div class="parallax_content">
+                                    <div
+                                      class="parallax_in"
+                                      style="
+                                        padding: 20% 60% 5% 0;
+                                        width: 100%;
+                                        float: none;
+                                      "
+                                    >
+                                      <div class="threecol-two">
+                                        <div class="clear"></div>
+                                        <div
+                                          class="gap"
+                                          style="height: 10px"
+                                        ></div>
+                                        <img
+                                          decoding="async"
+                                          fetchpriority="high"
+                                          src="https://graymattermetrics.com/wp-content/uploads/2015/04/ipad-mini.png"
+                                          alt="iPad-mini"
+                                          width="1000"
+                                          height="590"
+                                        />
+                                      </div>
+                                      <div class="threecol-one last">
+                                        <div class="clear"></div>
+                                        <div
+                                          class="gap"
+                                          style="height: 10px"
+                                        ></div>
+                                        <link
+                                          href="http://fonts.googleapis.com/css?family=Open+Sans"
+                                          rel="stylesheet"
+                                          type="text/css"
+                                        />
+                                        <div
+                                          class="googlefont"
+                                          style="
+                                            font-family: 'Open Sans', serif !important;
+                                            font-size: 32px !important;
+                                            margin: 0 0 0 0 !important;
+                                            color: #000;
+                                            line-height: 1.2;
+                                            float: none;
+                                            text-align: center;
+                                          "
+                                        >
+                                          What is CogSpeed?
+                                        </div>
+                                        <link
+                                          href="http://fonts.googleapis.com/css?family=Open+Sans"
+                                          rel="stylesheet"
+                                          type="text/css"
+                                        />
+                                        <div
+                                          class="googlefont"
+                                          style="
+                                            font-family: 'Open Sans', serif !important;
+                                            font-size: 15px !important;
+                                            margin: 10px 0 20px 0 !important;
+                                            color: #000;
+                                            line-height: 1;
+                                            float: none;
+                                            text-align: center;
+                                          "
+                                        >
+                                          CogSpeed is a mobile testing program
+                                          for individuals and employers that
+                                          gives users a real-time results of how
+                                          well the subjects brain is processing
+                                          information.
+                                        </div>
+                                        <link
+                                          href="http://fonts.googleapis.com/css?family=Open+Sans"
+                                          rel="stylesheet"
+                                          type="text/css"
+                                        />
+                                        <div
+                                          class="googlefont"
+                                          style="
+                                            font-family: 'Open Sans', serif !important;
+                                            font-size: 15px !important;
+                                            margin: 10px 0 20px 0 !important;
+                                            color: #000;
+                                            line-height: 1;
+                                            float: none;
+                                            text-align: center;
+                                          "
+                                        >
+                                          Can you drive safely? Can employees
+                                          run hazardous equipment?
+                                        </div>
+                                        <link
+                                          href="http://fonts.googleapis.com/css?family=Open+Sans"
+                                          rel="stylesheet"
+                                          type="text/css"
+                                        />
+                                        <div
+                                          class="googlefont"
+                                          style="
+                                            font-family: 'Open Sans', serif !important;
+                                            font-size: 15px !important;
+                                            margin: 10px 0 20px 0 !important;
+                                            color: #000;
+                                            line-height: 1;
+                                            float: none;
+                                            text-align: center;
+                                          "
+                                        >
+                                          You will begin to understand when you
+                                          or your employee&#8217;s ability to
+                                          concentrate changes throughout the day
+                                          or night, from week to week &#8211;
+                                          and can instantly see impairment
+                                          caused by alcohol, drugs, brain
+                                          injury, or senility!
+                                        </div>
+                                        <link
+                                          href="http://fonts.googleapis.com/css?family=Open+Sans"
+                                          rel="stylesheet"
+                                          type="text/css"
+                                        />
+                                        <div
+                                          class="googlefont"
+                                          style="
+                                            font-family: 'Open Sans', serif !important;
+                                            font-size: 15px !important;
+                                            margin: 10px 0 20px 0 !important;
+                                            color: #000;
+                                            line-height: 1;
+                                            float: none;
+                                            text-align: center;
+                                          "
+                                        >
+                                          Just think &#8230; a speedometer for
+                                          the brain!
+                                        </div>
+                                        <div class="clear"></div>
+                                        <div
+                                          class="gap"
+                                          style="height: 15px"
+                                        ></div>
+                                        <p style="text-align: center"> </p>
+                                      </div>
+                                      <div class="clear"></div>
+                                      <div
+                                        class="gap"
+                                        style="height: 10px"
+                                      ></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="custom-row row-style-yes row-parallax-bg"
+                    data-prlx-speed="0.25"
+                    data-min-height="400"
+                    style="
+                      background-color: #6b6b6b;
+                      background-image: url(https://graymattermetrics.com/wp-content/uploads/revslider/slider8/Pattern5.png);
+                      background-position: top;
+                      background-repeat: inherit;
+                      background-attachment: scroll;
+                      background-size: cover;
+                      padding-top: 70px;
+                      padding-bottom: 70px;
+                      margin-top: 70px;
+                      margin-bottom: 20px;
+                    "
+                  >
+                    <div class="wpb_row vc_row-fluid">
+                      <div class="vc_span12 wpb_column column_container">
+                        <div class="wpb_wrapper">
+                          <link
+                            href="http://fonts.googleapis.com/css?family=Open+Sans"
+                            rel="stylesheet"
+                            type="text/css"
+                          />
+                          <div
+                            class="googlefont"
+                            style="
+                              font-family: 'Open Sans', serif !important;
+                              font-size: 46px !important;
+                              margin: 28px !important;
+                              color: #ffffff;
+                              line-height: 1.2;
+                              float: none;
+                              text-align: center;
+                            "
+                          >
+                            <p>F U N C T I O N S</p>
+                          </div>
+                          <div class="wpb_row vc_row-fluid">
+                            <div class="vc_span4 wpb_column column_container">
+                              <div class="wpb_wrapper">
+                                <link
+                                  href="http://fonts.googleapis.com/css?family=Raleway"
+                                  rel="stylesheet"
+                                  type="text/css"
+                                />
+                                <div
+                                  class="googlefont"
+                                  style="
+                                    font-family: 'Raleway', serif !important;
+                                    font-size: 36px !important;
+                                    margin: 28px !important;
+                                    color: #ffffff;
+                                    line-height: 1.2;
+                                    float: none;
+                                    text-align: center;
+                                  "
+                                >
+                                  <p>test</p>
+                                </div>
+                                <link
+                                  href="http://fonts.googleapis.com/css?family=Open+Sans"
+                                  rel="stylesheet"
+                                  type="text/css"
+                                />
+                                <div
+                                  class="googlefont"
+                                  style="
+                                    font-family: 'Open Sans', serif !important;
+                                    font-size: 14px !important;
+                                    margin: 28px !important;
+                                    color: #ffffff;
+                                    line-height: 1.2;
+                                    float: none;
+                                    text-align: center;
+                                  "
+                                >
+                                  <p>
+                                    Set up and learning to take the test is fast
+                                    and easy. Downloading the test and permanent
+                                    storage of your scores requires access to
+                                    the internet, but testing can be done
+                                    anywhere, anytime, as often as you like. The
+                                    entire test procedure usually takes less
+                                    than two minutes to complete.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="vc_span4 wpb_column column_container">
+                              <div class="wpb_wrapper">
+                                <link
+                                  href="http://fonts.googleapis.com/css?family=Raleway"
+                                  rel="stylesheet"
+                                  type="text/css"
+                                />
+                                <div
+                                  class="googlefont"
+                                  style="
+                                    font-family: 'Raleway', serif !important;
+                                    font-size: 36px !important;
+                                    margin: 28px !important;
+                                    color: #ffffff;
+                                    line-height: 1.2;
+                                    float: none;
+                                    text-align: center;
+                                  "
+                                >
+                                  <p>analyze</p>
+                                </div>
+                                <link
+                                  href="http://fonts.googleapis.com/css?family=Open+Sans"
+                                  rel="stylesheet"
+                                  type="text/css"
+                                />
+                                <div
+                                  class="googlefont"
+                                  style="
+                                    font-family: 'Open Sans', serif !important;
+                                    font-size: 14px !important;
+                                    margin: 28px !important;
+                                    color: #ffffff;
+                                    line-height: 1.2;
+                                    float: none;
+                                    text-align: center;
+                                  "
+                                >
+                                  <p>
+                                    CogSpeed provides an instantaneous measure
+                                    of how fast you can correctly process
+                                    information and it can’t be fooled by
+                                    guessing or cheating. You can view the
+                                    results from all your past results, helping
+                                    you to track your highs and lows throughout
+                                    the year.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="vc_span4 wpb_column column_container">
+                              <div class="wpb_wrapper">
+                                <link
+                                  href="http://fonts.googleapis.com/css?family=Raleway"
+                                  rel="stylesheet"
+                                  type="text/css"
+                                />
+                                <div
+                                  class="googlefont"
+                                  style="
+                                    font-family: 'Raleway', serif !important;
+                                    font-size: 36px !important;
+                                    margin: 28px !important;
+                                    color: #ffffff;
+                                    line-height: 1.2;
+                                    float: none;
+                                    text-align: center;
+                                  "
+                                >
+                                  <p>share</p>
+                                </div>
+                                <link
+                                  href="http://fonts.googleapis.com/css?family=Open+Sans"
+                                  rel="stylesheet"
+                                  type="text/css"
+                                />
+                                <div
+                                  class="googlefont"
+                                  style="
+                                    font-family: 'Open Sans', serif !important;
+                                    font-size: 14px !important;
+                                    margin: 28px !important;
+                                    color: #ffffff;
+                                    line-height: 1.2;
+                                    float: none;
+                                    text-align: center;
+                                  "
+                                >
+                                  <p>
+                                    It&#8217;s possible to instantly transmit
+                                    anyone’s current cognitive processing
+                                    ability to any monitoring center, at any
+                                    world-wide location for immediate tracking
+                                    of performance reliability. No group is too
+                                    large to be constantly examined for each
+                                    individual’s accident potential. Concerned
+                                    employers, friends, and family, receive
+                                    peace of mind about the safety and wellness
+                                    of CogSpeed users.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="custom-row row-style-yes row-parallax-bg"
+                    data-prlx-speed="0.5"
+                    style="
+                      background-color: #ffffff;
+                      background-position: top;
+                      background-repeat: no-repeat;
+                      background-attachment: scroll;
+                      background-size: cover;
+                      padding-top: 40px;
+                      padding-bottom: 50px;
+                      margin-top: 20px;
+                      margin-bottom: 20px;
+                    "
+                  >
+                    <div class="wpb_row vc_row-fluid">
+                      <div class="vc_span12 wpb_column column_container">
+                        <div class="wpb_wrapper">
+                          <div class="wpb_text_column wpb_content_element">
+                            <div class="wpb_wrapper">
+                              <link
+                                href="http://fonts.googleapis.com/css?family=Raleway"
+                                rel="stylesheet"
+                                type="text/css"
+                              />
+                              <div
+                                class="googlefont"
+                                style="
+                                  font-family: 'Raleway', serif !important;
+                                  font-size: 30px !important;
+                                  margin: 10px 0 20px 0 !important;
+                                  color: #000;
+                                  line-height: 1.2;
+                                  float: none;
+                                  text-align: center;
+                                "
+                              >
+                                EVERYWHERE, ANYWHERE
+                              </div>
+                            </div>
+                          </div>
+                          <div class="wpb_text_column wpb_content_element">
+                            <div class="wpb_wrapper">
+                              <p style="text-align: center">
+                                <link
+                                  href="http://fonts.googleapis.com/css?family=Raleway"
+                                  rel="stylesheet"
+                                  type="text/css"
+                                />
+                              </p>
+                              <div
+                                class="googlefont"
+                                style="
+                                  font-family: 'Raleway', serif !important;
+                                  font-size: 16px !important;
+                                  margin: 0px 0 28px 0 !important;
+                                  color: #000;
+                                  line-height: 1;
+                                  float: none;
+                                  text-align: center;
+                                "
+                              >
+                                With CogSpeed you are able to test an employee
+                                in as little as 40-90 seconds, as often as
+                                necessary, and management can see the results
+                                instantly. You can use it anywhere on any mobile
+                                device with a wireless or cellular connection.
+                                And for a very affordable price.
+                              </div>
+                              <p style="text-align: center">
+                                <link
+                                  href="http://fonts.googleapis.com/css?family=Raleway"
+                                  rel="stylesheet"
+                                  type="text/css"
+                                />
+                              </p>
+                              <div
+                                class="googlefont"
+                                style="
+                                  font-family: 'Raleway', serif !important;
+                                  font-size: 16px !important;
+                                  margin: 0px 0 28px 0 !important;
+                                  color: #000;
+                                  line-height: 1;
+                                  float: none;
+                                  text-align: center;
+                                "
+                              >
+                                Watch the demo.
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="custom-row row-style-yes row-parallax-bg"
+                    data-prlx-speed="0.5"
+                    data-min-height="400"
+                    style="
+                      background-color: #ffffff;
+                      background-image: url(https://graymattermetrics.com/wp-content/uploads/2013/10/tired-man2-copy.jpg);
+                      background-position: top;
+                      background-repeat: no-repeat;
+                      background-attachment: fixed;
+                      background-size: cover;
+                    "
+                  >
+                    <div class="wpb_row vc_row-fluid">
+                      <div class="vc_span12 wpb_column column_container">
+                        <div class="wpb_wrapper">
+                          <div class="clear"></div>
+                          <div class="gap" style="height: 75px"></div>
+                          <div class="wpb_row vc_row-fluid">
+                            <div class="vc_span6 wpb_column column_container">
+                              <div class="wpb_wrapper"></div>
+                            </div>
+
+                            <div class="vc_span6 wpb_column column_container">
+                              <div class="wpb_wrapper">
+                                <div
+                                  class="wpb_text_column wpb_content_element"
+                                >
+                                  <div class="wpb_wrapper">
+                                    <link
+                                      href="http://fonts.googleapis.com/css?family=Raleway"
+                                      rel="stylesheet"
+                                      type="text/css"
+                                    />
+                                    <div
+                                      class="googlefont"
+                                      style="
+                                        font-family: 'Raleway', serif !important;
+                                        font-size: 36px !important;
+                                        margin: 10px 0 20px 0 !important;
+                                        color: #000;
+                                        line-height: 1.2;
+                                        float: none;
+                                        text-align: center;
+                                      "
+                                    >
+                                      IT&#8217;S TIME TO WAKE UP
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="wpb_row vc_row-fluid">
+                            <div class="vc_span6 wpb_column column_container">
+                              <div class="wpb_wrapper"></div>
+                            </div>
+
+                            <div class="vc_span6 wpb_column column_container">
+                              <div class="wpb_wrapper">
+                                <div
+                                  class="wpb_text_column wpb_content_element"
+                                >
+                                  <div class="wpb_wrapper">
+                                    <p style="text-align: center">
+                                      <link
+                                        href="http://fonts.googleapis.com/css?family=Open+Sans"
+                                        rel="stylesheet"
+                                        type="text/css"
+                                      />
+                                    </p>
+                                    <div
+                                      class="googlefont"
+                                      style="
+                                        font-family: 'Open Sans', serif !important;
+                                        font-size: 15px !important;
+                                        margin: 0px 0 28px 0 !important;
+                                        color: #000;
+                                        line-height: 1;
+                                        float: none;
+                                        text-align: center;
+                                      "
+                                    >
+                                      Each year in the U.S., the National
+                                      Highway Traffic Safety Administration
+                                      estimates that 100,000 reported crashes
+                                      result from driver fatigue, claiming some
+                                      1,500 lives and causing 71,000 injuries.
+                                    </div>
+                                    <p style="text-align: center">
+                                      <link
+                                        href="http://fonts.googleapis.com/css?family=Open+Sans"
+                                        rel="stylesheet"
+                                        type="text/css"
+                                      />
+                                    </p>
+                                    <div
+                                      class="googlefont"
+                                      style="
+                                        font-family: 'Open Sans', serif !important;
+                                        font-size: 15px !important;
+                                        margin: 0px 0 28px 0 !important;
+                                        color: #000;
+                                        line-height: 1;
+                                        float: none;
+                                        text-align: center;
+                                      "
+                                    >
+                                      Statistics also show truck crashes kill
+                                      more than 5,000 and injure 150,000
+                                      annually, with 750 of those fatalities and
+                                      20,000 injuries the result of a fatigued
+                                      commercial vehicle driver, according to
+                                      the Federal Motor Carrier Safety
+                                      Administration.
+                                    </div>
+                                    <p style="text-align: center">
+                                      <link
+                                        href="http://fonts.googleapis.com/css?family=Open+Sans"
+                                        rel="stylesheet"
+                                        type="text/css"
+                                      />
+                                    </p>
+                                    <div
+                                      class="googlefont"
+                                      style="
+                                        font-family: 'Open Sans', serif !important;
+                                        font-size: 15px !important;
+                                        margin: 0px 0 28px 0 !important;
+                                        color: #000;
+                                        line-height: 1;
+                                        float: none;
+                                        text-align: center;
+                                      "
+                                    >
+                                      Awake yet?
+                                    </div>
+                                    <p style="text-align: center"></p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="clear"></div>
+                          <div class="gap" style="height: 100px"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="custom-row row-style-yes row-parallax-bg"
+                    data-prlx-speed="0.5"
+                    style="
+                      background-color: #21bbd3;
+                      background-image: url(https://graymattermetrics.com/wp-content/uploads/2015/04/trafficlights6reverse.gif);
+                      background-position: center;
+                      background-repeat: no-repeat;
+                      background-attachment: fixed;
+                      background-size: cover;
+                      padding-top: -28px;
+                      margin-top: -10px;
+                      margin-bottom: -30px;
+                    "
+                  >
+                    <div class="wpb_row vc_row-fluid">
+                      <div class="vc_span12 wpb_column column_container">
+                        <div class="wpb_wrapper">
+                          <div class="clear"></div>
+                          <div class="gap" style="height: 150px"></div>
+                          <div class="wpb_row vc_row-fluid">
+                            <div class="vc_span12 wpb_column column_container">
+                              <div class="wpb_wrapper">
+                                <div
+                                  class="wpb_text_column wpb_content_element"
+                                >
+                                  <div class="wpb_wrapper">
+                                    <link
+                                      href="http://fonts.googleapis.com/css?family=Raleway"
+                                      rel="stylesheet"
+                                      type="text/css"
+                                    />
+                                    <div
+                                      class="googlefont"
+                                      style="
+                                        font-family: 'Raleway', serif !important;
+                                        font-size: 30px !important;
+                                        margin: 10px 0 20px 0 !important;
+                                        color: #fff;
+                                        line-height: 1.2;
+                                        float: none;
+                                        text-align: center;
+                                      "
+                                    >
+                                      CONCEPT + DEVELOPMENT
+                                    </div>
+                                  </div>
+                                </div>
+                                <div
+                                  class="wpb_text_column wpb_content_element"
+                                >
+                                  <div class="wpb_wrapper">
+                                    <link
+                                      href="http://fonts.googleapis.com/css?family=open+sans"
+                                      rel="stylesheet"
+                                      type="text/css"
+                                    />
+                                    <div
+                                      class="googlefont"
+                                      style="
+                                        font-family: 'open sans', serif !important;
+                                        font-size: 16px !important;
+                                        margin: 0px 0 28px 0 !important;
+                                        color: #fff;
+                                        line-height: 1;
+                                        float: none;
+                                        text-align: center;
+                                      "
+                                    >
+                                      CogSpeed has been in the developmental
+                                      stages since the 1980’s when Layne Perelli
+                                      completed his dissertation research on the
+                                      effects of fatigue and received a patent
+                                      on it in 1982.
+                                    </div>
+                                    <p style="text-align: left">
+                                      <link
+                                        href="http://fonts.googleapis.com/css?family=open+sans"
+                                        rel="stylesheet"
+                                        type="text/css"
+                                      />
+                                    </p>
+                                    <div
+                                      class="googlefont"
+                                      style="
+                                        font-family: 'open sans', serif !important;
+                                        font-size: 16px !important;
+                                        margin: 0px 0 28px 0 !important;
+                                        color: #fff;
+                                        line-height: 1;
+                                        float: none;
+                                        text-align: center;
+                                      "
+                                    >
+                                      It is the mission of Gray Matter Metrics
+                                      to open up a revolutionary approach to
+                                      monitoring human performance anywhere,
+                                      anytime and to make that valuable
+                                      information available immediately to
+                                      anyone who needs to know it. Our goal is
+                                      to distribute products that improve work
+                                      place safety, help save lives, and
+                                      contribute to the overall health and
+                                      well-being of society.
+                                    </div>
+                                    <p style="text-align: left">
+                                      <link
+                                        href="http://fonts.googleapis.com/css?family=open+sans"
+                                        rel="stylesheet"
+                                        type="text/css"
+                                      />
+                                    </p>
+                                    <div
+                                      class="googlefont"
+                                      style="
+                                        font-family: 'open sans', serif !important;
+                                        font-size: 16px !important;
+                                        margin: 0px 0 28px 0 !important;
+                                        color: #fff;
+                                        line-height: 1;
+                                        float: none;
+                                        text-align: center;
+                                      "
+                                    >
+                                      The technology was simply not in place for
+                                      such a sophisticated web app capability
+                                      until very recently. This application
+                                      requires a lightweight portable device
+                                      with very powerful, high-speed processing
+                                      power connected to the internet for
+                                      worldwide data collection. Only the latest
+                                      advances in software engineering (Java
+                                      Script, HTML5, .NET and SQL technologies),
+                                      wide-spread internet and cellular
+                                      connectivity, and the advanced
+                                      microprocessors found in today’s mobile
+                                      devices allow the app to run efficiently
+                                      at an affordable price.
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="clear"></div>
+                          <div class="gap" style="height: 150px"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <!-- /.entry -->
+                <div class="fix"></div>
+              </article>
+              <!-- /.post -->
+            </section>
+            <!-- /#main -->
+          </div>
+          <!-- /#main-sidebar-container -->
+        </div>
+        <!-- /#content -->
+
+        <a href="#" class="go-top">
+          <img
+            src="https://graymattermetrics.com/wp-content/themes/labomba/images/Misc/backtotop_hover.png"
+            alt="btt"
+          />
+        </a>
+
+        <!--#footer-widgets-container-->
+        <div id="footer-widgets-container"></div>
+        <!--/#footer_widgets_container_end-->
+        <!--#footer_container_start-->
+        <div id="footer-container">
+          <section id="extra-footer-widgets" class="col-full col-5">
+            <div class="block extra-footer-widget-1">
+              <div id="nav_menu-5" class="widget widget_nav_menu">
+                <h3>ABOUT</h3>
+                <div class="menu-about-container">
+                  <ul id="menu-about" class="menu">
+                    <li
+                      id="menu-item-7124"
+                      class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7124"
+                    >
+                      <a href="https://graymattermetrics.com/about/">About</a>
+                    </li>
+                    <li
+                      id="menu-item-7131"
+                      class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7131"
+                    >
+                      <a href="https://graymattermetrics.com/blog/"
+                        >Fatigue in the News</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="block extra-footer-widget-2">
+              <div id="nav_menu-9" class="widget widget_nav_menu">
+                <h3>USING CogSpeed</h3>
+              </div>
+            </div>
+            <div class="block extra-footer-widget-3">
+              <div id="nav_menu-6" class="widget widget_nav_menu">
+                <h3>POLICIES</h3>
+                <div class="menu-policies-container">
+                  <ul id="menu-policies" class="menu">
+                    <li
+                      id="menu-item-6816"
+                      class="menu-item menu-item-type-post_type menu-item-object-page menu-item-6816"
+                    >
+                      <a href="https://graymattermetrics.com/terms-conditions/"
+                        >Terms of Service</a
+                      >
+                    </li>
+                    <li
+                      id="menu-item-7138"
+                      class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7138"
+                    >
+                      <a href="https://graymattermetrics.com/privacy-policy-2/"
+                        >Privacy Policy</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="block extra-footer-widget-4">
+              <div id="nav_menu-7" class="widget widget_nav_menu">
+                <h3>Contact</h3>
+                <div class="menu-get-in-touch-container">
+                  <ul id="menu-get-in-touch" class="menu">
+                    <li
+                      id="menu-item-7127"
+                      class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7127"
+                    >
+                      <a href="https://graymattermetrics.com/contact/"
+                        >Contact</a
+                      >
+                    </li>
+                    <li
+                      id="menu-item-7567"
+                      class="menu-item menu-item-type-post_type menu-item-object-page menu-item-7567"
+                    >
+                      <a href="https://graymattermetrics.com/media-inquiries/"
+                        >Media Inquiries</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div id="sfsi-plus-widget-2" class="widget sfsi_plus">
+                <div class="sfsi_plus_widget" data-position="widget">
+                  <div id="sfsi_plus_wDiv"></div>
+                  <script>
+                    window.addEventListener(
+                      "sfsi_plus_functions_loaded",
+                      function () {
+                        if (typeof sfsi_plus_widget_set == "function") {
+                          sfsi_plus_widget_set();
+                        }
+                      }
+                    );
+                  </script>
+                  <div
+                    class="sfsiplus_norm_row sfsi_plus_wDiv"
+                    style="width: 225px; position: absolute; text-align: left"
+                  >
+                    <div
+                      style="
+                        width: 40px;
+                        height: auto;
+                        margin-left: 5px;
+                        margin-bottom: 5px;
+                      "
+                      class="sfsi_plus_wicons shuffeldiv"
+                    >
+                      <div class="sfsiplus_inerCnt">
+                        <a
+                          class="sficn"
+                          data-effect=""
+                          target="_blank"
+                          href="https://www.facebook.com/graymattermetrics"
+                          style="
+                            width: 40px;
+                            height: 40px;
+                            opacity: 1;
+                            background: #336699;
+                          "
+                          ><img
+                            alt="Facebook"
+                            title="Facebook"
+                            src="https://graymattermetrics.com/wp-content/plugins/ultimate-social-media-plus/images/icons_theme/flat/flat_fb.png"
+                            width="40"
+                            height="40"
+                            style=""
+                            class="sfcm sfsi_wicon sfsiplusid_round_icon_facebook"
+                            data-effect=""
+                        /></a>
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        width: 40px;
+                        height: auto;
+                        margin-left: 5px;
+                        margin-bottom: 5px;
+                      "
+                      class="sfsi_plus_wicons shuffeldiv"
+                    >
+                      <div class="sfsiplus_inerCnt">
+                        <a
+                          class="sficn"
+                          data-effect=""
+                          target="_blank"
+                          href="https://www.linkedin.com/company/gray-matter-metrics"
+                          style="
+                            width: 40px;
+                            height: 40px;
+                            opacity: 1;
+                            background: #0877b5;
+                          "
+                          ><img
+                            alt="LinkedIn"
+                            title="LinkedIn"
+                            src="https://graymattermetrics.com/wp-content/plugins/ultimate-social-media-plus/images/icons_theme/flat/flat_linkedin.png"
+                            width="40"
+                            height="40"
+                            style=""
+                            class="sfcm sfsi_wicon sfsiplusid_round_icon_linkedin"
+                            data-effect=""
+                        /></a>
+                        <div
+                          class="sfsi_plus_tool_tip_2 sfsi_plus_linkedin_tool_bdr sfsi_plus_Tlleft sfsiplusid_linkedin"
+                          style="
+                            display: block;
+                            width: 66px;
+                            opacity: 0;
+                            z-index: -1;
+                          "
+                        >
+                          <span class="bot_arow bot_linkedin_arow"></span>
+                          <div class="sfsi_plus_inside">
+                            <div class="icon4">
+                              <a
+                                href="https://www.linkedin.com/company/gray-matter-metrics"
+                                target="_blank"
+                                ><img
+                                  class="sfsi_plus_wicon"
+                                  alt=""
+                                  title=""
+                                  src="https://graymattermetrics.com/wp-content/plugins/ultimate-social-media-plus/images/visit_icons/linkedIn.png"
+                              /></a>
+                            </div>
+                            <div class="icon2">
+                              <a
+                                href="https://www.linkedin.com/shareArticle?url=https://graymattermetrics.com"
+                                ><img
+                                  class="sfsi_premium_wicon"
+                                  nopin="nopin"
+                                  alt="Share"
+                                  title="Share"
+                                  src="https://graymattermetrics.com/wp-content/plugins/ultimate-social-media-plus/images/share_icons/Linkedin_Share/en_US_share.svg"
+                              /></a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    id="sfsi_holder"
+                    class="sfsi_plus_holders"
+                    style="
+                      position: relative;
+                      float: left;
+                      width: 100%;
+                      z-index: -1;
+                    "
+                  ></div>
+                  <script></script>
+                  <div style="clear: both"></div>
+                </div>
+              </div>
+            </div>
+            <div class="block extra-footer-widget-5">
+              <div id="text-2" class="widget widget_text">
+                <h3>CONTACT INFO</h3>
+                <div class="textwidget">
+                  <p>
+                    Gray Matter Metrics, LLC<br />
+                    5100 John D Ryan Blvd <br />
+                    San Antonio, TX 78245 <br />
+                    210-867-7172<br />
+                    <a href="mailto:Info@GrayMatterMetrics.com"
+                      >Info@GrayMatterMetrics.com</a
+                    ><br />
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="fix"></div>
+          </section>
+          <!--/#footer-widgets-->
+          <div id="footer-container-bottom">
+            <footer id="footer" class="col-full">
+              <div id="copyright" class="col-left">
+                <p>&copy; 2023 Gray Matter Metrics. All Rights Reserved.</p>
+              </div>
+
+              <div id="credit" class="col-right">
+                <p>
+                  Powered by
+                  <a href="http://wordpress.org/" title="WordPress">WordPress</a
+                  >. Designed by <a href="http://daffyhazan.com/">Dahz</a>
+                </p>
+              </div>
+            </footer>
+          </div>
+        </div>
+        <!--/#footer_container_end-->
+      </div>
+      <!-- /#inner-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+
+    <div class="fix"></div>
+    <!--/.fix-->
+
+    <div id="fb-root">
+      <script type="text/javascript">
+        window.fbAsyncInit = function () {
+          FB.init({ status: true, cookie: true, xfbml: true });
+        };
+        (function () {
+          var e = document.createElement("script");
+          e.type = "text/javascript";
+          e.src =
+            document.location.protocol + "//connect.facebook.net/en_US/all.js";
+          e.async = true;
+          document.getElementById("fb-root").appendChild(e);
+        })();
+        (function () {
+          var e = document.createElement("script");
+          e.type = "text/javascript";
+          e.src = "http://platform.twitter.com/widgets.js";
+          e.async = true;
+          document.getElementById("fb-root").appendChild(e);
+        })();
+        window.___gcfg = { lang: "en" };
+        (function () {
+          var po = document.createElement("script");
+          po.type = "text/javascript";
+          po.async = true;
+          po.src = "https://apis.google.com/js/plusone.js";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(po, s);
+        })();
+      </script>
+    </div>
+    <script>
+      window.addEventListener("sfsi_plus_functions_loaded", function () {
+        if (typeof sfsi_plus_responsive_toggle == "function") {
+          sfsi_plus_responsive_toggle(0);
+          // console.log('sfsi_plus_responsive_toggle');
+        }
+      });
+    </script>
+
+    <script>
+      jQuery(document).ready(function ($) {
+        var fullscreenMap = jQuery(".one-col .map-canvas.fullscreen-yes"),
+          container = jQuery("#main, #main-shop"),
+          mapOffsetl = container.offset().left,
+          windowWidth = jQuery(window).width();
+
+        if (windowWidth > 980) {
+          mapOffsetl = mapOffsetl;
+
+          fullscreenMap.find(".one-col .map-canvas").css("width", windowWidth);
+
+          fullscreenMap.css("margin-left", "-" + mapOffsetl + "px");
+          // fullscreenMap.css('margin-left', '-' + mapOffsetl + 'px');
+          fullscreenMap.css("padding-left", function (index) {
+            totwidth = mapOffsetl + mapOffsetl;
+            return totwidth;
+          });
+        }
+      });
+    </script>
+    <link
+      rel="stylesheet"
+      id="js_composer_front-css"
+      href="https://graymattermetrics.com/wp-content/themes/labomba/pbuilder/js_composer/assets/css/js_composer_front.css?ver=3.6.13"
+      type="text/css"
+      media="screen"
+    />
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-includes/js/comment-reply.min.js?ver=6.3"
+      id="comment-reply-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/plugins/contact-form-7/includes/swv/js/index.js?ver=5.8"
+      id="swv-js"
+    ></script>
+    <script type="text/javascript" id="contact-form-7-js-extra">
+      /* <![CDATA[ */
+      var wpcf7 = {
+        api: {
+          root: "https:\/\/graymattermetrics.com\/wp-json\/",
+          namespace: "contact-form-7\/v1",
+        },
+      };
+      /* ]]> */
+    </script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/plugins/contact-form-7/includes/js/index.js?ver=5.8"
+      id="contact-form-7-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-includes/js/jquery/ui/core.min.js?ver=1.13.2"
+      id="jquery-ui-core-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/plugins/ultimate-social-media-plus/js/shuffle/modernizr.custom.min.js?ver=6.3"
+      id="SFSIPLUSjqueryModernizr-js"
+    ></script>
+    <script type="text/javascript" id="SFSIPLUSCustomJs-js-extra">
+      /* <![CDATA[ */
+      var sfsi_plus_ajax_object = {
+        ajax_url: "https:\/\/graymattermetrics.com\/wp-admin\/admin-ajax.php",
+        plugin_url:
+          "https:\/\/graymattermetrics.com\/wp-content\/plugins\/ultimate-social-media-plus\/",
+        rest_url: "https:\/\/graymattermetrics.com\/wp-json\/",
+      };
+      var sfsi_plus_links = {
+        admin_url: "https:\/\/graymattermetrics.com\/wp-admin\/",
+        plugin_dir_url:
+          "https:\/\/graymattermetrics.com\/wp-content\/plugins\/ultimate-social-media-plus\/",
+        rest_url: "https:\/\/graymattermetrics.com\/wp-json\/",
+        pretty_perma: "yes",
+      };
+      /* ]]> */
+    </script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/plugins/ultimate-social-media-plus/js/custom.js?ver=3.5.8"
+      id="SFSIPLUSCustomJs-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js?ver=1.10.3"
+      id="jquery-ui-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/themes/labomba/includes/js/third-party.js?ver=6.3"
+      id="third-party-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/themes/labomba/includes/js/jquery.flexslider.min.js?ver=6.3"
+      id="jquery-flexslider-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/themes/labomba/includes/js/script.js?ver=6.3"
+      id="script-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/themes/labomba/pbuilder/js_composer/assets/lib/isotope/jquery.isotope.min.js?ver=3.6.13"
+      id="isotope-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/themes/labomba/includes/js/jquery.prettyPhoto.js?ver=6.3"
+      id="prettyPhoto-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/themes/labomba/includes/js/portfolio.js?ver=6.3"
+      id="portfolio-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/themes/labomba/includes/js/general.js?ver=6.3"
+      id="general-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://graymattermetrics.com/wp-content/themes/labomba/pbuilder/js_composer/assets/js/js_composer_front.js?ver=3.6.13"
+      id="wpb_composer_front_js-js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="http://maps.google.com/maps/api/js?sensor=false&#038;ver=6.3"
+      id="map-js-js"
+    ></script>
+  </body>
+</html>
