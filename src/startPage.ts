@@ -258,6 +258,8 @@ export class StartPage {
   private async displaySamnPerelliChecklist(): Promise<number> {
     var level = 0;
 
+    this.createText(`S-PF Checklist`, this.app.screen.width * 0.5, this.app.screen.height * 0.1, 24, {wordWrap: true})
+
     const levels = [
       "Full alert, wide awake",
       "Very lively, responsive, but not at peak",
@@ -269,7 +271,7 @@ export class StartPage {
     ];
     const graphics: Array<GraphicList> = [];
     for (let index = levels.length - 1; index >= 0; index--) {
-      const y = this.app.screen.height * 0.1 + index * this.app.screen.height * 0.1;
+      const y = this.app.screen.height * 0.15 + index * this.app.screen.height * 0.1;
       const x = this.app.screen.width * 0.1;
       const width = this.app.screen.width * 0.8;
       const height = this.app.screen.height * 0.1;
@@ -289,13 +291,16 @@ export class StartPage {
 
       const text = new Text(`${7 - index}. ${levels[index]}`, {
         fontFamily: "Trebuchet",
-        fontSize: 18,
+        fontSize: 16,
         fill: 0xffffff,
       });
       text.position.set(x + 10, y + (this.app.screen.height * 0.1 - text.height) * 0.45);
       text.eventMode = "none";
       this.container.addChild(text);
     }
+
+    this.createText(`Samn, S. & Perelli, L. (1981). Estimating Aircrew Fatigue: A Technique with Application to 
+    // Airlift Operations. SAM-TR-82-2.`, this.app.screen.width * 0.5, this.app.screen.height * 0.92, 15, {wordWrap: true});
 
     await this.waitForKeyPressNoDestroy(graphics.map((graphic) => graphic[0]));
     await this.confirm("Ok");
@@ -312,19 +317,19 @@ export class StartPage {
     // if (process.env.NODE_ENV === "development") return {};
 
     // Display the home page
-    await this.displayHomePage();
+    // await this.displayHomePage();
 
-    // Display the test disclaimer
-    const ready = await this.displayTestDisclaimer();
-    if (!ready) return false;
+    // // Display the test disclaimer
+    // const ready = await this.displayTestDisclaimer();
+    // if (!ready) return false;
 
-    // Get sleep data
-    let sleepData;
-    while (true) {
-      sleepData = await this.displaySleepForm();
-      // Confirm sleep data
-      if (await this.confirmSleepData(sleepData)) break;
-    }
+    // // Get sleep data
+    // let sleepData;
+    // while (true) {
+    //   sleepData = await this.displaySleepForm();
+    //   // Confirm sleep data
+    //   if (await this.confirmSleepData(sleepData)) break;
+    // }
 
     // Display the Samn Perelli checklist
     // Minus 8 because the scale is inverted
@@ -335,7 +340,7 @@ export class StartPage {
 
     return {
       fatigueLevel,
-      ...sleepData,
+      // ...sleepData,
     };
   }
 }
