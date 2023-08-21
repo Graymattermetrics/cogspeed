@@ -313,7 +313,7 @@ export class StartPage {
     if (process.env.NODE_ENV === "development") return {};
 
     // Display the home page
-    // await this.displayHomePage();
+    await this.displayHomePage();
 
     // // Display the test disclaimer
     const ready = await this.displayTestDisclaimer();
