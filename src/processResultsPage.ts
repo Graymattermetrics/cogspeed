@@ -207,7 +207,7 @@ export class ProcessResultsPage {
     text.eventMode = "dynamic";
     text.on("pointerdown", this.downloadHandler.bind(this, this.formatData(data), 850 + data.answerLogs.length * 75));
 
-    const buttonContainer = this.ui.createButton("Restart test", this.app.screen.width / 2, this.app.screen.height / 2, this.app.screen.width / 2, this.app.screen.height / 5)
+    const buttonContainer = this.ui.createButton("Restart test", this.app.screen.width * 0.5, this.app.screen.height * 0.5, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
     buttonContainer.eventMode = "dynamic";
     buttonContainer.on("pointerdown", () => {
       window.location.reload();

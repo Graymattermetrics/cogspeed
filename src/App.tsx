@@ -55,7 +55,7 @@ async function main(): Promise<void> {
     align: "center",
   });
   loadingText.anchor.set(0.5);
-  loadingText.position.set(gameWidth / 2, gameHeight / 2);
+  loadingText.position.set(gameWidth * 0.5, gameHeight * 0.5);
   app.stage.addChild(loadingText);
   app.ticker.add((delta) => {
     loadingText.text = "Loading" + ".".repeat((Math.floor(app.ticker.lastTime / 1000) % 3) + 1);

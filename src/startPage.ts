@@ -137,10 +137,13 @@ export class StartPage {
 
     const readyDemo = new Sprite(this.ui.readyDemoTexture);
     readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
-    readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.5);
+    readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
     readyDemo.anchor.set(0.5);
 
+    const container = this.ui.createButton("Start now", this.app.screen.width * 0.5, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
+
     this.container.addChild(readyDemo);
+    this.container.addChild(container);
     await this.waitForKeyPress();
   }
 
@@ -258,7 +261,7 @@ export class StartPage {
   private async displaySamnPerelliChecklist(): Promise<number> {
     var level = 0;
 
-    this.createText(`S-PF Checklist`, this.app.screen.width * 0.5, this.app.screen.height * 0.1, 24, {wordWrap: true})
+    this.createText(`S-PF Checklist`, this.app.screen.width * 0.5, this.app.screen.height * 0.1, 24, { wordWrap: true })
 
     const levels = [
       "Full alert, wide awake",
@@ -300,7 +303,7 @@ export class StartPage {
     }
 
     this.createText(`Samn, S. & Perelli, L. (1981). Estimating Aircrew Fatigue: A Technique with Application to 
-    // Airlift Operations. SAM-TR-82-2.`, this.app.screen.width * 0.5, this.app.screen.height * 0.92, 15, {wordWrap: true});
+    // Airlift Operations. SAM-TR-82-2.`, this.app.screen.width * 0.5, this.app.screen.height * 0.92, 15, { wordWrap: true });
 
     await this.waitForKeyPressNoDestroy(graphics.map((graphic) => graphic[0]));
     await this.confirm("Ok");
@@ -333,13 +336,13 @@ export class StartPage {
 
     // Display the Samn Perelli checklist
     // Minus 8 because the scale is inverted
-    const fatigueLevel = 8 - (await this.displaySamnPerelliChecklist());
+    // const fatigueLevel = 8 - (await this.displaySamnPerelliChecklist());
 
     // Display the ready demo screen
     await this.displayReadyDemo();
 
     return {
-      fatigueLevel,
+      // fatigueLevel,
       // ...sleepData,
     };
   }

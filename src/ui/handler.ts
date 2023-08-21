@@ -117,11 +117,11 @@ export class CogSpeedGraphicsHandler {
   public createButton(content: string, x: number, y: number, width: number, height: number): Container {
     const container = new Container()
 
-    const restartButton = new Sprite(this.largeButtonTexture);
-    restartButton.anchor.set(0.5);
-    restartButton.position.set(x, y);
-    restartButton.width = width;
-    restartButton.height = height;
+    const button = new Sprite(this.largeButtonTexture);
+    button.anchor.set(0.5);
+    button.position.set(x, y);
+    button.width = width;
+    button.height = height;
     
     const text = new Text(content, {
       fontFamily: "Trebuchet",
@@ -132,7 +132,7 @@ export class CogSpeedGraphicsHandler {
     text.anchor.set(0.5);
     text.position.set(x, y);
     
-    container.addChild(restartButton);
+    container.addChild(button);
     container.addChild(text);
     return container;
   }
