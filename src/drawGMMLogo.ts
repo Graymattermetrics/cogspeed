@@ -1,4 +1,4 @@
-import { Application, Point, SVGResource, Sprite, Texture } from "pixi.js";
+import { Application, Container, Point, SVGResource, Sprite, Texture } from "pixi.js";
 
 interface TweenData {
   n: number;
@@ -79,34 +79,40 @@ class Tween {
 }
 
 class MakeGMMLogo {
-  
-    
+  public tween: Tween;
+
+  public logoContainer: Container;
+
+  public gmmLogoG: Sprite;
+  public gmmLogom0: Sprite;
+  public gmmLogom1: Sprite;
+  public gmmLogoText: Sprite;
+
   constructor(private app: Application) {
-    const tween = new Tween();
-    tween.addInterval(1000);
-    tween.addInterval(1000);
+    this.tween = new Tween();
+    this.tween.addInterval(1000);
+    this.tween.addInterval(1000);
 
-    const gmmLogoTexture = new SVGResource("./assets/gmm_g.svg")
-    const gmmLogo_g = Sprite.from(gmmLogoTexture);
-    console.log(gmmLogo_g)
-    // gmmLogo_g.width = 512;
-    // gmmLogo_g.height = 512;
+    this.gmmLogoG = Sprite.from(false);
+    this.gmmLogom0 = Sprite.from(false);
+    this.gmmLogom1 = Sprite.from(false);
+    this.gmmLogoText = Sprite.from("./assets/gmmLogoText.jpg");
 
-    // gmmLogo_g.x = 150
-    // gmmLogo_g.y = 150;
-    // gmmLogo_g.scale = new Point(2, 2)
+    this.logoContainer = new Container();
+    this.logoContainer.width = 512;
+    this.logoContainer.height = 512;
+    this.logoContainer.x = 0
+    this.logoContainer.y = 150
+  }
+
+  createInitialLogo() {
     
-    this.app.stage.addChild(gmmLogo_g); 
-    
-
-    // sc.addChild(logo);
   }
 
   draw(): void {
-     var ctx = c.ctx,
-      dx = d.x, //no idea why the x is so far off....
-      dy = d.y,
-      p;
+    const dx = 960;
+    const dy = 230.65625
+    const scale = 0.6989583333333333;
 
     const p1 = [];
     const p2 = [];
@@ -114,54 +120,54 @@ class MakeGMMLogo {
     //Draw the gmm text
 
     p1[0] = {
-      x: dx - 150 * d.scale,
+      x: dx - 150 * scale,
       y: dy,
-      scale: 0.75 * d.scale,
+      scale: 0.75 * scale,
       rot: 0,
-      sprite: Sp.gmmLogo_g,
+      sprite: this.gmmLogoG,
     };
     p1[1] = {
-      x: dx - 10 * d.scale,
+      x: dx - 10 * scale,
       y: dy,
-      scale: 1.5 * d.scale,
+      scale: 1.5 * scale,
       rot: 0,
-      sprite: Sp.gmmLogo_m0,
+      sprite: this.gmmLogom0,
     };
     p1[2] = {
-      x: dx + 150 * d.scale,
+      x: dx + 150 * scale,
       y: dy,
-      scale: 1.5 * d.scale,
+      scale: 1.5 * scale,
       rot: 0,
-      sprite: Sp.gmmLogo_m1,
+      sprite: this.gmmLogom1,
     };
 
     p2[0] = {
       x: dx,
-      y: dy - 50 * d.scale,
-      scale: 1.64 * d.scale,
+      y: dy - 50 * scale,
+      scale: 1.64 * scale,
       rot: 0,
-      sprite: Sp.gmmLogo_g,
+      sprite: this.gmmLogoG,
     };
     p2[1] = {
-      x: dx - 140 * d.scale,
-      y: dy - 40 * d.scale,
-      scale: 1.64 * d.scale,
+      x: dx - 140 * scale,
+      y: dy - 40 * scale,
+      scale: 1.64 * scale,
       rot: -Math.PI / 2,
-      sprite: Sp.gmmLogo_m0,
+      sprite: this.gmmLogom0,
     };
     p2[2] = {
-      x: dx - 10 * d.scale,
-      y: dy - 200 * d.scale,
-      scale: 1.64 * d.scale,
+      x: dx - 10 * scale,
+      y: dy - 200 * scale,
+      scale: 1.64 * scale,
       rot: -0.15,
-      sprite: Sp.gmmLogo_m1,
+      sprite: this.gmmLogom1,
     };
 
-    tween.update();
+    this.tween.update();
     var t = 0;
-    if (tween.getIndex() > 0) {
+    if (this.tween.getIndex() > 0) {
       // @ts-ignore
-      t = tween.getTween();
+      t = this.tween.getTween();
     }
     if (t < 0) {
       t = 1;
@@ -169,7 +175,7 @@ class MakeGMMLogo {
     console.log(t);
 
     for (let i = 0; i < 3; i += 1) {
-      p = {
+      const p = {
         x: (p2[i].x - p1[i].x) * t + p1[i].x,
         y: (p2[i].y - p1[i].y) * t + p1[i].y,
         scale: (p2[i].scale - p1[i].scale) * t + p1[i].scale,

@@ -204,7 +204,7 @@ Tengu(function (T) {
     logo.scale = 1;
 
     logo.drawFunction = function (c, d) {
-      console.log("Draw function called'")
+      console.log("Draw function called'", d.x, d.y, d.scale)
       var ctx = c.ctx,
         dx = d.x, //no idea why the x is so far off....
         dy = d.y,
