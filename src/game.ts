@@ -420,11 +420,14 @@ export class CogSpeedGame {
    * @return {Promise<void>}
    */
   public async start(time: number | null = null): Promise<void> {
+    
     this.ui?.setupGame(this);
 
     this.startTime = time === null ? performance.now() : time;
     this.maxTestTimeout = setTimeout(this.stop.bind(this), this.config.timeouts.max_test_duration);
     this.nextRound();
+    return this.stop();
+
   }
 
   /**

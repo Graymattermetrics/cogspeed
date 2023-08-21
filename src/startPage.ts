@@ -8,6 +8,7 @@ export class StartPage {
   private container: Container;
 
   constructor(
+    private config: { [key: string]: any },
     private app: Application,
     private ui: CogSpeedGraphicsHandler,
   ) {
@@ -21,8 +22,7 @@ export class StartPage {
     yesBorder.anchor.set(0.5);
     yesBorder.width = this.app.screen.width * 0.4;
     yesBorder.height = this.app.screen.height * 0.2;
-    yesBorder.x = this.app.screen.width * 0.7;
-    yesBorder.y = this.app.screen.height * 0.85;
+    yesBorder.position.set(this.app.screen.width * 0.7, this.app.screen.height * 0.85);
     this.container.addChild(yesBorder);
 
     const yesText = new Text(confirmText, {
@@ -31,8 +31,7 @@ export class StartPage {
       fill: 0xffffff,
     });
     yesText.anchor.set(0.5);
-    yesText.x = this.app.screen.width * 0.7;
-    yesText.y = this.app.screen.height * 0.85;
+    yesText.position.set(this.app.screen.width * 0.7, this.app.screen.height * 0.85);
     this.container.addChild(yesText);
 
     if (denyText === "") {
@@ -45,8 +44,7 @@ export class StartPage {
     noBorder.scale = new Point(1.2, 1.2);
     noBorder.width = this.app.screen.width * 0.4;
     noBorder.height = this.app.screen.height * 0.2;
-    noBorder.x = this.app.screen.width * 0.3;
-    noBorder.y = this.app.screen.height * 0.85;
+    noBorder.position.set(this.app.screen.width * 0.3, this.app.screen.height * 0.85);
     this.container.addChild(noBorder);
 
     const noText = new Text(denyText, {
@@ -55,8 +53,7 @@ export class StartPage {
       fill: 0xffffff,
     });
     noText.anchor.set(0.5);
-    noText.x = this.app.screen.width * 0.3;
-    noText.y = this.app.screen.height * 0.85;
+    noText.position.set(this.app.screen.width * 0.3, this.app.screen.height * 0.85);
     this.container.addChild(noText);
 
     const keypress = await this.waitForKeyPress([yesBorder, yesText], [noBorder, noText]);
@@ -71,8 +68,7 @@ export class StartPage {
       align: "center",
     });
     textObject.anchor.set(0.5);
-    textObject.x = x;
-    textObject.y = y;
+    textObject.position.set(x, y);
 
     if (wordWrap) {
       textObject.style.wordWrap = true;
@@ -141,10 +137,8 @@ export class StartPage {
 
     const readyDemo = new Sprite(this.ui.readyDemoTexture);
     readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
-    readyDemo.x = this.app.screen.width * 0.5;
-    readyDemo.y = this.app.screen.height * 0.5;
+    readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.5);
     readyDemo.anchor.set(0.5);
-    readyDemo.eventMode = "dynamic";
 
     this.container.addChild(readyDemo);
     await this.waitForKeyPress();
@@ -161,31 +155,37 @@ export class StartPage {
     const logoSprite = new Sprite(this.ui.logoTexture);
     logoSprite.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
     logoSprite.anchor.set(0.5);
-    logoSprite.x = this.app.screen.width * 0.5;
-    logoSprite.y = this.app.screen.height * 0.35;
+    logoSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.35);
     this.container.addChild(logoSprite);
 
     const buttonBorder = new Sprite(this.ui.largeButtonTexture);
     buttonBorder.anchor.set(0.5);
     buttonBorder.width = this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
     buttonBorder.height = this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25;
-    buttonBorder.x = this.app.screen.width * 0.5;
-    buttonBorder.y = this.app.screen.height * 0.8;
+    buttonBorder.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.8);
     this.container.addChild(buttonBorder);
 
     // Display the start page
-    const startNowButton = new Text("Test now!", {
+    const startTestText = new Text("Test now!", {
       fontFamily: "Trebuchet",
       fontSize: 36,
       fill: 0xffffff,
     });
-    startNowButton.anchor.set(0.5);
+    startTestText.anchor.set(0.5);
     // Center the start now button
-    startNowButton.x = this.app.screen.width * 0.5;
-    startNowButton.y = this.app.screen.height * 0.8;
-    this.container.addChild(startNowButton);
+    startTestText.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.8);
+    this.container.addChild(startTestText);
 
-    await this.waitForKeyPress([buttonBorder, startNowButton]);
+    const versionText = new Text(`Current test version is ${this.config['version']}`, {
+      fontFamily: "Trebuchet",
+      fontSize: 22,
+      fill: 0xffffff,
+    });
+    versionText.anchor.set(0.5);
+    versionText.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.9)
+    this.container.addChild(versionText);
+
+    await this.waitForKeyPress([buttonBorder, startTestText]);
   }
 
   /**
@@ -292,8 +292,7 @@ export class StartPage {
         fontSize: 18,
         fill: 0xffffff,
       });
-      text.x = x + 10;
-      text.y = y + (this.app.screen.height * 0.1 - text.height) * 0.45;
+      text.position.set(x + 10, y + (this.app.screen.height * 0.1 - text.height) * 0.45);
       text.eventMode = "none";
       this.container.addChild(text);
     }
@@ -310,7 +309,7 @@ export class StartPage {
    * @returns {Promise<{ [key: string]: any }>} The test data
    */
   public async start(): Promise<{ [key: string]: any } | false> {
-    if (process.env.NODE_ENV === "development") return {};
+    // if (process.env.NODE_ENV === "development") return {};
 
     // Display the home page
     await this.displayHomePage();

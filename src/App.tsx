@@ -49,7 +49,7 @@ async function main(): Promise<void> {
   // Show GMM Logo while loading all textures
   // Temp text instead of logo for now
   const loadingText = new Text("Loading", {
-    fontFamily: "Arial",
+    fontFamily: "Trebuchet",
     fontSize: 24,
     fill: 0xffffff,
     align: "center",
@@ -63,14 +63,12 @@ async function main(): Promise<void> {
 
   const graphicsManager = new CogSpeedGraphicsHandler(app);
 
-  // Emulate loading time
-  const loadingTime = process.env.NODE_ENV === "development" ? 100 : 3000;
-  await new Promise((resolve) => setTimeout(resolve, loadingTime));
+  await graphicsManager.loadScreen();
 
   app.stage.removeChild(loadingText);
   graphicsManager.setBackground("carbon");
 
-  const startPage = new StartPage(app, graphicsManager);
+  const startPage = new StartPage(config, app, graphicsManager);
   // Initiate before displaying to load config
   // Display start page
   const sleepData = await startPage.start();
