@@ -24,6 +24,7 @@ async function loadConfig(): Promise<{ [key: string]: any }> {
   let configUrl = "https://t6pedjjwcb.execute-api.us-east-2.amazonaws.com/default/getCogspeedConfig";
   const urlParams = new URLSearchParams(window.location.search);
   const version = urlParams.get("version");
+  // Append version and branch from window search location
   if (version) configUrl += `?version=${version}`;
   else {
     const branch = urlParams.get("branch");
@@ -62,7 +63,7 @@ async function main(): Promise<void> {
   });
 
   const graphicsManager = new CogSpeedGraphicsHandler(app);
-
+  // Load screen while displaying loading text
   await graphicsManager.loadScreen();
 
   app.stage.removeChild(loadingText);

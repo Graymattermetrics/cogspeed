@@ -20,7 +20,7 @@ export class StartPage {
     const yesBorder = new Sprite(this.ui.smallButtons[1]);
     yesBorder.scale = new Point(1.2, 1.2);
     yesBorder.anchor.set(0.5);
-    yesBorder.width = this.app.screen.width * 0.4;
+    yesBorder.width = this.app.screen.width * 0.475;
     yesBorder.height = this.app.screen.height * 0.2;
     yesBorder.position.set(this.app.screen.width * 0.7, this.app.screen.height * 0.85);
     this.container.addChild(yesBorder);
@@ -128,26 +128,6 @@ export class StartPage {
   }
 
   /**
-   * Display the ready demo screen
-   */
-  private async displayReadyDemo() {
-    // Display the ready demo screen
-    const size = 512;
-    const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
-
-    const readyDemo = new Sprite(this.ui.readyDemoTexture);
-    readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
-    readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
-    readyDemo.anchor.set(0.5);
-
-    const container = this.ui.createButton("Start now", this.app.screen.width * 0.5, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
-
-    this.container.addChild(readyDemo);
-    this.container.addChild(container);
-    await this.waitForKeyPress();
-  }
-
-  /**
    * Display the home page
    */
   private async displayHomePage() {
@@ -179,14 +159,7 @@ export class StartPage {
     startTestText.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.8);
     this.container.addChild(startTestText);
 
-    const versionText = new Text(`Current test version is ${this.config['version']}`, {
-      fontFamily: "Trebuchet",
-      fontSize: 22,
-      fill: 0xffffff,
-    });
-    versionText.anchor.set(0.5);
-    versionText.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.9)
-    this.container.addChild(versionText);
+    this.createText(`Current test version is ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.93, 14, {wordWrap: true});
 
     await this.waitForKeyPress([buttonBorder, startTestText]);
   }
@@ -274,10 +247,10 @@ export class StartPage {
     ];
     const graphics: Array<GraphicList> = [];
     for (let index = levels.length - 1; index >= 0; index--) {
-      const y = this.app.screen.height * 0.15 + index * this.app.screen.height * 0.1;
+      const y = this.app.screen.height * 0.15 + (index * this.app.screen.height * 0.09);
       const x = this.app.screen.width * 0.1;
       const width = this.app.screen.width * 0.8;
-      const height = this.app.screen.height * 0.1;
+      const height = this.app.screen.height * 0.09;
 
       const graphic = new Graphics();
       graphic.beginFill(0x0000);
@@ -297,17 +270,37 @@ export class StartPage {
         fontSize: 16,
         fill: 0xffffff,
       });
-      text.position.set(x + 10, y + (this.app.screen.height * 0.1 - text.height) * 0.45);
+      text.position.set(x + 10, y + (this.app.screen.height * 0.09 - text.height) * 0.45);
       text.eventMode = "none";
       this.container.addChild(text);
     }
 
     this.createText(`Samn, S. & Perelli, L. (1981). Estimating Aircrew Fatigue: A Technique with Application to 
-    // Airlift Operations. SAM-TR-82-2.`, this.app.screen.width * 0.5, this.app.screen.height * 0.92, 15, { wordWrap: true });
+    // Airlift Operations. SAM-TR-82-2.`, this.app.screen.width * 0.5, this.app.screen.height * 0.94, 12, { wordWrap: true });
 
     await this.waitForKeyPressNoDestroy(graphics.map((graphic) => graphic[0]));
     await this.confirm("Ok");
     return level;
+  }
+
+  /**
+   * Display the ready demo screen
+   */
+  private async displayReadyDemo() {
+    // Display the ready demo screen
+    const size = 512;
+    const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
+
+    const readyDemo = new Sprite(this.ui.readyDemoTexture);
+    readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
+    readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
+    readyDemo.anchor.set(0.5);
+
+    const container = this.ui.createButton("Start now", this.app.screen.width * 0.5, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
+
+    this.container.addChild(readyDemo);
+    this.container.addChild(container);
+    await this.waitForKeyPress();
   }
 
   /**
@@ -317,33 +310,35 @@ export class StartPage {
    * @returns {Promise<{ [key: string]: any }>} The test data
    */
   public async start(): Promise<{ [key: string]: any } | false> {
-    // if (process.env.NODE_ENV === "development") return {};
+    if (process.env.NODE_ENV === "development") return {};
 
     // Display the home page
     // await this.displayHomePage();
 
     // // Display the test disclaimer
-    // const ready = await this.displayTestDisclaimer();
-    // if (!ready) return false;
+    const ready = await this.displayTestDisclaimer();
+    if (!ready) return false;
 
     // // Get sleep data
-    // let sleepData;
-    // while (true) {
-    //   sleepData = await this.displaySleepForm();
-    //   // Confirm sleep data
-    //   if (await this.confirmSleepData(sleepData)) break;
-    // }
+    let sleepData;
+    while (true) {
+      sleepData = await this.displaySleepForm();
+      // Confirm sleep data
+      if (await this.confirmSleepData(sleepData)) break;
+    }
 
     // Display the Samn Perelli checklist
-    // Minus 8 because the scale is inverted
-    // const fatigueLevel = 8 - (await this.displaySamnPerelliChecklist());
+    // Minus from 8 because the scale is inverted
+    const fatigueLevel = 8 - (await this.displaySamnPerelliChecklist());
 
-    // Display the ready demo screen
-    await this.displayReadyDemo();
+    if (this.config.display_refresher_screens) {
+      // Display the ready demo screen
+      await this.displayReadyDemo();
+    }
 
     return {
-      // fatigueLevel,
-      // ...sleepData,
+      fatigueLevel,
+      ...sleepData,
     };
   }
 }

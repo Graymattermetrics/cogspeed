@@ -210,6 +210,7 @@ export class ProcessResultsPage {
     const buttonContainer = this.ui.createButton("Restart test", this.app.screen.width * 0.5, this.app.screen.height * 0.5, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
     buttonContainer.eventMode = "dynamic";
     buttonContainer.on("pointerdown", () => {
+      // TODO: Send back to home page
       window.location.reload();
     });
 
