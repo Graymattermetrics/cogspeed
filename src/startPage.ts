@@ -42,7 +42,7 @@ export class StartPage {
     const noBorder = new Sprite(this.ui.smallButtons[1]);
     noBorder.anchor.set(0.5);
     noBorder.scale = new Point(1.2, 1.2);
-    noBorder.width = this.app.screen.width * 0.4;
+    noBorder.width = this.app.screen.width * 0.475;
     noBorder.height = this.app.screen.height * 0.2;
     noBorder.position.set(this.app.screen.width * 0.3, this.app.screen.height * 0.85);
     this.container.addChild(noBorder);
