@@ -1,4 +1,4 @@
-import { Application, Container, Point, Rectangle, Sprite, Texture } from "pixi.js";
+import { Application, Container, Point, Rectangle, Sprite, Texture, Text } from "pixi.js";
 
 import buttonTextureImage from "../assets/button.png";
 import invertedButtonTextureImage from "../assets/button_inverted.png";
@@ -109,6 +109,34 @@ export class CogSpeedGraphicsHandler {
     this.smallButtons = this.loadButtons();
   }
 
+  public async loadScreen(): Promise<void> {
+    const loadingTime = process.env.NODE_ENV === "development" ? 100 : 3000;
+    await new Promise((resolve) => setTimeout(resolve, loadingTime));
+  }
+
+  public createButton(content: string, x: number, y: number, width: number, height: number): Container {
+    const container = new Container()
+
+    const button = new Sprite(this.largeButtonTexture);
+    button.anchor.set(0.5);
+    button.position.set(x, y);
+    button.width = width;
+    button.height = height;
+    
+    const text = new Text(content, {
+      fontFamily: "Trebuchet",
+      fontSize: 24,
+      fill: 0xc4e4ff,
+      align: "center",
+    });
+    text.anchor.set(0.5);
+    text.position.set(x, y);
+    
+    container.addChild(button);
+    container.addChild(text);
+    return container;
+  }
+
   private loadButtons(): Texture[] {
     const buttons = [];
     const spaceBetween = 128;
@@ -167,8 +195,7 @@ export class CogSpeedGraphicsHandler {
    * @param {Container | undefined} container The container to add the sprite to (if undefined, adds to stage)
    */
   public setSpritePosition(sprite: Sprite, x: number, y: number, container: Container | undefined = undefined): void {
-    sprite.x = container ? x : this.app.screen.width * x;
-    sprite.y = container ? y : this.app.screen.height * y;
+    sprite.position.set(container ? x : this.app.screen.width * x, container ? y : this.app.screen.height * y);
 
     if (container) container.addChild(sprite);
     else this.app.stage.addChild(sprite);
@@ -252,8 +279,7 @@ export class CogSpeedGraphicsHandler {
   public createGear(posX: number, posY: number, gearLocation: string = ""): [Container, Sprite[]] {
     // Add container
     const container = new Container();
-    container.x = this.app.screen.width * posX; // Centre
-    container.y = this.app.screen.height * posY; // Top
+    container.position.set(this.app.screen.width * posX, this.app.screen.height * posY);
     this.app.stage.addChild(container);
 
     // Add gear well below gear
@@ -285,9 +311,7 @@ export class CogSpeedGraphicsHandler {
       button.width = gear.width / gearK;
       button.height = gear.height / gearK;
 
-      const [x, y] = buttonPositions[i](gear.height, gear.width);
-      button.x = x;
-      button.y = y;
+      button.position.set(...buttonPositions[i](gear.height, gear.width));
       container.addChild(button);
       buttons.push(button);
     }
@@ -302,8 +326,7 @@ export class CogSpeedGraphicsHandler {
     const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
     const animationSprite = new Sprite(this.buttonTexture);
-    animationSprite.x = sprite.x;
-    animationSprite.y = sprite.y;
+    animationSprite.position.set(sprite.x, sprite.y);
     animationSprite.anchor.set(0.5);
     animationSprite.scale = new Point(0.8, 0.8);
     animationSprite.alpha = 0.7;

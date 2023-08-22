@@ -8,6 +8,7 @@ export class StartPage {
   private container: Container;
 
   constructor(
+    private config: { [key: string]: any },
     private app: Application,
     private ui: CogSpeedGraphicsHandler,
   ) {
@@ -19,10 +20,9 @@ export class StartPage {
     const yesBorder = new Sprite(this.ui.smallButtons[1]);
     yesBorder.scale = new Point(1.2, 1.2);
     yesBorder.anchor.set(0.5);
-    yesBorder.width = this.app.screen.width * 0.4;
+    yesBorder.width = this.app.screen.width * 0.475;
     yesBorder.height = this.app.screen.height * 0.2;
-    yesBorder.x = this.app.screen.width * 0.7;
-    yesBorder.y = this.app.screen.height * 0.85;
+    yesBorder.position.set(this.app.screen.width * 0.7, this.app.screen.height * 0.85);
     this.container.addChild(yesBorder);
 
     const yesText = new Text(confirmText, {
@@ -31,8 +31,7 @@ export class StartPage {
       fill: 0xffffff,
     });
     yesText.anchor.set(0.5);
-    yesText.x = this.app.screen.width * 0.7;
-    yesText.y = this.app.screen.height * 0.85;
+    yesText.position.set(this.app.screen.width * 0.7, this.app.screen.height * 0.85);
     this.container.addChild(yesText);
 
     if (denyText === "") {
@@ -43,10 +42,9 @@ export class StartPage {
     const noBorder = new Sprite(this.ui.smallButtons[1]);
     noBorder.anchor.set(0.5);
     noBorder.scale = new Point(1.2, 1.2);
-    noBorder.width = this.app.screen.width * 0.4;
+    noBorder.width = this.app.screen.width * 0.475;
     noBorder.height = this.app.screen.height * 0.2;
-    noBorder.x = this.app.screen.width * 0.3;
-    noBorder.y = this.app.screen.height * 0.85;
+    noBorder.position.set(this.app.screen.width * 0.3, this.app.screen.height * 0.85);
     this.container.addChild(noBorder);
 
     const noText = new Text(denyText, {
@@ -55,8 +53,7 @@ export class StartPage {
       fill: 0xffffff,
     });
     noText.anchor.set(0.5);
-    noText.x = this.app.screen.width * 0.3;
-    noText.y = this.app.screen.height * 0.85;
+    noText.position.set(this.app.screen.width * 0.3, this.app.screen.height * 0.85);
     this.container.addChild(noText);
 
     const keypress = await this.waitForKeyPress([yesBorder, yesText], [noBorder, noText]);
@@ -71,8 +68,7 @@ export class StartPage {
       align: "center",
     });
     textObject.anchor.set(0.5);
-    textObject.x = x;
-    textObject.y = y;
+    textObject.position.set(x, y);
 
     if (wordWrap) {
       textObject.style.wordWrap = true;
@@ -132,25 +128,6 @@ export class StartPage {
   }
 
   /**
-   * Display the ready demo screen
-   */
-  private async displayReadyDemo() {
-    // Display the ready demo screen
-    const size = 512;
-    const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
-
-    const readyDemo = new Sprite(this.ui.readyDemoTexture);
-    readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
-    readyDemo.x = this.app.screen.width * 0.5;
-    readyDemo.y = this.app.screen.height * 0.5;
-    readyDemo.anchor.set(0.5);
-    readyDemo.eventMode = "dynamic";
-
-    this.container.addChild(readyDemo);
-    await this.waitForKeyPress();
-  }
-
-  /**
    * Display the home page
    */
   private async displayHomePage() {
@@ -161,31 +138,30 @@ export class StartPage {
     const logoSprite = new Sprite(this.ui.logoTexture);
     logoSprite.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
     logoSprite.anchor.set(0.5);
-    logoSprite.x = this.app.screen.width * 0.5;
-    logoSprite.y = this.app.screen.height * 0.35;
+    logoSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.35);
     this.container.addChild(logoSprite);
 
     const buttonBorder = new Sprite(this.ui.largeButtonTexture);
     buttonBorder.anchor.set(0.5);
     buttonBorder.width = this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
     buttonBorder.height = this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25;
-    buttonBorder.x = this.app.screen.width * 0.5;
-    buttonBorder.y = this.app.screen.height * 0.8;
+    buttonBorder.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.8);
     this.container.addChild(buttonBorder);
 
     // Display the start page
-    const startNowButton = new Text("Test now!", {
+    const startTestText = new Text("Test now!", {
       fontFamily: "Trebuchet",
       fontSize: 36,
       fill: 0xffffff,
     });
-    startNowButton.anchor.set(0.5);
+    startTestText.anchor.set(0.5);
     // Center the start now button
-    startNowButton.x = this.app.screen.width * 0.5;
-    startNowButton.y = this.app.screen.height * 0.8;
-    this.container.addChild(startNowButton);
+    startTestText.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.8);
+    this.container.addChild(startTestText);
 
-    await this.waitForKeyPress([buttonBorder, startNowButton]);
+    this.createText(`Current test version is ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.93, 14, {wordWrap: true});
+
+    await this.waitForKeyPress([buttonBorder, startTestText]);
   }
 
   /**
@@ -258,6 +234,8 @@ export class StartPage {
   private async displaySamnPerelliChecklist(): Promise<number> {
     var level = 0;
 
+    this.createText(`S-PF Checklist`, this.app.screen.width * 0.5, this.app.screen.height * 0.1, 24, { wordWrap: true })
+
     const levels = [
       "Full alert, wide awake",
       "Very lively, responsive, but not at peak",
@@ -269,10 +247,10 @@ export class StartPage {
     ];
     const graphics: Array<GraphicList> = [];
     for (let index = levels.length - 1; index >= 0; index--) {
-      const y = this.app.screen.height * 0.1 + index * this.app.screen.height * 0.1;
+      const y = this.app.screen.height * 0.15 + (index * this.app.screen.height * 0.09);
       const x = this.app.screen.width * 0.1;
       const width = this.app.screen.width * 0.8;
-      const height = this.app.screen.height * 0.1;
+      const height = this.app.screen.height * 0.09;
 
       const graphic = new Graphics();
       graphic.beginFill(0x0000);
@@ -289,18 +267,40 @@ export class StartPage {
 
       const text = new Text(`${7 - index}. ${levels[index]}`, {
         fontFamily: "Trebuchet",
-        fontSize: 18,
+        fontSize: 16,
         fill: 0xffffff,
       });
-      text.x = x + 10;
-      text.y = y + (this.app.screen.height * 0.1 - text.height) * 0.45;
+      text.position.set(x + 10, y + (this.app.screen.height * 0.09 - text.height) * 0.45);
       text.eventMode = "none";
       this.container.addChild(text);
     }
 
+    this.createText(`Samn, S. & Perelli, L. (1981). Estimating Aircrew Fatigue: A Technique with Application to 
+    // Airlift Operations. SAM-TR-82-2.`, this.app.screen.width * 0.5, this.app.screen.height * 0.94, 12, { wordWrap: true });
+
     await this.waitForKeyPressNoDestroy(graphics.map((graphic) => graphic[0]));
     await this.confirm("Ok");
     return level;
+  }
+
+  /**
+   * Display the ready demo screen
+   */
+  private async displayReadyDemo() {
+    // Display the ready demo screen
+    const size = 512;
+    const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
+
+    const readyDemo = new Sprite(this.ui.readyDemoTexture);
+    readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
+    readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
+    readyDemo.anchor.set(0.5);
+
+    const container = this.ui.createButton("Start now", this.app.screen.width * 0.5, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
+
+    this.container.addChild(readyDemo);
+    this.container.addChild(container);
+    await this.waitForKeyPress();
   }
 
   /**
@@ -315,11 +315,11 @@ export class StartPage {
     // Display the home page
     await this.displayHomePage();
 
-    // Display the test disclaimer
+    // // Display the test disclaimer
     const ready = await this.displayTestDisclaimer();
     if (!ready) return false;
 
-    // Get sleep data
+    // // Get sleep data
     let sleepData;
     while (true) {
       sleepData = await this.displaySleepForm();
@@ -328,11 +328,13 @@ export class StartPage {
     }
 
     // Display the Samn Perelli checklist
-    // Minus 8 because the scale is inverted
+    // Minus from 8 because the scale is inverted
     const fatigueLevel = 8 - (await this.displaySamnPerelliChecklist());
 
-    // Display the ready demo screen
-    await this.displayReadyDemo();
+    if (this.config.display_refresher_screens) {
+      // Display the ready demo screen
+      await this.displayReadyDemo();
+    }
 
     return {
       fatigueLevel,

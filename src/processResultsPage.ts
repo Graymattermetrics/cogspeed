@@ -154,10 +154,9 @@ export class ProcessResultsPage {
     for (let y = 0; y < 2; y++) {
       for (let x = 0; x < 2; x++) {
         const loadingGearSprite = new Sprite(this.ui.loadingGearTexture);
-        loadingGearSprite.scale = new Point(0.4, 0.4);
-        loadingGearSprite.x = dynamicScreenWidth * (x === 0 ? 2 : 8);
-        loadingGearSprite.y = dynamicScreenHeight * (y === 0 ? 4 : 6);
         loadingGearSprite.anchor.set(0.5);
+        loadingGearSprite.position.set(dynamicScreenWidth * (x === 0 ? 2 : 8), dynamicScreenHeight * (y === 0 ? 4 : 6));
+        loadingGearSprite.scale = new Point(0.4, 0.4);
 
         this.app.ticker.add((delta: number) => {
           loadingGearSprite.rotation += 0.1 * delta;
@@ -197,22 +196,31 @@ export class ProcessResultsPage {
     textContent += "\n**Click me to download results**";
 
     const text = new Text(textContent, {
-      fontFamily: "Arial",
+      fontFamily: "Trebuchet",
       fontSize: 15,
       fill: 0xff1010,
       align: "left",
     });
     text.style.wordWrap = true;
     text.style.wordWrapWidth = this.app.screen.width - 30;
-    text.x = 5;
-    text.y = 5;
+    text.position.set(5, 5);
     text.eventMode = "dynamic";
     text.on("pointerdown", this.downloadHandler.bind(this, this.formatData(data), 850 + data.answerLogs.length * 75));
 
-    const loadingTime = process.env.NODE_ENV === "development" ? 100 : 5000;
-    await new Promise((resolve) => setTimeout(resolve, loadingTime));
+    const buttonContainer = this.ui.createButton("Restart test", this.app.screen.width * 0.5, this.app.screen.height * 0.5, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
+    buttonContainer.eventMode = "dynamic";
+    buttonContainer.on("pointerdown", () => {
+      // TODO: Send back to home page
+      window.location.reload();
+    });
+
+    await this.ui.loadScreen();
 
     loadingContainer.destroy();
+
     this.app.stage.addChild(text);
+    this.app.stage.addChild(buttonContainer);
+    
+
   }
 }
