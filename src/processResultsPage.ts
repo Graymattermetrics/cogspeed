@@ -214,7 +214,7 @@ export class ProcessResultsPage {
       window.location.reload();
     });
 
-    await this.ui.loadScreen();
+    await this.ui.emulateLoadingTime();
 
     loadingContainer.destroy();
 

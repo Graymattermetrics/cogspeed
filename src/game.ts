@@ -96,20 +96,19 @@ export class CogSpeedGame {
     // Pick random number from 1-6 excluding the previous answer
     const numbers = [1, 2, 3, 4, 5, 6];
     numbers.splice(numbers.indexOf(this.answer), 1);
+
     const answerLocation = numbers[Math.floor(Math.random() * numbers.length)];
-    // const answerLocation = 1;
     this.answer = answerLocation;
 
+    // Randomize query number and number or dots again excluding the previous answer
     const queryNumber = Math.floor(Math.random() * 9) + 1;
     let numbersOrDots: "dots" | "numbers" = Math.random() > 0.5 ? "numbers" : "dots";
+    // The query number is the same as last round, so invert the numbersordots
     if (queryNumber === this.query["queryNumber"]) {
       numbersOrDots = this.query["numbersOrDots"] === "numbers" ? "dots" : "numbers";
     }
 
-    this.query = {
-      queryNumber,
-      numbersOrDots: numbersOrDots,
-    };
+    this.query = {queryNumber, numbersOrDots};
 
     // Set display sprites
     this.ui?.setDisplayNumbers(answerLocation, queryNumber, numbersOrDots);

@@ -13,7 +13,6 @@ const app = new Application<HTMLCanvasElement>({
   width: gameWidth,
   height: gameHeight,
 });
-app.stage.interactive = true;
 
 /**
  * Loads the config from the backend
@@ -34,18 +33,24 @@ async function loadConfig(): Promise<{ [key: string]: any }> {
 }
 
 /**
+ * 
+ */
+async function performPracticeTest(config: { [key: string]: any }, graphicsManager: CogSpeedGraphicsHandler) {
+
+}
+
+/**
  * Loads initial page
  */
 async function main(): Promise<void> {
   const config = await loadConfig();
+  if (config.error) throw new Error(config.reason);
 
   const appDiv = document.querySelector(".App");
   if (!appDiv) throw new Error("No app div found");
   appDiv.appendChild(app.view);
 
   resizeCanvas(); // TODO
-
-  if (config.error) throw new Error(config.reason);
 
   // Show GMM Logo while loading all textures
   // Temp text instead of logo for now
@@ -63,14 +68,19 @@ async function main(): Promise<void> {
   });
 
   const graphicsManager = new CogSpeedGraphicsHandler(app);
+
   // Load screen while displaying loading text
-  await graphicsManager.loadScreen();
-
-  app.stage.removeChild(loadingText);
+  await graphicsManager.emulateLoadingTime();
   graphicsManager.setBackground("carbon");
+  app.stage.removeChild(loadingText);
 
+  // Display the home page
   const startPage = new StartPage(config, app, graphicsManager);
-  // Initiate before displaying to load config
+  const route = await startPage.displayHomePage();
+  if (route === "practice") {
+    return performPracticeTest(config, graphicsManager);
+  }
+
   // Display start page
   const sleepData = await startPage.start();
   if (!sleepData) throw new Error("No sleep data");

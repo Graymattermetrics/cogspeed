@@ -109,12 +109,12 @@ export class CogSpeedGraphicsHandler {
     this.smallButtons = this.loadButtons();
   }
 
-  public async loadScreen(): Promise<void> {
+  public async emulateLoadingTime(): Promise<void> {
     const loadingTime = process.env.NODE_ENV === "development" ? 100 : 3000;
     await new Promise((resolve) => setTimeout(resolve, loadingTime));
   }
 
-  public createButton(content: string, x: number, y: number, width: number, height: number): Container {
+  public createButton(content: string, x: number, y: number, width: number, height: number, fontSize: number = 24): Container {
     const container = new Container()
 
     const button = new Sprite(this.largeButtonTexture);
@@ -125,7 +125,7 @@ export class CogSpeedGraphicsHandler {
     
     const text = new Text(content, {
       fontFamily: "Trebuchet",
-      fontSize: 24,
+      fontSize: fontSize,
       fill: 0xc4e4ff,
       align: "center",
     });
