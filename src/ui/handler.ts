@@ -1,21 +1,21 @@
-import { Application, Container, Point, Rectangle, Sprite, Texture, Text } from "pixi.js";
+import { Application, Container, Point, Rectangle, Sprite, Text, Texture } from "pixi.js";
 
 import buttonTextureImage from "../assets/button.png";
 import invertedButtonTextureImage from "../assets/button_inverted.png";
 import buttonWellTextureImage from "../assets/button_well.png";
 import gearTextureImage from "../assets/gear.png";
 import gearWellTextureImage from "../assets/gear_well.png";
-import numbersAndDotsTextureImage from "../assets/numbers_and_dots.png";
-import numbersAndDotsInvertedTextureImage from "../assets/numbers_and_dots_inverted.png";
-import smallButtonTextureImage from "../assets/small_button.png";
 import largeButtonTextureImage from "../assets/large_button.png";
 import loadingGearImage from "../assets/loading_gear.png";
 import logoWithGearsImage from "../assets/logo_with_gears.png";
+import numbersAndDotsTextureImage from "../assets/numbers_and_dots.png";
+import numbersAndDotsInvertedTextureImage from "../assets/numbers_and_dots_inverted.png";
 import readyDemoImage from "../assets/ready_demmo.png";
+import smallButtonTextureImage from "../assets/small_button.png";
 
-import { CogSpeedGame } from "../game";
 import bgCarbonImage from "../assets/bg_carbon.jpg";
 import bgSteelImage from "../assets/bg_steel.jpg";
+import { CogSpeedGame } from "../routes/game";
 
 // Width, height of gear
 export const buttonPositions: { [key: number]: any } = {
@@ -184,7 +184,7 @@ export class CogSpeedGraphicsHandler {
       if (i <= 8) numbers[i + 1] = numberOrDot;
       else dots[i - 8] = numberOrDot;
     }
-    return { numbers: numbers, dots: dots };
+    return { numbers, dots };
   }
 
   /**

@@ -1,6 +1,8 @@
 import { Application, Container, Graphics, Point, Sprite, Text } from "pixi.js";
 
-import { CogSpeedGraphicsHandler } from "./ui/handler";
+import { Config } from "../types/Config";
+import { SleepData } from "../types/SleepData";
+import { CogSpeedGraphicsHandler } from "../ui/handler";
 
 type GraphicList = [Graphics, number, number, number, number];
 
@@ -8,7 +10,7 @@ export class StartPage {
   private container: Container;
 
   constructor(
-    private config: { [key: string]: any },
+    private config: Config,
     private app: Application,
     private ui: CogSpeedGraphicsHandler,
   ) {
@@ -168,7 +170,7 @@ export class StartPage {
    * Must click yes to continue
    * @returns {Promise<boolean>} Whether the user is ready
    */
-  private async displayTestDisclaimer(): Promise<boolean> {
+  public async displayTestDisclaimer(): Promise<boolean> {
     this.createText(
       "Take this test only when you're in a safe condition to do so.",
       this.app.screen.width * 0.5,
@@ -201,7 +203,7 @@ export class StartPage {
    * Must click yes to continue
    * @returns {Promise<boolean>} Whether the data is correct
    */
-  private async confirmSleepData(sleepData: { [key: string]: string }): Promise<boolean> {
+private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boolean> {
     return await this.confirm("Confirm", "Back");
   }
 
@@ -228,7 +230,7 @@ export class StartPage {
    * @returns {number} The level on the samn perelli fatigue scale
    * @see https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5803055/
    */
-  private async displaySamnPerelliChecklist(): Promise<number> {
+  public async displaySamnPerelliChecklist(): Promise<number> {
     var level = 0;
 
     this.createText(`S-PF Checklist`, this.app.screen.width * 0.5, this.app.screen.height * 0.1, 24, { wordWrap: true })
@@ -271,13 +273,15 @@ export class StartPage {
 
     await this.waitForKeyPressNoDestroy(graphics.map((graphic) => graphic[0]));
     await this.confirm("Ok");
-    return level;
+    return 8 - level;
   }
 
   /**
-   * Display the ready demo screen
+   * Display the ready demo screen.
+   * This consists of 6-7 refresher screens to remind how the buttons
+   * and numbers correlate to different parts of the screen. 
    */
-  private async displayReadyDemo() {
+  public async displayReadyDemo() {
     // Display the ready demo screen
     const size = 512;
     const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
@@ -298,9 +302,9 @@ export class StartPage {
    * Start the test
    * Goes through different pages - home page, disclaimer, sleep form
    * TODO: Seperate pages better
-   * @returns {Promise<{ [key: string]: any }>} The test data
+   * @returns {Promise<SleepData>} The test data
    */
-  public async start(): Promise<{ [key: string]: any } | false> {
+  public async start(): Promise<SleepData | false> {
     // Display the test disclaimer
     const ready = await this.displayTestDisclaimer();
     if (!ready) return false;
@@ -315,7 +319,7 @@ export class StartPage {
 
     // Display the Samn Perelli checklist
     // Minus from 8 because the scale is inverted
-    const fatigueLevel = 8 - (await this.displaySamnPerelliChecklist());
+    const fatigueLevel =await this.displaySamnPerelliChecklist();
 
     if (this.config.display_refresher_screens) {
       // Display the ready demo screen

@@ -1,8 +1,11 @@
 import { Application } from "pixi.js";
-import { CogSpeedGraphicsHandler } from "./ui/handler";
+import { CogSpeedGraphicsHandler } from "../ui/handler";
 
 import { v4 } from "uuid";
-import { ProcessResultsPage } from "./processResultsPage";
+import { Config } from "../types/Config";
+import { GameAnswer } from "../types/GameAnswer";
+import { SleepData } from "../types/SleepData";
+import { ProcessResultsPage } from "./results";
 
 /**
  * Cogspeed game that handles button clicks,
@@ -19,7 +22,6 @@ import { ProcessResultsPage } from "./processResultsPage";
  * The way in which each round is handled is as follows:
  * buttonClicked -> nextRound -> round -> stop | nextRound
  * The round function is called to create timers for the round
- *
  *
  * @param {Application} app The pixi application
  * @param {object} config The config holding the game settings
@@ -44,17 +46,17 @@ export class CogSpeedGame {
     queryNumber: -1,
     numbersOrDots: "numbers",
   };
-  previousAnswers: { [key: string]: any }[] = [];
+  previousAnswers: GameAnswer[] = [];
 
   // Timers
   maxTestTimeout: NodeJS.Timeout | undefined;
   currentRoundTimeout: NodeJS.Timeout | undefined;
 
   constructor(
-    public config: { [key: string]: any },
+    public config: Config,
     private app: Application | null = null,
     private ui: CogSpeedGraphicsHandler | null = null,
-    private sleepData: { [key: string]: any } = {},
+    private sleepData: SleepData | null = null,
   ) {}
 
   /**
@@ -353,7 +355,7 @@ export class CogSpeedGame {
     let timeTaken = timeClicked - previousTime;
     let answer = this.answer;
     let status = location === null ? "no response" : location === this.answer ? "correct" : "incorrect";
-    let isCorrectOrIncorrectFromPrevious = "";
+    let isCorrectOrIncorrectFromPrevious: "correct" | "incorrect" | null = null;
     let ratio = this.currentTimeout === -1 ? 0 : (timeClicked - previousTime) / this.currentTimeout;
 
     if (
@@ -387,22 +389,20 @@ export class CogSpeedGame {
     };
 
     // Log answer
-    const data: { [key: string]: number | string | null | boolean } = {
-      status, // correct, incorrect, no response
+    const data: GameAnswer = {
+      status,
       roundTypeNormalized: normalizeRounds[this.currentRound],
-      answerLocation: answer, // Location of the answer sprite (1-6)
-      locationClicked: location, // Location of the click (1-6) - will match answerLocation if correct
-      queryNumber: `${this.query["queryNumber"]}${this.query["numbersOrDots"].slice(0, 3)}`, // The query number concatinated with the numbers or dots
-      // Current duration (timeout)
+      answerLocation: answer,
+      locationClicked: location, 
+      queryNumber: `${this.query["queryNumber"]}${this.query["numbersOrDots"].slice(0, 3)}`,
       duration: this.currentTimeout,
-      correctRollingMeanRatio: "n/a", // The incorrect rolling mean
-      roundNumber: this.previousAnswers.length + 1, // Round number
-      roundType: this.currentRound, // Round type
-      timeTaken, // Time delta between previous answer
-      // Ratio of time taken to respond to time given
-      isCorrectOrIncorrectFromPrevious, // If the answer was correct from the previous answer
+      correctRollingMeanRatio: "n/a", 
+      roundNumber: this.previousAnswers.length + 1, 
+      roundType: this.currentRound,
+      timeTaken, 
+      isCorrectOrIncorrectFromPrevious, 
       ratio,
-      _time_epoch: timeClicked, // Time of answer
+      _time_epoch: timeClicked
     };
 
     this.previousAnswers.push(data);
@@ -448,14 +448,14 @@ export class CogSpeedGame {
     const round = (num: number, sf: number = 3) => {
       return Math.round((num * 10 ** sf) / 10 ** sf);
     };
-    const filterByStatus = (answers: { [key: string]: any }[], status: string) => {
-      return answers.filter((answer: { [key: string]: any }) => answer.status === status);
+    const filterByStatus = (answers: GameAnswer[], status: string) => {
+      return answers.filter((answer) => answer.status === status);
     };
-    const filterByRoundType = (answers: { [key: string]: any }[], roundType: number) => {
-      return answers.filter((answer: { [key: string]: any }) => answer.roundType === roundType);
+    const filterByRoundType = (answers: GameAnswer[], roundType: number) => {
+      return answers.filter((answer) => answer.roundType === roundType);
     };
-    const mapToTimeTaken = (answers: { [key: string]: any }[]) => {
-      return answers.map((answer: { [key: string]: any }) => answer.timeTaken);
+    const mapToTimeTaken = (answers: GameAnswer[]) => {
+      return answers.map((answer) => answer.timeTaken);
     };
 
     const sumOfLastTwoBlocks = this.previousBlockTimeouts.slice(-2).reduce((a, b) => a + b, 0);
@@ -472,8 +472,8 @@ export class CogSpeedGame {
     const lowestBlockTime = Math.min(...this.previousBlockTimeouts.slice(1, blockCount + 1));
     const highestBlockTime = Math.max(...this.previousBlockTimeouts.slice(1, blockCount + 1));
 
-    const firstMachinePacedRound: { [key: string]: any } | undefined = this.previousAnswers.filter(
-      (answer: { [key: string]: any }) => answer.roundType === 2,
+    const firstMachinePacedRound: GameAnswer | undefined = this.previousAnswers.filter(
+      (answer) => answer.roundType === 2,
     )[0];
 
     const totalMachinePacedAnswers = filterByRoundType(this.previousAnswers, 2);
@@ -484,13 +484,13 @@ export class CogSpeedGame {
     const slowestResponse = Math.max(...mapToTimeTaken(totalMachinePacedAnswers));
     const slowestCorrectResponse = Math.max(...mapToTimeTaken(filterByStatus(totalMachinePacedAnswers, "correct")));
     const meanMachinePacedAnswerTime =
-      totalMachinePacedAnswers.reduce((a: number, b: { [key: string]: any }) => a + b.timeTaken, 0) /
+      totalMachinePacedAnswers.reduce((a, b) => a + b.timeTaken, 0) /
       totalMachinePacedAnswers.length;
     const meanCorrectMachinePacedAnswerTime =
-      correctMachinePacedAnswers.reduce((a: number, b: { [key: string]: any }) => a + b.timeTaken, 0) /
+      correctMachinePacedAnswers.reduce((a, b) => a + b.timeTaken, 0) /
       correctMachinePacedAnswers.length;
 
-    const data: { [key: string]: any } = {
+    const data = {
       statusCode,
       status,
       success: statusCode === 0,

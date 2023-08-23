@@ -2,12 +2,13 @@ import axios from "axios";
 
 import { describe, expect, it, jest } from "@jest/globals";
 
-import { CogSpeedGame } from "../src/game";
+import { CogSpeedGame } from "../src/routes/game";
+import { Config } from "../src/types/Config";
 
 jest.useFakeTimers();
 jest.spyOn(global, "setTimeout");
 
-let config: { [key: string]: any };
+let config: Config;
 
 beforeAll(async () => {
   const response = await axios.get("https://t6pedjjwcb.execute-api.us-east-2.amazonaws.com/default/getCogspeedConfig");

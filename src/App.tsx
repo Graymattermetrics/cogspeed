@@ -1,10 +1,9 @@
-import "./App.css";
-
-import { Application, Text } from "pixi.js";
-import { CogSpeedGame } from "./game";
-import { StartPage } from "./startPage";
-import { CogSpeedGraphicsHandler } from "./ui/handler";
 import axios from "axios";
+import { Application, Text } from "pixi.js";
+import { CogSpeedGame } from "./routes/game";
+import { StartPage } from "./routes/start";
+import { Config } from "./types/Config";
+import { CogSpeedGraphicsHandler } from "./ui/handler";
 
 const gameWidth = window.innerWidth;
 const gameHeight = window.innerHeight;
@@ -19,7 +18,7 @@ const app = new Application<HTMLCanvasElement>({
  * NOTE: Increases load time
  * @return {Promise<void>}
  */
-async function loadConfig(): Promise<{ [key: string]: any }> {
+async function loadConfig(): Promise<Config> {
   let configUrl = "https://t6pedjjwcb.execute-api.us-east-2.amazonaws.com/default/getCogspeedConfig";
   const urlParams = new URLSearchParams(window.location.search);
   const version = urlParams.get("version");
@@ -33,9 +32,11 @@ async function loadConfig(): Promise<{ [key: string]: any }> {
 }
 
 /**
- * 
+ * Performs the practice test mode.
+ * This consists of arrows and self paced modes in order to teach
+ * the user how to 
  */
-async function performPracticeTest(config: { [key: string]: any }, graphicsManager: CogSpeedGraphicsHandler) {
+async function performPracticeTest(config: Config, graphicsManager: CogSpeedGraphicsHandler, fatigueLevel: number) {
 
 }
 
@@ -77,8 +78,14 @@ async function main(): Promise<void> {
   // Display the home page
   const startPage = new StartPage(config, app, graphicsManager);
   const route = await startPage.displayHomePage();
+  
+  // TODO: Implement routing so that practice can be situated under /practice
   if (route === "practice") {
-    return performPracticeTest(config, graphicsManager);
+    await startPage.displayTestDisclaimer();
+    const fatigueLevel = await startPage.displaySamnPerelliChecklist();
+    await startPage.displayReadyDemo();
+    
+    return performPracticeTest(config, graphicsManager, fatigueLevel);
   }
 
   // Display start page
