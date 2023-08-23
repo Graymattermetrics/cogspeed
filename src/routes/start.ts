@@ -85,7 +85,7 @@ export class StartPage {
   /**
    * Wait for a click on a sprite but don't destroy the sprite
    */
-  private async waitForKeyPressNoDestroy(sprite: (Sprite | Container | Text)[] = [this.container]): Promise<void> {
+  private async waitForKeyPressNoDestroy(sprite: (Sprite | Container | Text)[] = [this.container]) {
     // Block until a sprite is clicked but don't destroy the sprite
     var block = true;
 
@@ -229,6 +229,7 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
    * Asks the user about the quality of their sleep
    * @returns {number} The level on the samn perelli fatigue scale
    * @see https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5803055/
+   * @see https://www.icao.int/safety/fatiguemanagement/FRMSBangkok/4.%20Measuring%20Fatigue.pdf
    */
   public async displaySamnPerelliChecklist(): Promise<number> {
     var level = 0;

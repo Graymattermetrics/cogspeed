@@ -109,7 +109,7 @@ export class CogSpeedGraphicsHandler {
     this.smallButtons = this.loadButtons();
   }
 
-  public async emulateLoadingTime(): Promise<void> {
+  public async emulateLoadingTime() {
     const loadingTime = process.env.NODE_ENV === "development" ? 100 : 3000;
     await new Promise((resolve) => setTimeout(resolve, loadingTime));
   }
@@ -322,7 +322,7 @@ export class CogSpeedGraphicsHandler {
   /**
    * Ripple animation
    */
-  public async rippleAnimation(sprite: Sprite): Promise<void> {
+  public async rippleAnimation(sprite: Sprite) {
     const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
     const animationSprite = new Sprite(this.buttonTexture);

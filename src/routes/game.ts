@@ -27,6 +27,8 @@ import { ProcessResultsPage } from "./results";
  * @param {object} config The config holding the game settings
  * @param {CogSpeedGraphicsHandler} ui The ui handler
  * @return {void}
+ * 
+ * @see https://dub.sh/cogspeed-protocol
  */
 export class CogSpeedGame {
   // Time
@@ -127,11 +129,14 @@ export class CogSpeedGame {
   }
 
   /**
-   * [One] self paced round without a timeout
+   * Un-prejudiced training rounds to remind the user how to perform
+   * the cogspeed test.
+   * 
+   * 1. Sets timeout of max initial no response time [exit unsuccessfully]
+   * 
    * Round type 0
-   * @return {void}
    */
-  async trainingRound(): Promise<void> {
+  async trainingRound() {
     // Check how many training rounds have been completed
     const lastTrainingAnswers = this.previousAnswers.filter((answer) => answer.roundType === 0);
     if (lastTrainingAnswers.length === this.config.self_paced.number_of_training_rounds) {
@@ -142,10 +147,17 @@ export class CogSpeedGame {
   }
 
   /**
+   * Self paced startup rounds to deduce a baseline to start the 
+   * machine-paced at.
+   * 
+   * 1. Sets no response timeout for self-paced rounds [exit unsuccessfully]
+   * 2. Checks for max-wrong limit within the self-paced startup rounds [exit unsuccessfully]
+   * 3. Checks for more than total-correct-count without max-right-count in a row [exit unsuccessfully]
+   * 4. Checks for max-right-count in a row -> [next round]
+   * 
    * Round type 1
-   * @return {Promise <void>}
    */
-  async selfPacedStartupRound(): Promise<void> {
+  async selfPacedStartupRound() {
     // 1) Set no response timeout (roughly 6000ms)
     clearTimeout(this.currentRoundTimeout);
     this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.self_paced.no_response_duration);
@@ -179,10 +191,16 @@ export class CogSpeedGame {
   }
 
   /**
+   * Machine paced rounds attempt to force a block by slowly increasing the timeout
+   * 
+   * 1. Determine speedup and slowdown [speed]
+   * 2. Check if the last no-input number of answers were no input [block]
+   * 3. Check if roll mean limit exceeded [go to self-paced-restart mode]
+   * 4. Set no response timeout [next round]
+   * 
    * Round type 2
-   * @return {Promise <void>}
    */
-  async machinePacedRound(): Promise<void> {
+  async machinePacedRound() {
     // 1) Determine speedup and slowdown amount based on the ratio last answer
     const lastAnswer = this.previousAnswers.slice(-1).filter((answer) => answer.roundType === 2)[0];
     // If there is a last answer, change the timeout
@@ -203,7 +221,7 @@ export class CogSpeedGame {
       }
     }
 
-    // 2) Determine if the last (roughly 2) answers were no response
+    // 2) Check if the last (roughly 2) answers were no response
     // Indicating that the user has blocked
     const lastNAnswers = this.previousAnswers
       .slice(-this.config.machine_paced.blocking.no_input_count)
@@ -231,16 +249,19 @@ export class CogSpeedGame {
       }
     }
 
-    // Set no response timeout from the average of the last 4 answers (roughly 1500ms)
+    // 4) Set no response timeout from the average of the last 4 answers (roughly 1500ms)
     clearTimeout(this.currentRoundTimeout);
     this.currentRoundTimeout = setTimeout(this.buttonClicked.bind(this), this.currentTimeout);
   }
 
   /**
-   * Round type 3
    * Simulates a mini self paced environment after a block
-   * In order to act as a cooldown period
-   * @return {Promise <void>}
+   * Acts as a cooldown period to allow the user to recover.
+   * 
+   * 1. Checks if two consecutive similar-timed blocks exist [exit successfully]
+   * 2. Check if there are too many blocks [exit unsuccessfully]
+   * 
+   * Round type 3
    */
   async postBlockRound(): Promise<void> {
     const lastTwoBlocks = this.previousBlockTimeouts.slice(-2);
@@ -253,12 +274,12 @@ export class CogSpeedGame {
       return this.finalRounds();
     }
 
-    // If there are too many blocks (roughly 6) the test must exit
+    // 2) If there are too many blocks (roughly 6) the test must exit
     if (this.previousBlockTimeouts.length - 1 === this.config.machine_paced.blocking.max_block_count) {
       return this.stop(3);
     }
 
-    // 2) We can exit post-block successfully with (roughly 2) correct answers in a row
+    // 3) We can exit post-block successfully with (roughly 2) correct answers in a row
     // If the last (roughly 2) answers were correct, continue to machine paced
     const lastNAnswers = this.previousAnswers
       .slice(-this.config.machine_paced.blocking.min_correct_answers)
@@ -285,13 +306,17 @@ export class CogSpeedGame {
   }
 
   /**
-   * Round type 4
-   *
+   * Self paced restart round that occurs when the correct rolling mean average
+   * is below the required threshold.
+   * 
    * While this function is similar to postBlockRound, there are subtle differences
    * which would make it difficult to merge the two functions
-   * @return {Promise <void>}
+   *
+   * @augments CogSpeedGame.postBlockRound
+   * 
+   * Round type 4
    */
-  async selfPacedRestartRound(): Promise<void> {
+  async selfPacedRestartRound():Promise<void>  {
     // 1) We can exit self paced restart successfully with (roughly 2) correct answers in a row
     // If the last (roughly 2) answers were correct, continue to machine paced
     const lastNAnswers = this.previousAnswers
@@ -326,11 +351,11 @@ export class CogSpeedGame {
   }
 
   /**
+   * The final unscored rounds that act as confusion rounds.
+   * 
    * Round type 5
-   *
-   * The final unscored rounds
    */
-  async finalRounds(): Promise<void> {
+  async finalRounds() {
     const lastNRounds = this.previousAnswers
       .slice(-this.config.number_of_endmode_rounds)
       .filter((answer) => answer.roundType === 5);
@@ -344,7 +369,6 @@ export class CogSpeedGame {
    * Button clicked
    * @param {number | boolean} location The location of the button clicked or false if no response
    * @param {number} timeClicked The time (performance.now) the button was clicked
-   * @return {void}
    */
   public buttonClicked(location: number | null = null, timeClicked: number | null = null): void {
     timeClicked = timeClicked || performance.now();
@@ -415,10 +439,8 @@ export class CogSpeedGame {
 
   /**
    * Starts the game
-   * @return {void}
-   * @return {Promise<void>}
    */
-  public async start(time: number | null = null): Promise<void> {
+  public async start(time: number | null = null) {
     this.ui?.setupGame(this);
 
     this.startTime = time === null ? performance.now() : time;
@@ -432,7 +454,7 @@ export class CogSpeedGame {
    *
    * @param statusCode The status code of the exit
    */
-  public async stop(statusCode: number = 1): Promise<void> {
+  public async stop(statusCode: number = 1) {
     if (!this.app || !this.ui) return;
 
     clearTimeout(this.maxTestTimeout);

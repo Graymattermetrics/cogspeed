@@ -4,6 +4,7 @@ import { CogSpeedGame } from "./routes/game";
 import { StartPage } from "./routes/start";
 import { Config } from "./types/Config";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
+import { PracticeCogSpeed } from "./routes/practice";
 
 const gameWidth = window.innerWidth;
 const gameHeight = window.innerHeight;
@@ -16,42 +17,33 @@ const app = new Application<HTMLCanvasElement>({
 /**
  * Loads the config from the backend
  * NOTE: Increases load time
- * @return {Promise<void>}
  */
 async function loadConfig(): Promise<Config> {
-  let configUrl = "https://t6pedjjwcb.execute-api.us-east-2.amazonaws.com/default/getCogspeedConfig";
-  const urlParams = new URLSearchParams(window.location.search);
-  const version = urlParams.get("version");
-  // Append version and branch from window search location
-  if (version) configUrl += `?version=${version}`;
-  else {
-    const branch = urlParams.get("branch");
-    if (branch) configUrl += `?branch=${branch}`;
-  }
-  return (await axios.get(configUrl)).data;
+  let url = "https://t6pedjjwcb.execute-api.us-east-2.amazonaws.com/default/getCogspeedConfig";
+  const params = new URLSearchParams(window.location.search);
+
+  const version = params.get("version");
+  const branch = params.get("branch");
+
+  // Either append version or branch
+  if (version) url += `?version=${version}`;
+  else if (branch) url += `?branch=${branch}`;
+
+  const request = await axios.get(url);
+  return await request.data;
 }
 
-/**
- * Performs the practice test mode.
- * This consists of arrows and self paced modes in order to teach
- * the user how to 
- */
-async function performPracticeTest(config: Config, graphicsManager: CogSpeedGraphicsHandler, fatigueLevel: number) {
-
-}
 
 /**
  * Loads initial page
  */
-async function main(): Promise<void> {
+async function main() {
   const config = await loadConfig();
   if (config.error) throw new Error(config.reason);
 
   const appDiv = document.querySelector(".App");
   if (!appDiv) throw new Error("No app div found");
   appDiv.appendChild(app.view);
-
-  resizeCanvas(); // TODO
 
   // Show GMM Logo while loading all textures
   // Temp text instead of logo for now
@@ -85,7 +77,8 @@ async function main(): Promise<void> {
     const fatigueLevel = await startPage.displaySamnPerelliChecklist();
     await startPage.displayReadyDemo();
     
-    return performPracticeTest(config, graphicsManager, fatigueLevel);
+    const practiceTest = new PracticeCogSpeed(config, app, graphicsManager, fatigueLevel);
+    return await practiceTest.start();
   }
 
   // Display start page
@@ -95,18 +88,6 @@ async function main(): Promise<void> {
   // Game phase - called after start button is clicked
   const game = new CogSpeedGame(config, app, graphicsManager, sleepData);
   game.start();
-}
-
-/**
- * Resize canvas
- * @return {void}
- */
-function resizeCanvas(): void {
-  const resize = () => {
-    window.location.reload(); // TODO: Implement auto resize
-  };
-  // Test: may be breaking test when downloading logs on mobile
-  // window.addEventListener("resize", resize);
 }
 
 window.onload = main;
