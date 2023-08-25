@@ -7,11 +7,7 @@ type GraphicList = [Graphics, number, number, number, number];
 export class StartPage {
   private container: Container;
 
-  constructor(
-    private config: { [key: string]: any },
-    private app: Application,
-    private ui: CogSpeedGraphicsHandler,
-  ) {
+  constructor(private config: { [key: string]: any }, private app: Application, private ui: CogSpeedGraphicsHandler) {
     this.container = new Container();
     this.app.stage.addChild(this.container);
   }
@@ -102,7 +98,7 @@ export class StartPage {
    */
   private async waitForKeyPress(
     sprite: (Sprite | Container | Text)[] = [this.container],
-    secondSprites: (Sprite | Container | Text)[] = [],
+    secondSprites: (Sprite | Container | Text)[] = []
   ): Promise<Sprite | Container | null> {
     [...sprite, ...secondSprites].forEach((sprite_) => {
       sprite_.eventMode = "dynamic";
@@ -159,7 +155,13 @@ export class StartPage {
     startTestText.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.8);
     this.container.addChild(startTestText);
 
-    this.createText(`Current test version is ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.93, 14, {wordWrap: true});
+    this.createText(
+      `Current test version is ${this.config.version}`,
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.93,
+      14,
+      { wordWrap: true }
+    );
 
     await this.waitForKeyPress([buttonBorder, startTestText]);
   }
@@ -177,7 +179,7 @@ export class StartPage {
       this.app.screen.width * 0.5,
       this.app.screen.height * 0.1,
       24,
-      { wordWrap: true },
+      { wordWrap: true }
     );
 
     this.createText("Ready?", this.app.screen.width * 0.5, this.app.screen.height * 0.5, 48, {
@@ -234,7 +236,7 @@ export class StartPage {
   private async displaySamnPerelliChecklist(): Promise<number> {
     var level = 0;
 
-    this.createText(`S-PF Checklist`, this.app.screen.width * 0.5, this.app.screen.height * 0.1, 24, { wordWrap: true })
+    this.createText(`S-PF Checklist`, this.app.screen.width * 0.5, this.app.screen.height * 0.1, 24, { wordWrap: true });
 
     const levels = [
       "Full alert, wide awake",
@@ -247,7 +249,7 @@ export class StartPage {
     ];
     const graphics: Array<GraphicList> = [];
     for (let index = levels.length - 1; index >= 0; index--) {
-      const y = this.app.screen.height * 0.15 + (index * this.app.screen.height * 0.09);
+      const y = this.app.screen.height * 0.15 + index * this.app.screen.height * 0.09;
       const x = this.app.screen.width * 0.1;
       const width = this.app.screen.width * 0.8;
       const height = this.app.screen.height * 0.09;
@@ -275,8 +277,14 @@ export class StartPage {
       this.container.addChild(text);
     }
 
-    this.createText(`Samn, S. & Perelli, L. (1981). Estimating Aircrew Fatigue: A Technique with Application to 
-    // Airlift Operations. SAM-TR-82-2.`, this.app.screen.width * 0.5, this.app.screen.height * 0.94, 12, { wordWrap: true });
+    this.createText(
+      `Samn, S. & Perelli, L. (1981). Estimating Aircrew Fatigue: A Technique with Application to 
+    // Airlift Operations. SAM-TR-82-2.`,
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.94,
+      12,
+      { wordWrap: true }
+    );
 
     await this.waitForKeyPressNoDestroy(graphics.map((graphic) => graphic[0]));
     await this.confirm("Ok");
@@ -296,7 +304,13 @@ export class StartPage {
     readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
     readyDemo.anchor.set(0.5);
 
-    const container = this.ui.createButton("Start now", this.app.screen.width * 0.5, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
+    const container = this.ui.createButton(
+      "Start now",
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.85,
+      this.app.screen.width * 0.6,
+      this.app.screen.height * 0.2
+    );
 
     this.container.addChild(readyDemo);
     this.container.addChild(container);
