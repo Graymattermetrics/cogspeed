@@ -6,10 +6,7 @@ import { table } from "table";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 export class ProcessResultsPage {
-  constructor(
-    private app: Application,
-    private ui: CogSpeedGraphicsHandler,
-  ) {}
+  constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {}
 
   private formatObject(data: object): string {
     if (!data) return ``;
@@ -50,8 +47,13 @@ export class ProcessResultsPage {
       tableDataObj.push(tableAnswer);
     }
 
+    // Copy data into display data to also add the local date and time
+    const displayData = JSON.parse(JSON.stringify(data));
+    displayData["localDate"] = new Date(data["_date"]).toLocaleDateString();
+    displayData["localTime"] = new Date(data["_date"]).toLocaleTimeString();
+    
     return (
-      `${this.formatObject(data)}\n` +
+      `${this.formatObject(displayData)}\n` +
       table(tableDataObj, {
         border: {
           topBody: `-`,
@@ -128,7 +130,7 @@ export class ProcessResultsPage {
         },
         (error) => {
           resolve(null);
-        },
+        }
       );
     });
     const geolocation = coords ? `${coords.latitude},${coords.longitude}` : null;
@@ -190,26 +192,27 @@ export class ProcessResultsPage {
 
     const responseData = JSON.parse(JSON.stringify(data));
     delete responseData["answerLogs"];
-    const testSummary = JSON.stringify(responseData, null, 2).replaceAll('"', "").replaceAll(",", "");
 
-    let textContent = data.success ? `Test finished [temp text] \n${testSummary}` : "Test stopped (failed) [temp text]";
-    textContent += "\n**Click me to download results**";
+    const viewTestLogsButtonContainer = this.ui.createButton(
+      "View test logs",
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.3,
+      this.app.screen.width * 0.6,
+      this.app.screen.height * 0.2
+    );
+    viewTestLogsButtonContainer.on(
+      "pointerdown",
+      this.downloadHandler.bind(this, this.formatData(data), 850 + data.answerLogs.length * 75)
+    );
 
-    const text = new Text(textContent, {
-      fontFamily: "Trebuchet",
-      fontSize: 15,
-      fill: 0xff1010,
-      align: "left",
-    });
-    text.style.wordWrap = true;
-    text.style.wordWrapWidth = this.app.screen.width - 30;
-    text.position.set(5, 5);
-    text.eventMode = "dynamic";
-    text.on("pointerdown", this.downloadHandler.bind(this, this.formatData(data), 850 + data.answerLogs.length * 75));
-
-    const buttonContainer = this.ui.createButton("Restart test", this.app.screen.width * 0.5, this.app.screen.height * 0.5, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
-    buttonContainer.eventMode = "dynamic";
-    buttonContainer.on("pointerdown", () => {
+    const restartTestButtonContainer = this.ui.createButton(
+      "Restart test",
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.6,
+      this.app.screen.width * 0.6,
+      this.app.screen.height * 0.2
+    );
+    restartTestButtonContainer.on("pointerdown", () => {
       // TODO: Send back to home page
       window.location.reload();
     });
@@ -218,9 +221,7 @@ export class ProcessResultsPage {
 
     loadingContainer.destroy();
 
-    this.app.stage.addChild(text);
-    this.app.stage.addChild(buttonContainer);
-    
-
+    this.app.stage.addChild(viewTestLogsButtonContainer);
+    this.app.stage.addChild(restartTestButtonContainer);
   }
 }

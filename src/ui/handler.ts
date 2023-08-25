@@ -115,14 +115,15 @@ export class CogSpeedGraphicsHandler {
   }
 
   public createButton(content: string, x: number, y: number, width: number, height: number): Container {
-    const container = new Container()
+    const container = new Container();
+    container.eventMode = "dynamic";
 
     const button = new Sprite(this.largeButtonTexture);
     button.anchor.set(0.5);
     button.position.set(x, y);
     button.width = width;
     button.height = height;
-    
+
     const text = new Text(content, {
       fontFamily: "Trebuchet",
       fontSize: 24,
@@ -131,7 +132,7 @@ export class CogSpeedGraphicsHandler {
     });
     text.anchor.set(0.5);
     text.position.set(x, y);
-    
+
     container.addChild(button);
     container.addChild(text);
     return container;
@@ -243,7 +244,7 @@ export class CogSpeedGraphicsHandler {
       answerSprite,
       buttonPositions[answerLocation](this.gearWellSize, this.gearWellSize)[0],
       buttonPositions[answerLocation](this.gearWellSize, this.gearWellSize)[1],
-      answerLocation > 3 ? this.leftGearContainer : this.rightGearContainer,
+      answerLocation > 3 ? this.leftGearContainer : this.rightGearContainer
     );
 
     const numbers = Array.from({ length: 19 }, (x, i) => i);
@@ -264,7 +265,7 @@ export class CogSpeedGraphicsHandler {
         randomIncorrectSprite,
         buttonPositions[i + 1](this.gearWellSize, this.gearWellSize)[0],
         buttonPositions[i + 1](this.gearWellSize, this.gearWellSize)[1],
-        i > 2 ? this.leftGearContainer : this.rightGearContainer,
+        i > 2 ? this.leftGearContainer : this.rightGearContainer
       );
     }
   }
