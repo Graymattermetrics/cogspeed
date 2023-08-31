@@ -282,21 +282,24 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
    * This consists of 6-7 refresher screens to remind how the buttons
    * and numbers correlate to different parts of the screen. 
    */
-  public async displayReadyDemo() {
-    // Display the ready demo screen
-    const size = 512;
-    const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
+  public async displayReadyDemo(numberOfScreens: number) {
+    for (let i = 0; numberOfScreens > i; i ++ ) {
+      if (i >= this.ui.readyDemoTextures.length) break;
 
-    const readyDemo = new Sprite(this.ui.readyDemoTexture);
-    readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
-    readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
-    readyDemo.anchor.set(0.5);
+      const size = 512;
+      const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
 
-    const container = this.ui.createButton("Start now", this.app.screen.width * 0.5, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
+      const readyDemo = new Sprite(this.ui.readyDemoTextures[i]);
+      readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
+      readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
+      readyDemo.anchor.set(0.5);
 
-    this.container.addChild(readyDemo);
-    this.container.addChild(container);
-    await this.waitForKeyPress();
+      const container = this.ui.createButton("Start now", this.app.screen.width * 0.5, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
+
+      this.container.addChild(readyDemo);
+      this.container.addChild(container);
+      await this.waitForKeyPress();
+    }
   }
 
   /**
@@ -320,11 +323,13 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
 
     // Display the Samn Perelli checklist
     // Minus from 8 because the scale is inverted
-    const fatigueLevel =await this.displaySamnPerelliChecklist();
+    const fatigueLevel = await this.displaySamnPerelliChecklist();
 
     if (this.config.display_refresher_screens) {
-      // Display the ready demo screen
-      await this.displayReadyDemo();
+      // Display the ready demo screen with one screen
+      // Note that the practice test would display all of the screens
+      // but this method is called within the practice test mode
+      await this.displayReadyDemo(1);
     }
 
     return {

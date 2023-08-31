@@ -75,7 +75,7 @@ async function main() {
   if (route === "practice") {
     await startPage.displayTestDisclaimer();
     const fatigueLevel = await startPage.displaySamnPerelliChecklist();
-    await startPage.displayReadyDemo();
+    await startPage.displayReadyDemo(10);
     
     const practiceTest = new PracticeCogSpeed(config, app, graphicsManager, fatigueLevel);
     return await practiceTest.start();

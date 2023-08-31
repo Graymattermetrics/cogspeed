@@ -1,5 +1,3 @@
-
-
 import { Application } from "pixi.js";
 import { Config } from "../types/Config";
 import { CogSpeedGraphicsHandler } from "../ui/handler";

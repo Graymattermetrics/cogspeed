@@ -10,8 +10,9 @@ import loadingGearImage from "../assets/loading_gear.png";
 import logoWithGearsImage from "../assets/logo_with_gears.png";
 import numbersAndDotsTextureImage from "../assets/numbers_and_dots.png";
 import numbersAndDotsInvertedTextureImage from "../assets/numbers_and_dots_inverted.png";
-import readyDemoImage from "../assets/ready_demmo.png";
 import smallButtonTextureImage from "../assets/small_button.png";
+
+import readyDemoImageOne from "../assets/ready_demo_one.png";
 
 import bgCarbonImage from "../assets/bg_carbon.jpg";
 import bgSteelImage from "../assets/bg_steel.jpg";
@@ -77,8 +78,8 @@ export class CogSpeedGraphicsHandler {
   public smallButtonTextures: Texture;
   public largeButtonTexture: Texture;
   public loadingGearTexture: Texture;
-  public readyDemoTexture: Texture;
   public logoTexture: Texture;
+  public readyDemoTextures: Texture[];
 
   constructor(public app: Application) {
     this.gearWellTexture = Texture.from(gearWellTextureImage);
@@ -93,7 +94,7 @@ export class CogSpeedGraphicsHandler {
     this.smallButtonTextures = Texture.from(smallButtonTextureImage);
     this.largeButtonTexture = Texture.from(largeButtonTextureImage);
     this.loadingGearTexture = Texture.from(loadingGearImage);
-    this.readyDemoTexture = Texture.from(readyDemoImage);
+    this.readyDemoTextures = [Texture.from(readyDemoImageOne), ];
     this.logoTexture = Texture.from(logoWithGearsImage);
 
     // Load number and dot assets
