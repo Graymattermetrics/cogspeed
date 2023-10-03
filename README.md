@@ -1,46 +1,44 @@
-# Getting Started with Create React App
+## Welcome to CogSpeed
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+### What is cogspeed?
+CogSpeed is a mobile testing program for individuals and employers that gives users a real-time results of how well the subjects brain is processing information.
+Can you drive safely? Can employees run hazardous equipment?
+You will begin to understand when you or your employee’s ability to concentrate changes throughout the day or night, from week to week – and can instantly see impairment caused by alcohol, drugs, brain injury, or senility!
+Just think … a speedometer for the brain!
 
-In the project directory, you can run:
 
-### `npm start`
+### F U N C T I O N S
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+#### Test
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Set up and learning to take the test is fast and easy. Downloading the test and permanent storage of your scores requires access to the internet, but testing can be done anywhere, anytime, as often as you like. The entire test procedure usually takes less than two minutes to complete.
 
-### `npm test`
+#### Analyze
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+CogSpeed provides an instantaneous measure of how fast you can correctly process information and it can’t be fooled by guessing or cheating. You can view the results from all your past results, helping you to track your highs and lows throughout the year.
 
-### `npm run build`
+#### Share
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+It’s possible to instantly transmit anyone’s current cognitive processing ability to any monitoring center, at any world-wide location for immediate tracking of performance reliability. No group is too large to be constantly examined for each individual’s accident potential. Concerned employers, friends, and family, receive peace of mind about the safety and wellness of CogSpeed users.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### EVERYWHERE, ANYWHERE
 
-### `npm run eject`
+With CogSpeed you are able to test an employee in as little as 40-90 seconds, as often as necessary, and management can see the results instantly. You can use it anywhere on any mobile device with a wireless or cellular connection. And for a very affordable price.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### IT’S TIME TO WAKE UP
+Each year in the U.S., the National Highway Traffic Safety Administration estimates that 100,000 reported crashes result from driver fatigue, claiming some 1,500 lives and causing 71,000 injuries.
+Statistics also show truck crashes kill more than 5,000 and injure 150,000 annually, with 750 of those fatalities and 20,000 injuries the result of a fatigued commercial vehicle driver, according to the Federal Motor Carrier Safety Administration.
+Awake yet?
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### CONCEPT + DEVELOPMENT
+CogSpeed has been in the developmental stages since the 1980’s when Layne Perelli completed his dissertation research on the effects of fatigue and received a patent on it in 1982.
+It is the mission of Gray Matter Metrics to open up a revolutionary approach to monitoring human performance anywhere, anytime and to make that valuable information available immediately to anyone who needs to know it. Our goal is to distribute products that improve work place safety, help save lives, and contribute to the overall health and well-being of society.
+The technology was simply not in place for such a sophisticated web app capability until very recently. This application requires a lightweight portable device with very powerful, high-speed processing power connected to the internet for worldwide data collection. Only the latest advances in software engineering (Java Script, HTML5, .NET and SQL technologies), wide-spread internet and cellular connectivity, and the advanced microprocessors found in today’s mobile devices allow the app to run efficiently at an affordable price.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+## See more
+Tutorial - https://cogspeed.com/Admin/Home/File
