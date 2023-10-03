@@ -1,9 +1,9 @@
 import axios from "axios";
-import { Application, Container, Graphics, Point, Sprite, Text } from "pixi.js";
+import { Application, Container, Graphics, Point, Sprite } from "pixi.js";
 
-import { CogSpeedGraphicsHandler } from "./ui/handler";
-import { table } from "table";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { table } from "table";
+import { CogSpeedGraphicsHandler } from "../ui/handler";
 
 export class ProcessResultsPage {
   constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {}
@@ -217,7 +217,7 @@ export class ProcessResultsPage {
       window.location.reload();
     });
 
-    await this.ui.loadScreen();
+    await this.ui.emulateLoadingTime();
 
     loadingContainer.destroy();
 

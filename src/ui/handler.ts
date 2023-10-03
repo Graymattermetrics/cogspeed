@@ -1,21 +1,22 @@
-import { Application, Container, Point, Rectangle, Sprite, Texture, Text } from "pixi.js";
+import { Application, Container, Point, Rectangle, Sprite, Text, Texture } from "pixi.js";
 
 import buttonTextureImage from "../assets/button.png";
 import invertedButtonTextureImage from "../assets/button_inverted.png";
 import buttonWellTextureImage from "../assets/button_well.png";
 import gearTextureImage from "../assets/gear.png";
 import gearWellTextureImage from "../assets/gear_well.png";
-import numbersAndDotsTextureImage from "../assets/numbers_and_dots.png";
-import numbersAndDotsInvertedTextureImage from "../assets/numbers_and_dots_inverted.png";
-import smallButtonTextureImage from "../assets/small_button.png";
 import largeButtonTextureImage from "../assets/large_button.png";
 import loadingGearImage from "../assets/loading_gear.png";
 import logoWithGearsImage from "../assets/logo_with_gears.png";
-import readyDemoImage from "../assets/ready_demmo.png";
+import numbersAndDotsTextureImage from "../assets/numbers_and_dots.png";
+import numbersAndDotsInvertedTextureImage from "../assets/numbers_and_dots_inverted.png";
+import smallButtonTextureImage from "../assets/small_button.png";
 
-import { CogSpeedGame } from "../game";
+import readyDemoImageOne from "../assets/ready_demo_one.png";
+
 import bgCarbonImage from "../assets/bg_carbon.jpg";
 import bgSteelImage from "../assets/bg_steel.jpg";
+import { CogSpeedGame } from "../routes/game";
 
 // Width, height of gear
 export const buttonPositions: { [key: number]: any } = {
@@ -77,8 +78,8 @@ export class CogSpeedGraphicsHandler {
   public smallButtonTextures: Texture;
   public largeButtonTexture: Texture;
   public loadingGearTexture: Texture;
-  public readyDemoTexture: Texture;
   public logoTexture: Texture;
+  public readyDemoTextures: Texture[];
 
   constructor(public app: Application) {
     this.gearWellTexture = Texture.from(gearWellTextureImage);
@@ -93,7 +94,7 @@ export class CogSpeedGraphicsHandler {
     this.smallButtonTextures = Texture.from(smallButtonTextureImage);
     this.largeButtonTexture = Texture.from(largeButtonTextureImage);
     this.loadingGearTexture = Texture.from(loadingGearImage);
-    this.readyDemoTexture = Texture.from(readyDemoImage);
+    this.readyDemoTextures = [Texture.from(readyDemoImageOne), ];
     this.logoTexture = Texture.from(logoWithGearsImage);
 
     // Load number and dot assets
@@ -109,12 +110,12 @@ export class CogSpeedGraphicsHandler {
     this.smallButtons = this.loadButtons();
   }
 
-  public async loadScreen(): Promise<void> {
+  public async emulateLoadingTime() {
     const loadingTime = process.env.NODE_ENV === "development" ? 100 : 3000;
     await new Promise((resolve) => setTimeout(resolve, loadingTime));
   }
 
-  public createButton(content: string, x: number, y: number, width: number, height: number): Container {
+  public createButton(content: string, x: number, y: number, width: number, height: number, fontSize: number = 24): Container {
     const container = new Container();
     container.eventMode = "dynamic";
 
@@ -126,7 +127,7 @@ export class CogSpeedGraphicsHandler {
 
     const text = new Text(content, {
       fontFamily: "Trebuchet",
-      fontSize: 24,
+      fontSize: fontSize,
       fill: 0xc4e4ff,
       align: "center",
     });
@@ -185,7 +186,7 @@ export class CogSpeedGraphicsHandler {
       if (i <= 8) numbers[i + 1] = numberOrDot;
       else dots[i - 8] = numberOrDot;
     }
-    return { numbers: numbers, dots: dots };
+    return { numbers, dots };
   }
 
   /**
@@ -323,7 +324,7 @@ export class CogSpeedGraphicsHandler {
   /**
    * Ripple animation
    */
-  public async rippleAnimation(sprite: Sprite): Promise<void> {
+  public async rippleAnimation(sprite: Sprite) {
     const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
     const animationSprite = new Sprite(this.buttonTexture);

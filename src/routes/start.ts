@@ -1,13 +1,19 @@
 import { Application, Container, Graphics, Point, Sprite, Text } from "pixi.js";
 
-import { CogSpeedGraphicsHandler } from "./ui/handler";
+import { Config } from "../types/Config";
+import { SleepData } from "../types/SleepData";
+import { CogSpeedGraphicsHandler } from "../ui/handler";
 
 type GraphicList = [Graphics, number, number, number, number];
 
 export class StartPage {
   private container: Container;
 
-  constructor(private config: { [key: string]: any }, private app: Application, private ui: CogSpeedGraphicsHandler) {
+  constructor(
+    private config: Config,
+    private app: Application,
+    private ui: CogSpeedGraphicsHandler,
+  ) {
     this.container = new Container();
     this.app.stage.addChild(this.container);
   }
@@ -28,10 +34,11 @@ export class StartPage {
     });
     yesText.anchor.set(0.5);
     yesText.position.set(this.app.screen.width * 0.7, this.app.screen.height * 0.85);
+    yesText.eventMode = "none";
     this.container.addChild(yesText);
 
     if (denyText === "") {
-      await this.waitForKeyPress([yesBorder, yesText]);
+      await this.waitForKeyPress(yesBorder);
       return true;
     }
 
@@ -50,21 +57,22 @@ export class StartPage {
     });
     noText.anchor.set(0.5);
     noText.position.set(this.app.screen.width * 0.3, this.app.screen.height * 0.85);
+    noText.eventMode = "none";
     this.container.addChild(noText);
 
-    const keypress = await this.waitForKeyPress([yesBorder, yesText], [noBorder, noText]);
+    const keypress = await this.waitForKeyPress(yesBorder, [noBorder]);
     return keypress === yesBorder || keypress === yesText;
   }
 
-  private createText(text: string, x: number, y: number, fontSize: number, { wordWrap = true, centre = false, fill = 0xffffff }) {
+  private createText(text: string, x: number, y: number, fontSize: number, { wordWrap = true, centre = false, fill = 0xffffff, anchor = true }) {
     const textObject = new Text(text, {
       fontFamily: "Trebuchet",
       fontSize: fontSize,
       fill: fill,
       align: "center",
     });
-    textObject.anchor.set(0.5);
     textObject.position.set(x, y);
+    if (anchor) textObject.anchor.set(0.5);
 
     if (wordWrap) {
       textObject.style.wordWrap = true;
@@ -77,7 +85,7 @@ export class StartPage {
   /**
    * Wait for a click on a sprite but don't destroy the sprite
    */
-  private async waitForKeyPressNoDestroy(sprite: (Sprite | Container | Text)[] = [this.container]): Promise<void> {
+  private async waitForKeyPressNoDestroy(sprite: (Sprite | Container | Text)[] = [this.container]) {
     // Block until a sprite is clicked but don't destroy the sprite
     var block = true;
 
@@ -96,16 +104,17 @@ export class StartPage {
   /**
    * Wait for a click on a sprite
    */
-  private async waitForKeyPress(
-    sprite: (Sprite | Container | Text)[] = [this.container],
-    secondSprites: (Sprite | Container | Text)[] = []
-  ): Promise<Sprite | Container | null> {
-    [...sprite, ...secondSprites].forEach((sprite_) => {
-      sprite_.eventMode = "dynamic";
-      sprite_.on("pointerdown", () => {
-        sprite_.destroy();
-        this.container.destroy();
-      });
+  private async waitForKeyPress(sprite: Sprite | Container = this.container,
+    secondSprites: (Sprite | Container)[] = []): Promise<Sprite | Container | null> {
+    // Set each sprite to dynamic and listen for pointerdown event
+    [sprite, ...secondSprites].forEach((sprite_) => {
+      if (sprite_ !== null) {
+        sprite_.eventMode = "dynamic";
+        sprite_.on("pointerdown", () => {
+          sprite_.destroy();
+          this.container.destroy();
+        });
+      }
     });
 
     // Block until the start page is removed
@@ -115,7 +124,7 @@ export class StartPage {
     this.container = new Container();
     this.app.stage.addChild(this.container);
 
-    for (const sprite_ of sprite) {
+    for (const sprite_ of [sprite, ...secondSprites]) {
       if (sprite_.destroyed === true) {
         return sprite_;
       }
@@ -126,44 +135,32 @@ export class StartPage {
   /**
    * Display the home page
    */
-  private async displayHomePage() {
-    // Create the logo
+  public async displayHomePage(): Promise<"test" | "practice"> {
+    // GMM Logo
     const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
     const size = 512;
 
     const logoSprite = new Sprite(this.ui.logoTexture);
     logoSprite.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
     logoSprite.anchor.set(0.5);
-    logoSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.35);
+    logoSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.315);
     this.container.addChild(logoSprite);
 
-    const buttonBorder = new Sprite(this.ui.largeButtonTexture);
-    buttonBorder.anchor.set(0.5);
-    buttonBorder.width = this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8;
-    buttonBorder.height = this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25;
-    buttonBorder.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.8);
-    this.container.addChild(buttonBorder);
+    // Test now button
+    const testNowContainer = this.ui.createButton("Test now!", this.app.screen.width * 0.5, this.app.screen.height * 0.7, 
+    this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8, this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25, 36)
+    this.container.addChild(testNowContainer);
 
-    // Display the start page
-    const startTestText = new Text("Test now!", {
-      fontFamily: "Trebuchet",
-      fontSize: 36,
-      fill: 0xffffff,
-    });
-    startTestText.anchor.set(0.5);
-    // Center the start now button
-    startTestText.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.8);
-    this.container.addChild(startTestText);
+    // Practice button
+    const practiceContainer = this.ui.createButton("Practice test", this.app.screen.width * 0.5, this.app.screen.height * 0.825, 
+    this.app.screen.width * 0.6, this.app.screen.height * 0.15, 20)
+    this.container.addChild(practiceContainer);
 
-    this.createText(
-      `Current test version is ${this.config.version}`,
-      this.app.screen.width * 0.5,
-      this.app.screen.height * 0.93,
-      14,
-      { wordWrap: true }
-    );
-
-    await this.waitForKeyPress([buttonBorder, startTestText]);
+    // Version text
+    this.createText(`Version ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.97, 11, {wordWrap: true});
+    
+    const clicked = await this.waitForKeyPress(testNowContainer, [practiceContainer]);
+    return clicked === testNowContainer ? "test": "practice";
   }
 
   /**
@@ -173,13 +170,13 @@ export class StartPage {
    * Must click yes to continue
    * @returns {Promise<boolean>} Whether the user is ready
    */
-  private async displayTestDisclaimer(): Promise<boolean> {
+  public async displayTestDisclaimer(): Promise<boolean> {
     this.createText(
       "Take this test only when you're in a safe condition to do so.",
       this.app.screen.width * 0.5,
       this.app.screen.height * 0.1,
       24,
-      { wordWrap: true }
+      { wordWrap: true },
     );
 
     this.createText("Ready?", this.app.screen.width * 0.5, this.app.screen.height * 0.5, 48, {
@@ -206,7 +203,7 @@ export class StartPage {
    * Must click yes to continue
    * @returns {Promise<boolean>} Whether the data is correct
    */
-  private async confirmSleepData(sleepData: { [key: string]: string }): Promise<boolean> {
+private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boolean> {
     return await this.confirm("Confirm", "Back");
   }
 
@@ -232,11 +229,12 @@ export class StartPage {
    * Asks the user about the quality of their sleep
    * @returns {number} The level on the samn perelli fatigue scale
    * @see https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5803055/
+   * @see https://www.icao.int/safety/fatiguemanagement/FRMSBangkok/4.%20Measuring%20Fatigue.pdf
    */
-  private async displaySamnPerelliChecklist(): Promise<number> {
+  public async displaySamnPerelliChecklist(): Promise<number> {
     var level = 0;
 
-    this.createText(`S-PF Checklist`, this.app.screen.width * 0.5, this.app.screen.height * 0.1, 24, { wordWrap: true });
+    this.createText(`S-PF Checklist`, this.app.screen.width * 0.5, this.app.screen.height * 0.1, 24, { wordWrap: true })
 
     const levels = [
       "Full alert, wide awake",
@@ -247,9 +245,10 @@ export class StartPage {
       "Very difficult to concentrate, groggy",
       "Unable to function, ready to drop",
     ];
-    const graphics: Array<GraphicList> = [];
+
+    const graphics: GraphicList[] = [];
     for (let index = levels.length - 1; index >= 0; index--) {
-      const y = this.app.screen.height * 0.15 + index * this.app.screen.height * 0.09;
+      const y = this.app.screen.height * 0.15 + (index * this.app.screen.height * 0.09);
       const x = this.app.screen.width * 0.1;
       const width = this.app.screen.width * 0.8;
       const height = this.app.screen.height * 0.09;
@@ -267,73 +266,54 @@ export class StartPage {
       });
       this.container.addChild(graphic);
 
-      const text = new Text(`${7 - index}. ${levels[index]}`, {
-        fontFamily: "Trebuchet",
-        fontSize: 16,
-        fill: 0xffffff,
-      });
-      text.position.set(x + 10, y + (this.app.screen.height * 0.09 - text.height) * 0.45);
-      text.eventMode = "none";
-      this.container.addChild(text);
+      this.createText(`${7 - index}. ${levels[index]}`, x + 10, y + this.app.screen.height * 0.0405 - 8.55, 16, {anchor: false});
     }
 
-    this.createText(
-      `Samn, S. & Perelli, L. (1981). Estimating Aircrew Fatigue: A Technique with Application to 
-    // Airlift Operations. SAM-TR-82-2.`,
-      this.app.screen.width * 0.5,
-      this.app.screen.height * 0.94,
-      12,
-      { wordWrap: true }
-    );
+    this.createText(`Samn, S. & Perelli, L. (1981). Estimating Aircrew Fatigue: A Technique with Application to 
+    // Airlift Operations. SAM-TR-82-2.`, this.app.screen.width * 0.5, this.app.screen.height * 0.94, 12, { wordWrap: true });
 
     await this.waitForKeyPressNoDestroy(graphics.map((graphic) => graphic[0]));
     await this.confirm("Ok");
-    return level;
+    return 8 - level;
   }
 
   /**
-   * Display the ready demo screen
+   * Display the ready demo screen.
+   * This consists of 6-7 refresher screens to remind how the buttons
+   * and numbers correlate to different parts of the screen. 
    */
-  private async displayReadyDemo() {
-    // Display the ready demo screen
-    const size = 512;
-    const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
+  public async displayReadyDemo(numberOfScreens: number) {
+    for (let i = 0; numberOfScreens > i; i ++ ) {
+      if (i >= this.ui.readyDemoTextures.length) break;
 
-    const readyDemo = new Sprite(this.ui.readyDemoTexture);
-    readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
-    readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
-    readyDemo.anchor.set(0.5);
+      const size = 512;
+      const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
 
-    const container = this.ui.createButton(
-      "Start now",
-      this.app.screen.width * 0.5,
-      this.app.screen.height * 0.85,
-      this.app.screen.width * 0.6,
-      this.app.screen.height * 0.2
-    );
+      const readyDemo = new Sprite(this.ui.readyDemoTextures[i]);
+      readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
+      readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
+      readyDemo.anchor.set(0.5);
 
-    this.container.addChild(readyDemo);
-    this.container.addChild(container);
-    await this.waitForKeyPress();
+      const container = this.ui.createButton("Start now", this.app.screen.width * 0.5, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
+
+      this.container.addChild(readyDemo);
+      this.container.addChild(container);
+      await this.waitForKeyPress();
+    }
   }
 
   /**
    * Start the test
    * Goes through different pages - home page, disclaimer, sleep form
    * TODO: Seperate pages better
-   * @returns {Promise<{ [key: string]: any }>} The test data
+   * @returns {Promise<SleepData>} The test data
    */
-  public async start(): Promise<{ [key: string]: any } | false> {
-    if (process.env.NODE_ENV === "development") return {};
-
-    // Display the home page
-    await this.displayHomePage();
-
-    // // Display the test disclaimer
+  public async start(): Promise<SleepData | false> {
+    // Display the test disclaimer
     const ready = await this.displayTestDisclaimer();
     if (!ready) return false;
 
-    // // Get sleep data
+    // Get sleep data
     let sleepData;
     while (true) {
       sleepData = await this.displaySleepForm();
@@ -343,11 +323,13 @@ export class StartPage {
 
     // Display the Samn Perelli checklist
     // Minus from 8 because the scale is inverted
-    const fatigueLevel = 8 - (await this.displaySamnPerelliChecklist());
+    const fatigueLevel = await this.displaySamnPerelliChecklist();
 
     if (this.config.display_refresher_screens) {
-      // Display the ready demo screen
-      await this.displayReadyDemo();
+      // Display the ready demo screen with one screen
+      // Note that the practice test would display all of the screens
+      // but this method is called within the practice test mode
+      await this.displayReadyDemo(1);
     }
 
     return {
