@@ -286,6 +286,7 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
     for (let i = 0; numberOfScreens > i; i ++ ) {
       if (i >= this.ui.readyDemoTextures.length) break;
 
+      // TODO: Make this dynamic (assuming each image is not 512x512)
       const size = 512;
       const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
 

@@ -16,6 +16,8 @@ export class PracticeCogSpeed {
         private fatigueLevel: number | null = null
     ) {}
 
+    
+
     public async start() {
         
     }
