@@ -13,6 +13,8 @@ import numbersAndDotsInvertedTextureImage from "../assets/numbers_and_dots_inver
 import smallButtonTextureImage from "../assets/small_button.png";
 
 import readyDemoImageOne from "../assets/ready_demo_one.png";
+import readyDemoImageTwo from "../assets/ready_demo_two.png";
+import readyDemoImageThree from "../assets/ready_demo_three.png";
 
 import bgCarbonImage from "../assets/bg_carbon.jpg";
 import bgSteelImage from "../assets/bg_steel.jpg";
@@ -94,8 +96,8 @@ export class CogSpeedGraphicsHandler {
     this.smallButtonTextures = Texture.from(smallButtonTextureImage);
     this.largeButtonTexture = Texture.from(largeButtonTextureImage);
     this.loadingGearTexture = Texture.from(loadingGearImage);
-    this.readyDemoTextures = [Texture.from(readyDemoImageOne), ];
-    this.logoTexture = Texture.from(logoWithGearsImage);
+    this.readyDemoTextures = [Texture.from(readyDemoImageOne), Texture.from(readyDemoImageTwo), Texture.from(readyDemoImageThree)];
+    this.logoTexture = Texture.from(logoWithGearsImage);  
 
     // Load number and dot assets
     const { numbers, dots } = this.loadNumbersAndDots(false);
