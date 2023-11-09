@@ -21,7 +21,7 @@ export interface GameAnswer {
     // Round number
     roundNumber: number;
     // Round type (not normalized)
-    roundType: 0 | 1 | 2 | 3 | 4 | 5;
+    roundType: 0 | 1 | 2 | 3 | 4 | 5 | 6;   
     // Time delta between previous answer
     timeTaken: number;
     // If the answer was correct or incorrect from previous
