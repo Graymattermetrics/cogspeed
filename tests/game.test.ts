@@ -36,15 +36,26 @@ const createGame = () => {
   return game;
 };
 
+const practiceTestGame = () => {
+  const game = createGame();
+
+  // We perform the same number of clicks as there are training rounds
+  for (let i = 0; i < config.self_paced.number_of_training_rounds; i++) {
+    game.buttonClicked(0); // We don't care where it is clicked
+  }
+  return game;
+}
+
 /**
  * Creates a game that has completed all training rounds
  * and is currently in selfPacedStartup round
  */
 const selfPacedStartupGame = () => {
-  const game = createGame();
-  // We perform the same number of clicks as there are training rounds
-  for (let i = 0; i < config.self_paced.number_of_training_rounds; i++) {
-    game.buttonClicked(0); // We don't care where it is clicked
+  const game = practiceTestGame();
+
+  // Go through practice tests
+  for (let i = 0; i < config.practice.number_of_rounds; i ++) {
+    game.buttonClicked(0);
   }
   return game;
 };
@@ -105,11 +116,17 @@ describe("Test game algorithm", () => {
     expect(setTimeout).toBeCalledWith(expect.any(Function), config.timeouts.max_test_duration);
   });
 
-  it("[tr] should have n training rounds", async () => {
-    const game = selfPacedStartupGame();
+  it("[pt] should have n practice tests", async () => {
+    const game = practiceTestGame();
     expect(game.currentRound).toBe(1);
     expect(game.previousAnswers.length).toEqual(config.self_paced.number_of_training_rounds);
     expect(setTimeout).toHaveBeenCalledTimes(3);
+  });
+
+  it("[tr] should have n training rounds", async () => {
+    const game = selfPacedStartupGame();
+    expect(game.currentRound).toBe(2);
+    expect(game.previousAnswers.length).toEqual(config.self_paced.number_of_training_rounds + config.practice.number_of_rounds);
   });
 
   it("[sp] should fail self paced mode if there are n wrong answers", async () => {
@@ -120,7 +137,7 @@ describe("Test game algorithm", () => {
       game.buttonClicked(-1); // Wrong answer
     }
     expect(game.stop).toHaveBeenCalledTimes(1);
-    expect(game.previousAnswers.length).toEqual(config.self_paced.number_of_training_rounds + config.self_paced.max_wrong_count);
+    expect(game.previousAnswers.length).toEqual(config.self_paced.number_of_training_rounds + + config.practice.number_of_rounds + config.self_paced.max_wrong_count);
   });
 
   it("[sp] should fail self paced mode if there are n correct answers but not m correct answers in a row", async () => {
@@ -153,7 +170,7 @@ describe("Test game algorithm", () => {
 
   it("[sp] should exit self paced startup mode if there are n correct answers in a row", async () => {
     const game = machinePacedGame();
-    expect(game.currentRound).toBe(2);
+    expect(game.currentRound).toBe(3);
     expect(game.currentTimeout).toBe(1000 - config.machine_paced.initial_speedup_amount);
     expect(game.stop).toHaveBeenCalledTimes(0);
     expect(setTimeout).lastCalledWith(expect.any(Function), 1000 - config.machine_paced.initial_speedup_amount);
@@ -203,7 +220,7 @@ describe("Test game algorithm", () => {
     for (let i = 0; i < thresholdNumber; i++) {
       game.buttonClicked(-1); // Wrong answer
     }
-    expect(game.currentRound).toBe(4);
+    expect(game.currentRound).toBe(5);
   });
 
   it("[spr] should not enter self paced restart mode if the roll mean limit is exceeded but there is a correct answer from previous", async () => {
@@ -223,9 +240,9 @@ describe("Test game algorithm", () => {
     for (let i = 1; i < thresholdNumber; i++) {
       game.buttonClicked(-1, (i + 1) * 1000); // Wrong answer (roughly 2 times)
     }
-    expect(game.currentRound).toBe(2);
+    expect(game.currentRound).toBe(3);
     game.buttonClicked(-1, (thresholdNumber + 3) * 1000); // Wrong answer (roughly 2 times)
-    expect(game.currentRound).toBe(4);
+    expect(game.currentRound).toBe(5);
   });
 
   it("[spr] should not enter self paced restart mode if the roll mean limit is exceeded but there is a incorrect answer from previous", async () => {
@@ -242,14 +259,14 @@ describe("Test game algorithm", () => {
     for (let i = 1; i < thresholdNumber; i++) {
       game.buttonClicked(-1, (i + 1) * 1000); // Wrong answer (roughly 2 times)
     }
-    expect(game.currentRound).toBe(2);
+    expect(game.currentRound).toBe(3);
     game.buttonClicked(-1, (thresholdNumber + 3) * 1000); // emulate is incorrect from previous
-    expect(game.currentRound).toBe(4);
+    expect(game.currentRound).toBe(5);
   });
 
   it("[pb] should enter post block mode if there are n answers without response", async () => {
     const game = postBlockGame();
-    expect(game.currentRound).toBe(3);
+    expect(game.currentRound).toBe(4);
     expect(setTimeout).lastCalledWith(expect.any(Function), config.machine_paced.blocking.no_response_duration);
   });
 
@@ -259,7 +276,7 @@ describe("Test game algorithm", () => {
     for (let i = 0; i < config.machine_paced.blocking.min_correct_answers; i++) {
       game.buttonClicked(game.answer, (i + 1) * 10000); // Right answer
     }
-    expect(game.currentRound).toBe(2);
+    expect(game.currentRound).toBe(3);
   });
 
   it("[pb] should exit with n wrong answers overall", () => {
@@ -278,14 +295,14 @@ describe("Test game algorithm", () => {
     for (let i = 0; i < config.self_paced.max_right_count; i++) {
       game.buttonClicked(game.answer, (i + 1) * 1000); // Right answer with +1000ms delay each time
     }
-    expect(game.currentRound).toBe(2);
+    expect(game.currentRound).toBe(3);
 
     const thresholdNumber =
       Math.trunc(config.machine_paced.rolling_average.mean_size * config.machine_paced.rolling_average.threshold) + 1;
     for (let i = 0; i < thresholdNumber; i++) {
       game.buttonClicked(-1); // Wrong answer
     }
-    expect(game.currentRound).toBe(4);
+    expect(game.currentRound).toBe(5);
 
     // Return to machine paced
     game.buttonClicked(game.answer, 10000); // Right answer (500ms)
