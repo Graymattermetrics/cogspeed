@@ -81,6 +81,9 @@ export class CogSpeedGraphicsHandler {
   public logoTexture: Texture;
   public readyDemoTextures: Texture[];
 
+  public queryNumberSprite: Sprite | null = null;
+  public answerButtons: Sprite[] | null = null;
+
   constructor(public app: Application) {
     this.gearWellTexture = Texture.from(gearWellTextureImage);
     this.gearTexture = Texture.from(gearTextureImage);
@@ -366,6 +369,8 @@ export class CogSpeedGraphicsHandler {
 
   public createInputGear(posX: number, posY: number, game: CogSpeedGame): void {
     const [container, buttons] = this.createGear(posX, posY, "input");
+
+    this.answerButtons = buttons;
 
     for (let i = 1; i <= 6; i++) {
       const button = buttons[i - 1];

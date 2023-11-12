@@ -128,6 +128,20 @@ export class CogSpeedGame {
     rounds[this.currentRound].bind(this)();
   }
 
+  // Flashes the answer and then continues
+  async revealAnswer() {
+    clearTimeout(this.currentRoundTimeout);
+
+    if (!this.ui || !this.ui.answerButtons) return;
+
+    await this.ui.rippleAnimation(this.ui.answerButtons[6 - this.answer]);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    await this.ui.rippleAnimation(this.ui.answerButtons[6 - this.answer]);
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    this.buttonClicked();
+  }
+
   /**
    * Un-prejudiced training rounds to remind the user how to perform
    * the cogspeed test.
@@ -158,35 +172,36 @@ export class CogSpeedGame {
    * Round type 1
    */
   async selfPacedStartupRound() {
-    // 1) Set no response timeout (roughly 6000ms)
+    // 1) Set no response timeout (roughly 3000ms)
+    // Instead of the timeout stopping the test, it just reveals the answer
+    // And then moves onto the next round
+
     clearTimeout(this.currentRoundTimeout);
-    this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.self_paced.no_response_duration);
+    this.currentRoundTimeout = setTimeout(this.revealAnswer.bind(this), this.config.self_paced.no_response_duration);
 
-    // 2) Max wrong limit (roughly 5)
     const selfPacedAnswers = this.previousAnswers.filter((answer) => answer.roundType === 1);
-    const wrongAnswers = selfPacedAnswers.filter((answer) => answer.status === "incorrect");
-    if (wrongAnswers.length >= this.config.self_paced.max_wrong_count) return this.stop(2);
 
-    // 3) More than (roughly 12) correct answers that are less than (roughly 3000ms)
-    // But not (roughly 4) correct answers in a row
-    const correctAnswers = selfPacedAnswers.filter(
-      (answer) => answer.status === "correct" && answer.timeTaken <= this.config.self_paced.max_correct_duration,
-    );
-    if (correctAnswers.length >= this.config.self_paced.total_correct_count) return this.stop(2);
+    // 2) If more than (roughly 20) answers have occured, then end the test
+    if (selfPacedAnswers.length === this.config.total_answer_count) return this.stop(4);
 
-    // 4) If (roughly 4) correct answers in a row
+    // 3) If (roughly 6) correct answers in a row under (roughly 2600ms)
     // We move to the next round
-    const lastNAnswers = selfPacedAnswers.slice(-this.config.self_paced.max_right_count);
-    if (lastNAnswers.filter((answer) => answer.status === "correct").length === this.config.self_paced.max_right_count) {
-      this.currentRound = 2;
-      // Set machine paced timeout
-      this.currentTimeout =
-        Math.min(
-          lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) / 4,
-          this.config.machine_paced.max_start_duration,
-        ) - this.config.machine_paced.initial_speedup_amount; // Minimim response time (roughly 100ms)
-      // Call next round
-      return this.machinePacedRound();
+    const lastNCorrectAnswers = selfPacedAnswers.slice(-this.config.self_paced.max_right_count).filter((answer) => answer.status === "correct");
+    if (lastNCorrectAnswers.length === this.config.self_paced.max_right_count) {
+      // Calculate average time to ensure under (roughly 2600ms)
+      const averageResponseTime = lastNCorrectAnswers.reduce((a, b) => a + b.timeTaken, 0) / lastNCorrectAnswers.length;
+
+      if (this.config.self_paced.right_count_art_less_than > averageResponseTime) {
+        this.currentRound = 2;
+        // Set machine paced timeout
+        this.currentTimeout =
+          Math.min(
+            averageResponseTime,
+            this.config.machine_paced.max_start_duration,
+          ) - this.config.machine_paced.initial_speedup_amount; // Minimim response time (roughly 100ms)
+        // Call next round
+        return this.machinePacedRound();
+      }
     }
   }
 

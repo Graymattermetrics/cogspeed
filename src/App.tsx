@@ -72,14 +72,14 @@ async function main() {
   const route = await startPage.displayHomePage();
   
   // TODO: Implement routing so that practice can be situated under /practice
-  if (route === "practice") {
-    await startPage.displayTestDisclaimer();
-    const fatigueLevel = await startPage.displaySamnPerelliChecklist();
-    await startPage.displayReadyDemo(10);
+  // if (route === "practice") {
+  //   await startPage.displayTestDisclaimer();
+  //   const fatigueLevel = await startPage.displaySamnPerelliChecklist();
+  //   await startPage.displayReadyDemo(10);
     
-    const practiceTest = new PracticeCogSpeed(config, app, graphicsManager, fatigueLevel);
-    return await practiceTest.start();
-  }
+  //   const practiceTest = new PracticeCogSpeed(config, app, graphicsManager, fatigueLevel);
+  //   return await practiceTest.start();
+  // }
 
   // Display start page
   const sleepData = await startPage.start();

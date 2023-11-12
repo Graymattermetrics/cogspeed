@@ -112,43 +112,18 @@ describe("Test game algorithm", () => {
     expect(setTimeout).toHaveBeenCalledTimes(3);
   });
 
-  it("[sp] should fail self paced mode if there are n wrong answers", async () => {
-    const game = selfPacedStartupGame();
-
-    // Click the wrong answer n times
-    for (let i = 0; i < config.self_paced.max_wrong_count; i++) {
-      game.buttonClicked(-1); // Wrong answer
-    }
-    expect(game.stop).toHaveBeenCalledTimes(1);
-    expect(game.previousAnswers.length).toEqual(config.self_paced.number_of_training_rounds + config.self_paced.max_wrong_count);
-  });
-
   it("[sp] should fail self paced mode if there are n correct answers but not m correct answers in a row", async () => {
     const game = selfPacedStartupGame();
 
     // Click the right answer n times but add in a wrong answer
-    // Eg 12 / 3 = 4
-    for (let i = 0; i < 4; i++) {
-      game.buttonClicked(game.answer, 100); // Right answer (<3000ms delay)
-      game.buttonClicked(game.answer, 100); // Right answer
-      game.buttonClicked(game.answer, 100); // Right answer
-      if (i != 3) game.buttonClicked(-1, 100); // Wrong answer
+    for (let i = 0; i < 100; i++) {
+      // game.buttonClicked(game.answer, 100); // Right answer (<3000ms delay)
+      // game.buttonClicked(game.answer, 100); // Right answer
+      // game.buttonClicked(game.answer, 100); // Right answer
+      game.buttonClicked(-1, 100); // Wrong answer
     }
+    expect(game.currentRound).toBe(1);
     expect(game.stop).toHaveBeenCalledTimes(1);
-  });
-
-  it("[sp] should not exit self paced mode if the correct answers are > than n seconds", async () => {
-    const game = selfPacedStartupGame();
-
-    // Click the right answer n times but add in a wrong answer
-    // Eg 12 / 3 = 4
-    for (let i = 0; i < 4; i++) {
-      game.buttonClicked(game.answer, (i + 1) * config.self_paced.max_correct_duration + 1); // Right answer (>3000ms delay)
-      game.buttonClicked(game.answer, (i + 1) * config.self_paced.max_correct_duration + 3001); // Right answer
-      game.buttonClicked(game.answer, (i + 1) * config.self_paced.max_correct_duration + 6001); // Right answer
-      if (i != 3) game.buttonClicked(-1, (i + 1) * config.self_paced.max_correct_duration + 9001); // Wrong answer
-    }
-    expect(game.stop).toHaveBeenCalledTimes(0);
   });
 
   it("[sp] should exit self paced startup mode if there are n correct answers in a row", async () => {

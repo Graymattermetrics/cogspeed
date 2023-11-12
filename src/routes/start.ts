@@ -152,14 +152,14 @@ export class StartPage {
     this.container.addChild(testNowContainer);
 
     // Practice button
-    const practiceContainer = this.ui.createButton("Practice test", this.app.screen.width * 0.5, this.app.screen.height * 0.825, 
-    this.app.screen.width * 0.6, this.app.screen.height * 0.15, 20)
-    this.container.addChild(practiceContainer);
+    // const practiceContainer = this.ui.createButton("Practice test", this.app.screen.width * 0.5, this.app.screen.height * 0.825, 
+    // this.app.screen.width * 0.6, this.app.screen.height * 0.15, 20)
+    // this.container.addChild(practiceContainer);
 
     // Version text
     this.createText(`Version ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.97, 11, {wordWrap: true});
     
-    const clicked = await this.waitForKeyPress(testNowContainer, [practiceContainer]);
+    const clicked = await this.waitForKeyPress(testNowContainer);
     return clicked === testNowContainer ? "test": "practice";
   }
 
@@ -309,17 +309,19 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
    * @returns {Promise<SleepData>} The test data
    */
   public async start(): Promise<SleepData | false> {
+    if (process.env.NODE_ENV === "development") return {fatigueLevel: 1};
+
     // Display the test disclaimer
     const ready = await this.displayTestDisclaimer();
     if (!ready) return false;
 
     // Get sleep data
-    let sleepData;
-    while (true) {
-      sleepData = await this.displaySleepForm();
-      // Confirm sleep data
-      if (await this.confirmSleepData(sleepData)) break;
-    }
+    // let sleepData;
+    // while (true) {
+    //   sleepData = await this.displaySleepForm();
+    //   // Confirm sleep data
+    //   if (await this.confirmSleepData(sleepData)) break;
+    // }
 
     // Display the Samn Perelli checklist
     // Minus from 8 because the scale is inverted
@@ -334,7 +336,7 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
 
     return {
       fatigueLevel,
-      ...sleepData,
+      // ...sleepData,
     };
   }
 }
