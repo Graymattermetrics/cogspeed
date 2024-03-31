@@ -94,7 +94,7 @@ export class CogSpeedGame {
   /**
    * Simply runs the next round
    */
-  nextRound(): void {
+  nextRound() {
     this.ui?.clearStage();
 
     // Create random answer location
@@ -130,6 +130,22 @@ export class CogSpeedGame {
     rounds[this.currentRound].bind(this)();
   }
 
+  async displayCorrectAnswer() {
+    if (!this.ui?.inputButtons) return;
+
+    const answerSprite = this.ui.inputButtons[6 - this.answer];
+    for (let i = 0; i < 3; i ++){ 
+      this.ui.rippleAnimation(answerSprite);
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+
+    // TODO: Exit if incorrect button was pressed immediately 
+    if (await this.ui.waitForKeyPress(answerSprite, this.config.practice_mode.no_response_duration)) {
+      return
+    }
+    return this.stop(4);
+  }
+
   /**
    * Un-prejudiced training rounds to remind the user how to perform
    * the cogspeed test.
@@ -149,44 +165,33 @@ export class CogSpeedGame {
   }
 
   /**
-   * This mode a) determines whether or not the user is experienced enough
-   * with cogspeed to continue into the test and b) performs practice test mode ⁺ 
+   * This mode consists of (roughly 20) screens to allow the user to become 
+   * acquitted with taking the CogSpeed test. If in these 20 screens, 4 correct
+   * answers in a row have not been obtained with an art of ``right_count_art_less_than``
+   * then the test fails.
    * 
-   * Scenarios:
-   *   1. User passes with brd under brd threshold and continues with the test as normal
-   *   2. User fails due to brd exceeding threshold, and continues in practice mode
    * 
-   * The practice test mode (⁺) consists of:
-   *     1. High no response timeout
-   *     2. Highlighting incorrect and correct answers
-   *     3. Remaining on screen until next is clicked
    * 
    * Round type 1
    */
   async practiceMode() {
+    // 1) Set no response timeout 
     clearTimeout(this.currentRoundTimeout);
-    // Initially practice test mode is used to determine capibility;
-    // If the brd of the last four practice test modes is less than the 
-    // threshold, then the user can continue onto self-paced-startup
-
-    const lastPracticeModeAnswers = this.previousAnswers.filter(answer => answer.roundType === 1);
-    if (lastPracticeModeAnswers.length === this.config.practice.number_of_rounds) {
-      // There have been n (roughly 4) answers. We determine capbility now
-      const averageResponseTime = lastPracticeModeAnswers.map(answer => answer.timeTaken)
-            .reduce((partialSum, a) => partialSum + a, 0) / lastPracticeModeAnswers.length;
-      
-      if (averageResponseTime < this.config.practice.success_art_less_than) {
-        // Successfully passed with the average response time less than the threshold
-        // Move on to self paced startup
-        this.currentRound = 2;
-        return this.selfPacedStartupRound();
-      }
-      // No such luck, the rest of the test is now in practice mode
-    }
-
-    // Code...
+    this.currentRoundTimeout = setTimeout(this.displayCorrectAnswer.bind(this), this.config.practice_mode.no_response_duration);
     
-    this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.practice.no_response_duration); 
+    const practiceTestAnswers = this.previousAnswers.filter((answer) => answer.roundType === 1);
+
+    // 2) If there have been (roughly 4) correct answers in a row under (roughly 2600ms), continue to self-paced
+    if (practiceTestAnswers.slice(-this.config.practice_mode.max_right_count).filter((answer) => answer.status === "correct").length === this.config.practice_mode.max_right_count
+    && practiceTestAnswers.slice(-this.config.practice_mode.max_right_count).reduce((a, b) => a + b.timeTaken, 0) / this.config.practice_mode.max_right_count < this.config.practice_mode.right_count_art_less_than) {
+      this.currentRound = 2;
+      return this.selfPacedStartupRound();
+    }
+    
+    // 2) If more than (roughly 20) answers have occurred without (roughly 4) successful answers, exit test unsuccessfully
+    if (practiceTestAnswers.length > this.config.practice_mode.total_answer_count) {
+      return this.stop(4);
+    }
   }
 
   /**
@@ -227,7 +232,7 @@ export class CogSpeedGame {
         Math.min(
           lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) / 4,
           this.config.machine_paced.max_start_duration,
-        ) - this.config.machine_paced.initial_speedup_amount; // Minimim response time (roughly 100ms)
+        ) - this.config.machine_paced.initial_speedup_amount; // Minimum response time (roughly 100ms)
       // Call next round
       return this.machinePacedRound();
     }

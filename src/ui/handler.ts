@@ -13,6 +13,8 @@ import numbersAndDotsInvertedTextureImage from "../assets/numbers_and_dots_inver
 import smallButtonTextureImage from "../assets/small_button.png";
 
 import readyDemoImageOne from "../assets/ready_demo_one.png";
+import readyDemoImageTwo from "../assets/ready_demo_two.png";
+import readyDemoImageThree from "../assets/ready_demo_three.png";
 
 import bgCarbonImage from "../assets/bg_carbon.jpg";
 import bgSteelImage from "../assets/bg_steel.jpg";
@@ -81,6 +83,9 @@ export class CogSpeedGraphicsHandler {
   public logoTexture: Texture;
   public readyDemoTextures: Texture[];
 
+  answerSprite: Sprite | null;
+  inputButtons: Sprite[] | null;
+
   constructor(public app: Application) {
     this.gearWellTexture = Texture.from(gearWellTextureImage);
     this.gearTexture = Texture.from(gearTextureImage);
@@ -94,7 +99,7 @@ export class CogSpeedGraphicsHandler {
     this.smallButtonTextures = Texture.from(smallButtonTextureImage);
     this.largeButtonTexture = Texture.from(largeButtonTextureImage);
     this.loadingGearTexture = Texture.from(loadingGearImage);
-    this.readyDemoTextures = [Texture.from(readyDemoImageOne), ];
+    this.readyDemoTextures = [Texture.from(readyDemoImageOne), Texture.from(readyDemoImageTwo), Texture.from(readyDemoImageThree)];
     this.logoTexture = Texture.from(logoWithGearsImage);
 
     // Load number and dot assets
@@ -108,6 +113,8 @@ export class CogSpeedGraphicsHandler {
 
     // Load button assets
     this.smallButtons = this.loadButtons();
+    this.answerSprite = null;
+    this.inputButtons = null;
   }
 
   public async emulateLoadingTime() {
@@ -241,6 +248,7 @@ export class CogSpeedGraphicsHandler {
     this.setSpritePosition(queryNumberSprite, 0.5, 0.75);
 
     const answerSprite = this.getSprite(numberOrDot !== "numbers" ? "numbers" : "dots", queryNumber, true);
+    this.answerSprite = answerSprite;
     this.setSpritePosition(
       answerSprite,
       buttonPositions[answerLocation](this.gearWellSize, this.gearWellSize)[0],
@@ -389,6 +397,8 @@ export class CogSpeedGraphicsHandler {
     button.width = buttons[0].width;
     button.height = buttons[0].height;
     container.addChild(button);
+
+    this.inputButtons = buttons;
   }
 
   /**
@@ -405,5 +415,26 @@ export class CogSpeedGraphicsHandler {
 
     // Create input gear
     this.createInputGear(0.5, 0.75, game);
+  }
+  
+  /**
+   * Wait for a click on a sprite
+   */
+  public async waitForKeyPress(sprite: Sprite, timeout: number) {
+    const container = new Container();
+    const startTime = performance.now();
+
+    sprite.eventMode = "dynamic";
+    sprite.on("pointerdown", () => {
+      container.destroy();
+    });
+
+    // Block until the start page is removed
+    while (container.destroyed === false) {
+      // Timed out
+      if (performance.now() > startTime + timeout) return null;
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    return true;
   }
 }

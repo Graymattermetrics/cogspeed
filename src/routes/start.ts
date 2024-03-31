@@ -135,7 +135,7 @@ export class StartPage {
   /**
    * Display the home page
    */
-  public async displayHomePage(): Promise<"test" | "practice"> {
+  public async displayHomePage() {
     // GMM Logo
     const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
     const size = 512;
@@ -151,16 +151,10 @@ export class StartPage {
     this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8, this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25, 36)
     this.container.addChild(testNowContainer);
 
-    // Practice button
-    const practiceContainer = this.ui.createButton("Practice test", this.app.screen.width * 0.5, this.app.screen.height * 0.825, 
-    this.app.screen.width * 0.6, this.app.screen.height * 0.15, 20)
-    this.container.addChild(practiceContainer);
-
     // Version text
     this.createText(`Version ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.97, 11, {wordWrap: true});
     
-    const clicked = await this.waitForKeyPress(testNowContainer, [practiceContainer]);
-    return clicked === testNowContainer ? "test": "practice";
+    await this.waitForKeyPress(testNowContainer);
   }
 
   /**
@@ -329,8 +323,6 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
 
     if (this.config.display_refresher_screens) {
       // Display the ready demo screen with one screen
-      // Note that the practice test would display all of the screens
-      // but this method is called within the practice test mode
       await this.displayReadyDemo(1);
     }
 

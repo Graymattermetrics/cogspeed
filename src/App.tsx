@@ -4,7 +4,6 @@ import { CogSpeedGame } from "./routes/game";
 import { StartPage } from "./routes/start";
 import { Config } from "./types/Config";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
-import { PracticeCogSpeed } from "./routes/practice";
 
 const gameWidth = window.innerWidth;
 const gameHeight = window.innerHeight;
@@ -69,18 +68,8 @@ async function main() {
 
   // Display the home page
   const startPage = new StartPage(config, app, graphicsManager);
-  const route = await startPage.displayHomePage();
+  await startPage.displayHomePage();
   
-  // TODO: Implement routing so that practice can be situated under /practice
-  if (route === "practice") {
-    await startPage.displayTestDisclaimer();
-    const fatigueLevel = await startPage.displaySamnPerelliChecklist();
-    await startPage.displayReadyDemo(10);
-    
-    const practiceTest = new PracticeCogSpeed(config, app, graphicsManager, fatigueLevel);
-    return await practiceTest.start();
-  }
-
   // Display start page
   const sleepData = await startPage.start();
   if (!sleepData) throw new Error("No sleep data");
