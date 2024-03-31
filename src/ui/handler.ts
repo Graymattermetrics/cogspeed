@@ -84,7 +84,7 @@ export class CogSpeedGraphicsHandler {
   public readyDemoTextures: Texture[];
 
   answerSprite: Sprite | null;
-  inputButtons: Sprite[] | null;
+  inputButtons: Sprite[];
 
   constructor(public app: Application) {
     this.gearWellTexture = Texture.from(gearWellTextureImage);
@@ -114,7 +114,7 @@ export class CogSpeedGraphicsHandler {
     // Load button assets
     this.smallButtons = this.loadButtons();
     this.answerSprite = null;
-    this.inputButtons = null;
+    this.inputButtons = [];
   }
 
   public async emulateLoadingTime() {
@@ -379,8 +379,8 @@ export class CogSpeedGraphicsHandler {
       const button = buttons[i - 1];
       button.eventMode = "dynamic";
       button.on("pointerdown", () => {
-        game.buttonClicked(7 - i);
-        this.rippleAnimation(button);
+        const ripple = game.buttonClicked(7 - i);
+        if (ripple) this.rippleAnimation(button);
       });
     }
 
