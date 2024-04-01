@@ -49,12 +49,12 @@ async function loadConfig(): Promise<Config> {
  * @param startNow Called from restart. Bypasses sleep data
  */
 export async function startUp (config: Config | null = null, startNow: boolean = false) {
-  const app = createApp();
-
   if (config === null) {
       config = await loadConfig();
       if (config.error) throw new Error(config.reason);
   }
+
+  const app = createApp();
   
     // Show GMM Logo while loading all textures
     // Temp text instead of logo for now
