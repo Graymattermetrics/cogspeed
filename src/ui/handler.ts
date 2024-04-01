@@ -15,6 +15,7 @@ import smallButtonTextureImage from "../assets/small_button.png";
 import readyDemoImageOne from "../assets/ready_demo_one.png";
 import readyDemoImageTwo from "../assets/ready_demo_two.png";
 import readyDemoImageThree from "../assets/ready_demo_three.png";
+import readyDemoImageFinal from "../assets/ready_demo_final.png";
 
 import bgCarbonImage from "../assets/bg_carbon.jpg";
 import bgSteelImage from "../assets/bg_steel.jpg";
@@ -99,7 +100,8 @@ export class CogSpeedGraphicsHandler {
     this.smallButtonTextures = Texture.from(smallButtonTextureImage);
     this.largeButtonTexture = Texture.from(largeButtonTextureImage);
     this.loadingGearTexture = Texture.from(loadingGearImage);
-    this.readyDemoTextures = [Texture.from(readyDemoImageOne), Texture.from(readyDemoImageTwo), Texture.from(readyDemoImageThree)];
+    this.readyDemoTextures = [Texture.from(readyDemoImageOne), Texture.from(readyDemoImageTwo), 
+      Texture.from(readyDemoImageThree), Texture.from(readyDemoImageFinal)];
     this.logoTexture = Texture.from(logoWithGearsImage);
 
     // Load number and dot assets
@@ -432,11 +434,12 @@ export class CogSpeedGraphicsHandler {
     // Block until the start page is removed
     let i = 0;
     while (container.destroyed === false) {
+      console.log(i)
       // Ripple 3 times every 300 ms
-      if (i % 6 == 0 && i < 20) this.rippleAnimation(sprite);
+      if (i % 3 === 0 && i < 9) this.rippleAnimation(sprite);
       // Timed out
       if (performance.now() > startTime + timeout) return null;
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       i ++;
     }
     return true;

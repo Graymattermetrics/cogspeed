@@ -162,7 +162,7 @@ export class CogSpeedGame {
       this.currentRound = 1;
       return this.practiceMode();
     }
-    this.currentRoundTimeout = setTimeout(this.displayCorrectAnswer.bind(this), this.config.timeouts.max_initial_no_response * 0.5);
+    this.currentRoundTimeout = setTimeout(this.displayCorrectAnswer.bind(this), this.config.timeouts.max_initial_no_response);
   }
 
   /**
@@ -595,6 +595,6 @@ export class CogSpeedGame {
     };
 
     const resultsPage = new ProcessResultsPage(this.app, this.ui);
-    await resultsPage.show(data);
+    await resultsPage.show(data, this.config);
   }
 }
