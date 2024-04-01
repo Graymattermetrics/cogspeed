@@ -80,6 +80,7 @@ export class StartPage {
     }
 
     this.container.addChild(textObject);
+    return textObject;
   }
 
   /**
@@ -150,6 +151,22 @@ export class StartPage {
     const testNowContainer = this.ui.createButton("Test now!", this.app.screen.width * 0.5, this.app.screen.height * 0.7, 
     this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8, this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25, 36)
     this.container.addChild(testNowContainer);
+
+    // Privacy policies
+    const privacyPoliciesText = this.createText("View our pivacy policies", this.app.screen.width * 0.5, this.app.screen.height * 0.84, 20, {wordWrap: true});
+    privacyPoliciesText.eventMode = "dynamic";
+    // privacyPoliciesText.
+    privacyPoliciesText.on('pointerdown', () => {
+      window.open("https://www.graymattermetrics.com/privacy-policy-2/")
+    });
+
+    // Terms of service
+    const tosText = this.createText("View our TOS", this.app.screen.width * 0.5, this.app.screen.height * 0.89, 20, {wordWrap: true});
+    tosText.eventMode = "dynamic";
+    // privacyPoliciesText.
+    tosText.on('pointerdown', () => {
+      window.open("http://www.graymattermetrics.com/terms-conditions/");
+    });
 
     // Version text
     this.createText(`Version ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.97, 11, {wordWrap: true});
