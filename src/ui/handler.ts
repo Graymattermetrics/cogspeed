@@ -13,6 +13,9 @@ import numbersAndDotsInvertedTextureImage from "../assets/numbers_and_dots_inver
 import smallButtonTextureImage from "../assets/small_button.png";
 
 import readyDemoImageOne from "../assets/ready_demo_one.png";
+import readyDemoImageTwo from "../assets/ready_demo_two.png";
+import readyDemoImageThree from "../assets/ready_demo_three.png";
+import readyDemoImageFinal from "../assets/ready_demo_final.png";
 
 import bgCarbonImage from "../assets/bg_carbon.jpg";
 import bgSteelImage from "../assets/bg_steel.jpg";
@@ -81,6 +84,9 @@ export class CogSpeedGraphicsHandler {
   public logoTexture: Texture;
   public readyDemoTextures: Texture[];
 
+  answerSprite: Sprite | null;
+  inputButtons: Sprite[];
+
   constructor(public app: Application) {
     this.gearWellTexture = Texture.from(gearWellTextureImage);
     this.gearTexture = Texture.from(gearTextureImage);
@@ -94,7 +100,8 @@ export class CogSpeedGraphicsHandler {
     this.smallButtonTextures = Texture.from(smallButtonTextureImage);
     this.largeButtonTexture = Texture.from(largeButtonTextureImage);
     this.loadingGearTexture = Texture.from(loadingGearImage);
-    this.readyDemoTextures = [Texture.from(readyDemoImageOne), ];
+    this.readyDemoTextures = [Texture.from(readyDemoImageOne), Texture.from(readyDemoImageTwo), 
+      Texture.from(readyDemoImageThree), Texture.from(readyDemoImageFinal)];
     this.logoTexture = Texture.from(logoWithGearsImage);
 
     // Load number and dot assets
@@ -108,6 +115,8 @@ export class CogSpeedGraphicsHandler {
 
     // Load button assets
     this.smallButtons = this.loadButtons();
+    this.answerSprite = null;
+    this.inputButtons = [];
   }
 
   public async emulateLoadingTime() {
@@ -241,6 +250,7 @@ export class CogSpeedGraphicsHandler {
     this.setSpritePosition(queryNumberSprite, 0.5, 0.75);
 
     const answerSprite = this.getSprite(numberOrDot !== "numbers" ? "numbers" : "dots", queryNumber, true);
+    this.answerSprite = answerSprite;
     this.setSpritePosition(
       answerSprite,
       buttonPositions[answerLocation](this.gearWellSize, this.gearWellSize)[0],
@@ -371,8 +381,8 @@ export class CogSpeedGraphicsHandler {
       const button = buttons[i - 1];
       button.eventMode = "dynamic";
       button.on("pointerdown", () => {
-        game.buttonClicked(7 - i);
-        this.rippleAnimation(button);
+        const ripple = game.buttonClicked(7 - i);
+        if (ripple) this.rippleAnimation(button);
       });
     }
 
@@ -389,6 +399,8 @@ export class CogSpeedGraphicsHandler {
     button.width = buttons[0].width;
     button.height = buttons[0].height;
     container.addChild(button);
+
+    this.inputButtons = buttons;
   }
 
   /**
@@ -405,5 +417,31 @@ export class CogSpeedGraphicsHandler {
 
     // Create input gear
     this.createInputGear(0.5, 0.75, game);
+  }
+  
+  /**
+   * Wait for a click on a sprite
+   */
+  public async waitForKeyPressCorrectAnswer(sprite: Sprite, timeout: number) {
+    const container = new Container();
+    const startTime = performance.now();
+
+    sprite.eventMode = "dynamic";
+    sprite.on("pointerdown", () => {
+      container.destroy();
+    });
+
+    // Block until the start page is removed
+    let i = 0;
+    while (container.destroyed === false) {
+      console.log(i)
+      // Ripple 3 times every 300 ms
+      if (i % 3 === 0 && i < 9) this.rippleAnimation(sprite);
+      // Timed out
+      if (performance.now() > startTime + timeout) return null;
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      i ++;
+    }
+    return true;
   }
 }

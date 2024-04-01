@@ -80,6 +80,7 @@ export class StartPage {
     }
 
     this.container.addChild(textObject);
+    return textObject;
   }
 
   /**
@@ -135,7 +136,7 @@ export class StartPage {
   /**
    * Display the home page
    */
-  public async displayHomePage(): Promise<"test" | "practice"> {
+  public async displayHomePage() {
     // GMM Logo
     const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
     const size = 512;
@@ -151,16 +152,26 @@ export class StartPage {
     this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8, this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25, 36)
     this.container.addChild(testNowContainer);
 
-    // Practice button
-    const practiceContainer = this.ui.createButton("Practice test", this.app.screen.width * 0.5, this.app.screen.height * 0.825, 
-    this.app.screen.width * 0.6, this.app.screen.height * 0.15, 20)
-    this.container.addChild(practiceContainer);
+    // Privacy policies
+    const privacyPoliciesText = this.createText("View our pivacy policies", this.app.screen.width * 0.5, this.app.screen.height * 0.84, 20, {wordWrap: true});
+    privacyPoliciesText.eventMode = "dynamic";
+    // privacyPoliciesText.
+    privacyPoliciesText.on('pointerdown', () => {
+      window.open("https://www.graymattermetrics.com/privacy-policy-2/")
+    });
+
+    // Terms of service
+    const tosText = this.createText("View our TOS", this.app.screen.width * 0.5, this.app.screen.height * 0.89, 20, {wordWrap: true});
+    tosText.eventMode = "dynamic";
+    // privacyPoliciesText.
+    tosText.on('pointerdown', () => {
+      window.open("http://www.graymattermetrics.com/terms-conditions/");
+    });
 
     // Version text
     this.createText(`Version ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.97, 11, {wordWrap: true});
     
-    const clicked = await this.waitForKeyPress(testNowContainer, [practiceContainer]);
-    return clicked === testNowContainer ? "test": "practice";
+    await this.waitForKeyPress(testNowContainer);
   }
 
   /**
@@ -283,8 +294,9 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
    * and numbers correlate to different parts of the screen. 
    */
   public async displayReadyDemo(numberOfScreens: number) {
-    for (let i = 0; numberOfScreens > i; i ++ ) {
-      if (i >= this.ui.readyDemoTextures.length) break;
+    let continueButton;
+    for (let i = 0; i < numberOfScreens; i ++ ) {
+      if (i >= this.ui.readyDemoTextures.length - 1) break;
 
       const size = 512;
       const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
@@ -294,12 +306,30 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
       readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
       readyDemo.anchor.set(0.5);
 
-      const container = this.ui.createButton("Start now", this.app.screen.width * 0.5, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
-
+      continueButton = this.ui.createButton("Continue", this.app.screen.width * 0.3, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2, 18);
+      const skipToTest = this.ui.createButton("Skip", this.app.screen.width * 0.7, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2, 18)
+      
+      this.container.addChild(continueButton);
       this.container.addChild(readyDemo);
-      this.container.addChild(container);
-      await this.waitForKeyPress();
+      this.container.addChild(skipToTest);
+      if (await this.waitForKeyPress(skipToTest, [this.container]) === skipToTest) break;
     }
+
+    // TODO: Simplify
+    // Display final screen
+    const size = 512;
+    const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
+
+    const readyDemo = new Sprite(this.ui.readyDemoTextures[this.ui.readyDemoTextures.length - 1]);
+    readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
+    readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
+    readyDemo.anchor.set(0.5);
+
+    const skipToTest = this.ui.createButton("Start now", this.app.screen.width * 0.5, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
+    
+    this.container.addChild(readyDemo);
+    this.container.addChild(skipToTest);
+    await this.waitForKeyPress();
   }
 
   /**
@@ -308,7 +338,14 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
    * TODO: Seperate pages better
    * @returns {Promise<SleepData>} The test data
    */
-  public async start(): Promise<SleepData | false> {
+  public async start(skipToDisplay: boolean): Promise<SleepData | false> {
+    // if (process.env.NODE_ENV === "development") return {fatigueLevel: -1};
+
+    if (skipToDisplay) {
+      await this.displayReadyDemo(Infinity);
+      return {fatigueLevel: 1};
+    }
+
     // Display the test disclaimer
     const ready = await this.displayTestDisclaimer();
     if (!ready) return false;
@@ -327,9 +364,7 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
 
     if (this.config.display_refresher_screens) {
       // Display the ready demo screen with one screen
-      // Note that the practice test would display all of the screens
-      // but this method is called within the practice test mode
-      await this.displayReadyDemo(1);
+      await this.displayReadyDemo(Infinity);
     }
 
     return {
