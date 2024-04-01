@@ -5,13 +5,23 @@ import { StartPage } from "./routes/start";
 import { Config } from "./types/Config";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 
-const gameWidth = window.innerWidth;
-const gameHeight = window.innerHeight;
 
-const app = new Application<HTMLCanvasElement>({
-  width: gameWidth,
-  height: gameHeight,
-});
+function createApp(): Application {
+  const gameWidth = window.innerWidth;
+  const gameHeight = window.innerHeight;
+
+  const app = new Application<HTMLCanvasElement>({
+    width: gameWidth,
+    height: gameHeight,
+  });
+
+  const appDiv = document.querySelector(".App");
+  if (!appDiv) throw new Error("No app div found");
+  appDiv.appendChild(app.view);
+
+  return app;
+}
+
 
 /**
  * Loads the config from the backend
@@ -39,14 +49,12 @@ async function loadConfig(): Promise<Config> {
  * @param startNow Called from restart. Bypasses sleep data
  */
 export async function startUp (config: Config | null = null, startNow: boolean = false) {
-    if (config === null) {
-        config = await loadConfig();
-        if (config.error) throw new Error(config.reason);
-    }
-  
-    const appDiv = document.querySelector(".App");
-    if (!appDiv) throw new Error("No app div found");
-    appDiv.appendChild(app.view);
+  const app = createApp();
+
+  if (config === null) {
+      config = await loadConfig();
+      if (config.error) throw new Error(config.reason);
+  }
   
     // Show GMM Logo while loading all textures
     // Temp text instead of logo for now
@@ -57,7 +65,7 @@ export async function startUp (config: Config | null = null, startNow: boolean =
       align: "center",
     });
     loadingText.anchor.set(0.5);
-    loadingText.position.set(gameWidth * 0.5, gameHeight * 0.5);
+    loadingText.position.set(app.screen.width * 0.5, app.screen.height * 0.5);
     app.stage.addChild(loadingText);
     app.ticker.add((delta) => {
       loadingText.text = "Loading" + ".".repeat((Math.floor(app.ticker.lastTime / 1000) % 3) + 1);
