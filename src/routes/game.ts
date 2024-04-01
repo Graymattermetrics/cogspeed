@@ -539,7 +539,7 @@ export class CogSpeedGame {
       (answer) => answer.roundType === 2,
     )[0];
 
-    const totalMachinePacedAnswers = filterByRoundType(this.previousAnswers, 3);
+    const totalMachinePacedAnswers = filterByRoundType(this.previousAnswers, 2);
     const correctMachinePacedAnswers = filterByStatus(totalMachinePacedAnswers, "correct");
 
     const quickestResponse = Math.min(...mapToTimeTaken(totalMachinePacedAnswers));
