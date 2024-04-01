@@ -138,13 +138,9 @@ export class CogSpeedGame {
     this.isInPause = this.answer;
 
     const answerSprite = this.ui.inputButtons[6 - this.answer];
-    for (let i = 0; i < 3; i ++){ 
-      this.ui.rippleAnimation(answerSprite);
-      await new Promise(resolve => setTimeout(resolve, 500));
-    }
-
+    
     // TODO: Exit if incorrect button was pressed immediately 
-    if (await this.ui.waitForKeyPress(answerSprite, this.config.practice_mode.no_response_duration)) {
+    if (await this.ui.waitForKeyPressCorrectAnswer(answerSprite, this.config.practice_mode.no_response_duration)) {
       this.isInPause = null;
       return
     }
@@ -408,7 +404,7 @@ export class CogSpeedGame {
    * @param {number} timeClicked The time (performance.now) the button was clicked
    */
   public buttonClicked(location: number | null = null, timeClicked: number | null = null): boolean {
-    if (this.ui && this.isInPause !== null && this.isInPause != location) {
+    if (this.ui && this.isInPause !== null && this.isInPause !== location) {
       // It should only respond to one in this mode
       this.ui.rippleAnimation(this.ui.inputButtons[6 - this.answer]);
       return false;
@@ -429,7 +425,7 @@ export class CogSpeedGame {
       previousAnswer &&
       previousAnswer.status === "no response" &&
       this.config.machine_paced.minimum_response_time > timeTaken &&
-      location != null
+      location !== null
     ) {
       if (location === previousAnswer.answerLocation) {
         // The answer is correct for the previous answer

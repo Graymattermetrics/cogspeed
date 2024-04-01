@@ -420,7 +420,7 @@ export class CogSpeedGraphicsHandler {
   /**
    * Wait for a click on a sprite
    */
-  public async waitForKeyPress(sprite: Sprite, timeout: number) {
+  public async waitForKeyPressCorrectAnswer(sprite: Sprite, timeout: number) {
     const container = new Container();
     const startTime = performance.now();
 
@@ -430,10 +430,14 @@ export class CogSpeedGraphicsHandler {
     });
 
     // Block until the start page is removed
+    let i = 0;
     while (container.destroyed === false) {
+      // Ripple 3 times every 300 ms
+      if (i % 6 == 0 && i < 20) this.rippleAnimation(sprite);
       // Timed out
       if (performance.now() > startTime + timeout) return null;
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      i ++;
     }
     return true;
   }
