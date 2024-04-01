@@ -595,6 +595,6 @@ export class CogSpeedGame {
     };
 
     const resultsPage = new ProcessResultsPage(this.app, this.ui);
-    await resultsPage.show(data);
+    await resultsPage.show(data, this.config);
   }
 }

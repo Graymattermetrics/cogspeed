@@ -4,6 +4,8 @@ import { Application, Container, Graphics, Point, Sprite } from "pixi.js";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { table } from "table";
 import { CogSpeedGraphicsHandler } from "../ui/handler";
+import { startUp } from "../main";
+import { Config } from "../types/Config";
 
 export class ProcessResultsPage {
   constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {}
@@ -181,7 +183,7 @@ export class ProcessResultsPage {
     return container;
   }
 
-  public async show(data: { [key: string]: any }) {
+  public async show(data: { [key: string]: any }, config: Config) {
     const loadingContainer = this.loadingScreen();
 
     const [geolocation, normalizedLocation] = await this.getCurrentPosition();
@@ -214,7 +216,7 @@ export class ProcessResultsPage {
     );
     restartTestButtonContainer.on("pointerdown", () => {
       // TODO: Send back to home page
-      window.location.reload();
+      startUp(config, true);
     });
 
     await this.ui.emulateLoadingTime();

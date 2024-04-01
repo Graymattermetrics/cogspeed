@@ -277,8 +277,9 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
    * and numbers correlate to different parts of the screen. 
    */
   public async displayReadyDemo(numberOfScreens: number) {
-    for (let i = 0; numberOfScreens > i; i ++ ) {
-      if (i >= this.ui.readyDemoTextures.length) break;
+    let continueButton;
+    for (let i = 0; i < numberOfScreens; i ++ ) {
+      if (i >= this.ui.readyDemoTextures.length - 1) break;
 
       const size = 512;
       const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
@@ -288,12 +289,30 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
       readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
       readyDemo.anchor.set(0.5);
 
-      const container = this.ui.createButton("Start now", this.app.screen.width * 0.5, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
-
+      continueButton = this.ui.createButton("Continue", this.app.screen.width * 0.3, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2, 18);
+      const skipToTest = this.ui.createButton("Skip", this.app.screen.width * 0.7, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2, 18)
+      
+      this.container.addChild(continueButton);
       this.container.addChild(readyDemo);
-      this.container.addChild(container);
-      await this.waitForKeyPress();
+      this.container.addChild(skipToTest);
+      if (await this.waitForKeyPress(skipToTest, [this.container]) === skipToTest) break;
     }
+
+    // TODO: Simplify
+    // Display final screen
+    const size = 512;
+    const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
+
+    const readyDemo = new Sprite(this.ui.readyDemoTextures[this.ui.readyDemoTextures.length - 1]);
+    readyDemo.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
+    readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
+    readyDemo.anchor.set(0.5);
+
+    const skipToTest = this.ui.createButton("Start now", this.app.screen.width * 0.5, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
+    
+    this.container.addChild(readyDemo);
+    this.container.addChild(skipToTest);
+    await this.waitForKeyPress();
   }
 
   /**
@@ -302,8 +321,13 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
    * TODO: Seperate pages better
    * @returns {Promise<SleepData>} The test data
    */
-  public async start(): Promise<SleepData | false> {
-    if (process.env.NODE_ENV === "development") return {fatigueLevel: 1};
+  public async start(skipToDisplay: boolean): Promise<SleepData | false> {
+    // if (process.env.NODE_ENV === "development") return {fatigueLevel: -1};
+
+    if (skipToDisplay) {
+      await this.displayReadyDemo(Infinity);
+      return {fatigueLevel: 1};
+    }
 
     // Display the test disclaimer
     const ready = await this.displayTestDisclaimer();
@@ -323,7 +347,7 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
 
     if (this.config.display_refresher_screens) {
       // Display the ready demo screen with one screen
-      await this.displayReadyDemo(1);
+      await this.displayReadyDemo(Infinity);
     }
 
     return {
