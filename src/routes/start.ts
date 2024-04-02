@@ -153,23 +153,23 @@ export class StartPage {
     this.container.addChild(testNowContainer);
 
     // Privacy policies
-    const privacyPoliciesText = this.createText("View our pivacy policies", this.app.screen.width * 0.5, this.app.screen.height * 0.84, 20, {wordWrap: true});
+    const privacyPoliciesText = this.createText("View our pivacy policies", this.app.screen.width * 0.5, this.app.screen.height * 0.87, 21, {wordWrap: true});
     privacyPoliciesText.eventMode = "dynamic";
     // privacyPoliciesText.
-    privacyPoliciesText.on('pointerdown', () => {
+    privacyPoliciesText.on('pointertap', () => {
       window.open("https://www.graymattermetrics.com/privacy-policy-2/")
     });
 
     // Terms of service
-    const tosText = this.createText("View our TOS", this.app.screen.width * 0.5, this.app.screen.height * 0.89, 20, {wordWrap: true});
+    const tosText = this.createText("View our TOS", this.app.screen.width * 0.5, this.app.screen.height * 0.93, 21, {wordWrap: true});
     tosText.eventMode = "dynamic";
     // privacyPoliciesText.
-    tosText.on('pointerdown', () => {
+    tosText.on('pointertap', () => {
       window.open("http://www.graymattermetrics.com/terms-conditions/");
     });
 
     // Version text
-    this.createText(`Version ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.97, 11, {wordWrap: true});
+    this.createText(`Version ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.02, 11, {wordWrap: true});
     
     await this.waitForKeyPress(testNowContainer);
   }
