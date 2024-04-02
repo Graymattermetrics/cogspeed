@@ -247,6 +247,7 @@ export class ProcessResultsPage {
     );
     restartTestButtonContainer.on("pointerdown", () => {
       // TODO: Send back to home page
+      this.app.destroy();
       startUp(config, true);
     });
 
