@@ -10,19 +10,49 @@ import { Config } from "../types/Config";
 export class ProcessResultsPage {
   constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {}
 
-  private formatObject(data: object): string {
+  private formatKey(key: string, capitalise: boolean = false): string {
+    let result = capitalise ? key[0].toUpperCase() : key[0];
+    let i = 0;
+    for (const letter of key.slice(1)) {
+      i ++;
+      if (letter === "_") {
+        continue;
+      }
+
+      if (key[i - 1] === "_") {
+        result += letter.toUpperCase();
+      } else {
+        result += letter;
+      }
+    }
+    return result;
+  }
+  
+  private formatKeys(keys: string[]): string {
+    let result = "";
+    for (const key of keys) {
+      result += this.formatKey(key, key !== keys[0]);
+    }
+    return result
+  }
+
+  private formatObject(data: Record<string, any>, keys: string[] | null = null): string {
     if (!data) return ``;
 
     let formattedData = ``;
     for (const [key, value] of Object.entries(data)) {
       if (["answerLogs"].includes(key)) continue;
-      if (typeof value === "object") formattedData += this.formatObject(value);
-      else formattedData += `${key} = ${value}\n`;
+      
+      // Add the keys
+      let copyKeys = null;
+      if (keys !== null) copyKeys = [...keys, key];
+      if (typeof value === "object") formattedData += this.formatObject(value, copyKeys);
+      else formattedData += `${copyKeys ? this.formatKeys(copyKeys): key} = ${value}\n`;
     }
     return formattedData;
   }
 
-  private formatData(data: { [key: string]: any }): string {
+  private formatData(data: Record<string, any>, config: Config): string {
     const keys = [
       ["Num", "roundNumber"],
       ["Type", "roundType"],
@@ -86,7 +116,8 @@ export class ProcessResultsPage {
           alignment: "center",
           content: "Answer logs\n(Rm = rolling mean average)",
         },
-      })
+      }) +
+      `\n${this.formatObject(config, [])}`
     );
   }
 
@@ -204,7 +235,7 @@ export class ProcessResultsPage {
     );
     viewTestLogsButtonContainer.on(
       "pointerdown",
-      this.downloadHandler.bind(this, this.formatData(data), 850 + data.answerLogs.length * 75)
+      this.downloadHandler.bind(this, this.formatData(data, config), 1850 + data.answerLogs.length * 75)
     );
 
     const restartTestButtonContainer = this.ui.createButton(
