@@ -169,7 +169,7 @@ export class StartPage {
     });
 
     // Version text
-    this.createText(`Version ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.02, 11, {wordWrap: true});
+    this.createText(`Version ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.03, 11, {wordWrap: true});
     
     await this.waitForKeyPress(testNowContainer);
   }
@@ -351,12 +351,13 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
     if (!ready) return false;
 
     // Get sleep data
-    let sleepData;
-    while (true) {
-      sleepData = await this.displaySleepForm();
-      // Confirm sleep data
-      if (await this.confirmSleepData(sleepData)) break;
-    }
+    // TODO: Implement
+    // let sleepData;
+    // while (true) {
+    //   sleepData = await this.displaySleepForm();
+    //   // Confirm sleep data
+    //   if (await this.confirmSleepData(sleepData)) break;
+    // }
 
     // Display the Samn Perelli checklist
     // Minus from 8 because the scale is inverted
@@ -368,8 +369,7 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
     }
 
     return {
-      fatigueLevel,
-      ...sleepData,
-    };
+      fatigueLevel
+        };
   }
 }
