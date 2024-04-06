@@ -433,7 +433,6 @@ export class CogSpeedGraphicsHandler {
     // Block until the start page is removed
     let i = 0;
     while (container.destroyed === false) {
-      console.log(i)
       // Ripple 3 times every 300 ms
       if (i % 3 === 0 && i < 9) this.rippleAnimation(sprite);
       // Timed out

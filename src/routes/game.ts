@@ -55,7 +55,8 @@ export class CogSpeedGame {
   currentRoundTimeout: NodeJS.Timeout | undefined;
 
   // Misc
-  isInPause: number | null;
+  isInPauseFromTimeout: number | null;
+
 
   constructor(
     public config: Config,
@@ -63,7 +64,7 @@ export class CogSpeedGame {
     private ui: CogSpeedGraphicsHandler | null = null,
     private sleepData: SleepData | null = null,
   ) {
-    this.isInPause = null;
+    this.isInPauseFromTimeout = null;
   }
 
   /**
@@ -99,6 +100,7 @@ export class CogSpeedGame {
    * Simply runs the next round
    */
   nextRound() {
+    console.log("next round called", this.currentRound);
     this.ui?.clearStage();
 
     // Create random answer location
@@ -135,13 +137,13 @@ export class CogSpeedGame {
 
   async displayCorrectAnswer() {
     if (!this.ui?.inputButtons) return;
-    this.isInPause = this.answer;
+    this.isInPauseFromTimeout = this.answer;
 
     const answerSprite = this.ui.inputButtons[6 - this.answer];
     
     // TODO: Exit if incorrect button was pressed immediately 
     if (await this.ui.waitForKeyPressCorrectAnswer(answerSprite, this.config.practice_mode.no_response_duration)) {
-      this.isInPause = null;
+      this.isInPauseFromTimeout = null;
       return
     }
     return this.stop(4);
@@ -404,7 +406,7 @@ export class CogSpeedGame {
    * @param {number} timeClicked The time (performance.now) the button was clicked
    */
   public buttonClicked(location: number | null = null, timeClicked: number | null = null): boolean {
-    if (this.ui && this.isInPause !== null && this.isInPause !== location) {
+    if (this.ui && this.isInPauseFromTimeout !== null && this.isInPauseFromTimeout !== location) {
       // It should only respond to one in this mode
       this.ui.rippleAnimation(this.ui.inputButtons[6 - this.answer]);
       return false;
@@ -472,6 +474,12 @@ export class CogSpeedGame {
     this.previousAnswers.push(data);
     if (this.currentRound === 2) {
       this.previousAnswers[this.previousAnswers.length - 1].correctRollingMeanRatio = this.getCorrectRollingMean();
+    }
+
+    if (location && location !== this.answer && [0, 1].includes(this.currentRound)) {
+      // Force the correct answer to be clicked before moving on
+      this.displayCorrectAnswer();
+      return false;
     }
 
     this.nextRound();
