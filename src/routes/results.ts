@@ -251,11 +251,25 @@ export class ProcessResultsPage {
       startUp(config, true);
     });
 
+    const homeButton = this.ui.createButton(
+      "Go back to home",
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.80,
+      this.app.screen.width * 0.6,
+      this.app.screen.height * 0.2
+    );
+    homeButton.on("pointerdown", () => {
+      // TODO: Send back to home page
+      this.app.destroy();
+      startUp(config, false);
+    });
+
     await this.ui.emulateLoadingTime();
 
     loadingContainer.destroy();
 
     this.app.stage.addChild(viewTestLogsButtonContainer);
     this.app.stage.addChild(restartTestButtonContainer);
+    this.app.stage.addChild(homeButton);
   }
 }
