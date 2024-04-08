@@ -28,6 +28,8 @@ export interface GameAnswer {
     isCorrectOrIncorrectFromPrevious: "incorrect" | "correct" | null;
     // The ratio of timeTaken to duration
     ratio: number;
+    // Unique id for each round (used in practice modes)
+    _id: string;
     // Time of answer
     _time_epoch: number;
 }
