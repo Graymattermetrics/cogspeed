@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Application, Container, Graphics, Point, Sprite } from "pixi.js";
+import { Application, Container, Graphics, Point, Sprite, Text } from "pixi.js";
 
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { table } from "table";
@@ -223,13 +223,39 @@ export class ProcessResultsPage {
       normalizedLocation,
     };
 
+    const textObject = new Text(`Test summary
+      Test version: ${config.version}
+      Account ID: ...
+      Test ID: ${data._id}
+      Status: ${data.status}
+      Message: ${data.statusCode}
+      Date/time: ${data._date}
+      Location: ${normalizedLocation}
+      Test duration: ${data.testDuration}
+      No rounds: ${data.numberOfRounds}
+      No blocks: ${data.blocking.blockCount}
+      Block range: ${data.blocking.blockRange}
+      Final block diff: ${data.blocking.finalBlockDiff}
+      `, {
+      fontFamily: "Trebuchet",
+      fontSize: 18,
+      fill: 0xffffff,
+      align: "center",
+    });
+    textObject.position.set(this.app.screen.width * 0.5,
+      this.app.screen.height * 0.2);
+
+    textObject.anchor.set(0.5);
+    this.app.stage.addChild(textObject);
+    
+
     const responseData = JSON.parse(JSON.stringify(data));
     delete responseData["answerLogs"];
 
     const viewTestLogsButtonContainer = this.ui.createButton(
       "View test logs",
       this.app.screen.width * 0.5,
-      this.app.screen.height * 0.3,
+      this.app.screen.height * 0.45,
       this.app.screen.width * 0.6,
       this.app.screen.height * 0.2
     );
