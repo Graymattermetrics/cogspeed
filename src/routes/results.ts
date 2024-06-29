@@ -246,7 +246,6 @@ export class ProcessResultsPage {
       this.app.screen.height * 0.2);
 
     textObject.anchor.set(0.5);
-    this.app.stage.addChild(textObject);
     
 
     const responseData = JSON.parse(JSON.stringify(data));
@@ -297,5 +296,6 @@ export class ProcessResultsPage {
     this.app.stage.addChild(viewTestLogsButtonContainer);
     this.app.stage.addChild(restartTestButtonContainer);
     this.app.stage.addChild(homeButton);
+    this.app.stage.addChild(textObject);
   }
 }
