@@ -245,10 +245,11 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
   public async displaySamnPerelliChecklist(): Promise<number> {
     var level = 0;
 
-    this.createText(`S-PF Checklist`, this.app.screen.width * 0.5, this.app.screen.height * 0.1, 24, { wordWrap: true })
+    this.createText(`Samn-Perelli Fatigue Scale`, this.app.screen.width * 0.5, this.app.screen.height * 0.05, 20, { wordWrap: true })
+    this.createText(`S-PFS`, this.app.screen.width * 0.5, this.app.screen.height * 0.1, 24, { wordWrap: true })
 
     const levels = [
-      "Full alert, wide awake",
+      "Fully alert, wide awake",
       "Very lively, responsive, but not at peak",
       "Okay, about normal",
       "Less than sharp, let down",
