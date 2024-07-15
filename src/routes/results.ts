@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Application, Container, Graphics, Point, Sprite, Text } from "pixi.js";
+import { Application, Container, Graphics, Point, Sprite, Text, Texture } from "pixi.js";
 
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { table } from "table";
@@ -7,7 +7,11 @@ import { CogSpeedGraphicsHandler } from "../ui/handler";
 import { startUp } from "../main";
 import { Config } from "../types/Config";
 
+import resultsGraph from "../assets/results_graph.png";
+
 export class ProcessResultsPage {
+  public resultsGraphTexture: Texture | undefined;
+
   constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {}
 
   private formatKey(key: string, capitalise: boolean = false): string {
@@ -231,7 +235,7 @@ export class ProcessResultsPage {
       wordWrapWidth: this.app.screen.width * 0.8
     });
     textSummary.position.set(this.app.screen.width * 0.5,
-      this.app.screen.height * 0.15);
+      this.app.screen.height * 0.18);
 
     textSummary.anchor.set(0.5);
     this.app.stage.addChild(textSummary);
@@ -247,6 +251,17 @@ export class ProcessResultsPage {
       this.ui.removeAllStageChildren();
       this.show(data, config, {shouldLoad: false});
     });
+
+    if (!this.resultsGraphTexture) {
+      throw new Error("Results graph texture is not loaded.");
+    }
+
+    const graphSprite = new Sprite(this.resultsGraphTexture);
+    graphSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.55)
+    graphSprite.scale.set(0.7);
+    graphSprite.anchor.set(0.5, 0.5)
+
+    this.app.stage.addChild(graphSprite);
     this.app.stage.addChild(backButtonContainer);
   }
 
@@ -254,8 +269,8 @@ export class ProcessResultsPage {
     let loadingContainer;
     if (args.shouldLoad) {
       loadingContainer = this.loadingScreen();
+      this.resultsGraphTexture = Texture.from(resultsGraph);
     }
-
 
     const [geolocation, normalizedLocation] = await this.getCurrentPosition();
     data.location = {
