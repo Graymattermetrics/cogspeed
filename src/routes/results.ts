@@ -214,8 +214,48 @@ export class ProcessResultsPage {
     return container;
   }
 
-  public async show(data: { [key: string]: any }, config: Config) {
-    const loadingContainer = this.loadingScreen();
+  public async showSummaryPage(data: { [key: string]: any }, config: Config) {
+    const textSummary = new Text(`Test summary
+      Test version: ${config.version}
+      Account ID: ...
+      Date/time: ${data._date}
+      Location: ${data.location.normalizedLocation}
+      Status: ${data.status}
+      Message: ${data.statusCode}
+      Blocking duration: ${data.blockingRoundDuration}`, {
+      fontFamily: "Trebuchet",
+      fontSize: 18,
+      fill: 0xffffff,
+      align: "center",
+      wordWrap: true,
+      wordWrapWidth: this.app.screen.width * 0.8
+    });
+    textSummary.position.set(this.app.screen.width * 0.5,
+      this.app.screen.height * 0.15);
+
+    textSummary.anchor.set(0.5);
+    this.app.stage.addChild(textSummary);
+
+    const backButtonContainer = this.ui.createButton(
+      "Go back",
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.85,
+      this.app.screen.width * 0.6,
+      this.app.screen.height * 0.2
+    );
+    backButtonContainer.on("pointerdown", () => {
+      this.ui.removeAllStageChildren();
+      this.show(data, config, {shouldLoad: false});
+    });
+    this.app.stage.addChild(backButtonContainer);
+  }
+
+  public async show(data: { [key: string]: any }, config: Config, args: { shouldLoad: boolean} = {shouldLoad: true}) {
+    let loadingContainer;
+    if (args.shouldLoad) {
+      loadingContainer = this.loadingScreen();
+    }
+
 
     const [geolocation, normalizedLocation] = await this.getCurrentPosition();
     data.location = {
@@ -223,30 +263,17 @@ export class ProcessResultsPage {
       normalizedLocation,
     };
 
-    const textObject = new Text(`Test summary
-      Test version: ${config.version}
-      Account ID: ...
-      Test ID: ${data._id}
-      Status: ${data.status}
-      Message: ${data.statusCode}
-      Date/time: ${data._date}
-      Location: ${normalizedLocation}
-      Test duration: ${data.testDuration}
-      No rounds: ${data.numberOfRounds}
-      No blocks: ${data.blocking.blockCount}
-      Block range: ${data.blocking.blockRange}
-      Final block diff: ${data.blocking.finalBlockDiff}
-      `, {
-      fontFamily: "Trebuchet",
-      fontSize: 18,
-      fill: 0xffffff,
-      align: "center",
+    const summaryPageButtonContainer = this.ui.createButton(
+      "View test summary",
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.3,
+      this.app.screen.width * 0.6,
+      this.app.screen.height * 0.2
+    );
+    summaryPageButtonContainer.on("pointerdown", () => {
+      this.ui.removeAllStageChildren();
+      this.showSummaryPage(data, config);
     });
-    textObject.position.set(this.app.screen.width * 0.5,
-      this.app.screen.height * 0.2);
-
-    textObject.anchor.set(0.5);
-    
 
     const responseData = JSON.parse(JSON.stringify(data));
     delete responseData["answerLogs"];
@@ -289,13 +316,14 @@ export class ProcessResultsPage {
       startUp(config, false);
     });
 
-    await this.ui.emulateLoadingTime();
+    if (args.shouldLoad && loadingContainer) {
+      await this.ui.emulateLoadingTime();
+      loadingContainer.destroy();
+    }
 
-    loadingContainer.destroy();
-
+    this.app.stage.addChild(summaryPageButtonContainer);
     this.app.stage.addChild(viewTestLogsButtonContainer);
     this.app.stage.addChild(restartTestButtonContainer);
     this.app.stage.addChild(homeButton);
-    this.app.stage.addChild(textObject);
   }
 }

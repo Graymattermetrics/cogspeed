@@ -527,7 +527,7 @@ export class CogSpeedGame {
    */
   public async start(time: number | null = null) {
     this.ui?.setupGame(this);
-
+    
     this.startTime = time === null ? performance.now() : time;
     this.maxTestTimeout = setTimeout(this.stop.bind(this), this.config.timeouts.max_test_duration);
     this.nextRound();
@@ -548,9 +548,7 @@ export class CogSpeedGame {
     const status = info.status;
     const message = info.message;
 
-    for (var i = this.app.stage.children.length - 1; i >= 0; i--) {
-      this.app.stage.removeChild(this.app.stage.children[i]);
-    }
+    this.ui.removeAllStageChildren();
 
     const round = (num: number, sf: number = 3) => {
       return Math.round((num * 10 ** sf) / 10 ** sf);

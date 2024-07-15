@@ -368,6 +368,12 @@ export class CogSpeedGraphicsHandler {
     this.app.stage.addChild(background);
   }
 
+  public removeAllStageChildren() {
+    for (var i = this.app.stage.children.length - 1; i >= 0; i--) {
+      this.app.stage.removeChild(this.app.stage.children[i]);
+    }
+  }
+
   public createDisplayGear(posX: number, posY: number, gearLocation: string): Container {
     const [container] = this.createGear(posX, posY, gearLocation);
     return container;
