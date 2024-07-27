@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Application, Container, Graphics, Point, Sprite, Text, Texture } from "pixi.js";
+import { Application, autoDetectRenderer, Container, Graphics, Point, Sprite, Text, Texture } from "pixi.js";
 
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { table } from "table";
@@ -8,6 +8,7 @@ import { startUp } from "../main";
 import { Config } from "../types/Config";
 
 import resultsGraph from "../assets/results_graph.png";
+import { SleepData } from "../types/SleepData";
 
 export class ProcessResultsPage {
   public resultsGraphTexture: Texture | undefined;
@@ -218,7 +219,7 @@ export class ProcessResultsPage {
     return container;
   }
 
-  public async showSummaryPage(data: { [key: string]: any }, config: Config) {
+  public async showSummaryPage(data: { sleepData: SleepData, [key: string]: any }, config: Config) {
     const textSummary = new Text(`Test summary
       Test version: ${config.version}
       Account ID: ...
@@ -256,10 +257,50 @@ export class ProcessResultsPage {
       throw new Error("Results graph texture is not loaded.");
     }
 
+    const _IMAGE_SCALE = 0.8;
+    const scaleBy = _IMAGE_SCALE / 0.8
+
     const graphSprite = new Sprite(this.resultsGraphTexture);
     graphSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.55)
-    graphSprite.scale.set(0.7);
+    graphSprite.scale.set(_IMAGE_SCALE);
     graphSprite.anchor.set(0.5, 0.5)
+    console.log(graphSprite.width, graphSprite.x, graphSprite._bounds.maxX)
+    
+    const halfW = graphSprite.width * 0.5;
+    const halfH = graphSprite.height * 0.5;
+
+    // These values are generated for image scale of 0.8
+
+    const rowHeight = scaleBy * 0.264 * halfH; 
+    const firstRow = scaleBy * 0.53 * halfH
+    const firstColumnX = scaleBy * 0.05 * halfW;
+    
+    const __emojiMapping: Record<number, string> = {
+      1: "😁",
+      2: "😃",
+      3: "🙂",
+      4: "😑",
+      5: "😒",
+      6: "😴",
+      7: "😰"
+    }
+    const val = __emojiMapping[data.sleepData.fatigueLevel];
+
+    console.log({halfW, halfH})
+    const textSummarySPFScore = new Text(val, {
+      // fontFamily: "Arial Black",
+      fontSize: 24,
+      fill: 0x00000,
+      // fontWeight: "bolder"
+    });
+    // textSummarySPFScore.anchor.set(0.5 / scaleBy, 0.5 / scaleBy);
+    // textSummarySPFScore.position.set(-halfW, -halfH);
+    textSummarySPFScore.position.set(firstColumnX-halfW, firstRow-halfH + rowHeight * (data.sleepData.fatigueLevel-1))
+    graphSprite.addChild(textSummarySPFScore);
+
+    
+
+
 
     this.app.stage.addChild(graphSprite);
     this.app.stage.addChild(backButtonContainer);
@@ -287,6 +328,7 @@ export class ProcessResultsPage {
     );
     summaryPageButtonContainer.on("pointerdown", () => {
       this.ui.removeAllStageChildren();
+      // @ts-ignore
       this.showSummaryPage(data, config);
     });
 

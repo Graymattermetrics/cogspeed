@@ -119,7 +119,7 @@ export class CogSpeedGraphicsHandler {
   }
 
   public async emulateLoadingTime() {
-    const loadingTime = process.env.NODE_ENV === "development" ? 100 : 3000;
+    const loadingTime = process.env.NODE_ENV === "development" ? 10 : 3000;
     await new Promise((resolve) => setTimeout(resolve, loadingTime));
   }
 
