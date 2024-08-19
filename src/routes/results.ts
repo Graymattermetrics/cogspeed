@@ -278,10 +278,17 @@ export class ProcessResultsPage {
       normalizedLocation,
     };
 
+    data.sleepData.fatigueLevel = 2;
+    data.cognitiveProcessingIndex = 20;
+    data.blockingRoundDuration = 3000;
+    
+    // Add table to top of page
+    const resultsTableContainer = this.ui.createResultsTable(data.sleepData.fatigueLevel, data.cognitiveProcessingIndex, data.blockingRoundDuration, this.app.screen.height * 0.15);
+
     const summaryPageButtonContainer = this.ui.createButton(
-      "View test summary",
+      "Test summary",
       this.app.screen.width * 0.5,
-      this.app.screen.height * 0.3,
+      this.app.screen.height * 0.40,
       this.app.screen.width * 0.6,
       this.app.screen.height * 0.2
     );
@@ -294,9 +301,9 @@ export class ProcessResultsPage {
     delete responseData["answerLogs"];
 
     const viewTestLogsButtonContainer = this.ui.createButton(
-      "View test logs",
+      "Test logs",
       this.app.screen.width * 0.5,
-      this.app.screen.height * 0.45,
+      this.app.screen.height * 0.53,
       this.app.screen.width * 0.6,
       this.app.screen.height * 0.2
     );
@@ -306,9 +313,9 @@ export class ProcessResultsPage {
     );
 
     const restartTestButtonContainer = this.ui.createButton(
-      "Restart test",
+      "Restart",
       this.app.screen.width * 0.5,
-      this.app.screen.height * 0.6,
+      this.app.screen.height * 0.7,
       this.app.screen.width * 0.6,
       this.app.screen.height * 0.2
     );
@@ -319,9 +326,9 @@ export class ProcessResultsPage {
     });
 
     const homeButton = this.ui.createButton(
-      "Go back to home",
+      "Home",
       this.app.screen.width * 0.5,
-      this.app.screen.height * 0.80,
+      this.app.screen.height * 0.83,
       this.app.screen.width * 0.6,
       this.app.screen.height * 0.2
     );
@@ -336,6 +343,7 @@ export class ProcessResultsPage {
       loadingContainer.destroy();
     }
 
+    this.app.stage.addChild(resultsTableContainer);
     this.app.stage.addChild(summaryPageButtonContainer);
     this.app.stage.addChild(viewTestLogsButtonContainer);
     this.app.stage.addChild(restartTestButtonContainer);

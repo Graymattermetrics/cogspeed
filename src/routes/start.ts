@@ -169,7 +169,7 @@ export class StartPage {
     });
 
     // Version text
-    this.createText(`Version ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.03, 11, {wordWrap: true});
+    this.createText(`Version ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.03, 14, {wordWrap: true});
     
     await this.waitForKeyPress(testNowContainer);
   }

@@ -527,8 +527,10 @@ export class CogSpeedGame {
    */
   public async start(time: number | null = null) {
     this.ui?.setupGame(this);
-    
+    this.stop(0);
     this.startTime = time === null ? performance.now() : time;
+    return;
+    
     this.maxTestTimeout = setTimeout(this.stop.bind(this), this.config.timeouts.max_test_duration);
     this.nextRound();
   }

@@ -1,4 +1,4 @@
-import { Application, Container, Point, Rectangle, Sprite, Text, Texture } from "pixi.js";
+import { Application, Container, Graphics, Point, Rectangle, Sprite, Text, Texture } from "pixi.js";
 
 import buttonTextureImage from "../assets/button.png";
 import invertedButtonTextureImage from "../assets/button_inverted.png";
@@ -119,8 +119,130 @@ export class CogSpeedGraphicsHandler {
   }
 
   public async emulateLoadingTime() {
-    const loadingTime = process.env.NODE_ENV === "development" ? 100 : 3000;
+    const loadingTime = process.env.NODE_ENV === "development" ? 0 : 3000;
     await new Promise((resolve) => setTimeout(resolve, loadingTime));
+  }
+
+  private _getMapValue(map: Record<number, number>, value: number, inverse=false): number {
+    let v = null;
+    for (const [key, value_] of Object.entries(map)) {
+      if (inverse) {
+        if (value < Number.parseInt(key)) v = value_;
+      } else {
+        if (value > Number.parseInt(key)) v = value_;
+      }
+    }
+    if (v == null) {
+      return inverse ? 0xF4B4B4 : 0x7CE8FF;
+    }
+    return v;
+  }
+
+  public createResultsTable(spfScore: 1 | 2 | 3 | 4 | 5 | 6 | 7, cpiScore: number, blockingRoundDuration: number, yPos: number): Container {
+    const _spfScoreMap = {
+      1: 0xF4B4B4,
+      2: 0xff644e,
+      3: 0xFFB05C,
+      4: 0xFFEE67,
+      5: 0xC1F46A,
+      6: 0xA7EA63,
+      7: 0x7CE8FF
+    };
+    
+    // COGSPEED Score Mapping
+    const _cogspeedScoreMap = {
+      0: 0xF4B4B4,   // 0 - < 0
+      1: 0xff644e,   // 10 - 1
+      11: 0xFFB05C,  // 25 - 11
+      26: 0xFFEE67,  // 50 - 26
+      51: 0xC1F46A,  // 75 - 51
+      76: 0xA7EA63,  // 90 - 76
+      91: 0x7CE8FF   // 100 - 91
+    };
+    
+    // Blocking Round Duration Mapping
+    const _blockingRoundDurationMap = {
+      1800: 0xF4B4B4,   // >1800 ms
+      1690: 0xff644e,   // 1690-1789 ms
+      1525: 0xFFB05C,   // 1525-1668 ms
+      1250: 0xFFEE67,   // 1250-1514 ms
+      975: 0xC1F46A,    // 975-1239 ms
+      810: 0xA7EA63,    // 810-964 ms
+      700: 0x7CE8FF     // 700-799 ms
+    };
+
+    const container = new Container();
+
+
+    const screenWidth = this.app.screen.width;
+    const screenHeight = this.app.screen.height;
+
+    const width = screenWidth * 0.28;
+    const height = screenHeight * 0.05;
+
+    const marginLeft = screenWidth * 0.08;
+    
+    // First column, SPF
+    const headerBoxSPF = new Graphics();
+    headerBoxSPF.beginFill(0xffffff);
+    headerBoxSPF.lineStyle(2, 0xafafaf);
+    headerBoxSPF.drawRect(marginLeft, yPos, width, height);
+
+    const headerTextSPF = new Text("S-P-F Score", {fill: 0x00000, fontSize: 14})
+    headerTextSPF.position.set(screenWidth * 0.135, yPos + 8);
+
+    const valueBoxSPF = new Graphics();
+    let colour = _spfScoreMap[spfScore];
+    valueBoxSPF.beginFill(colour);
+    valueBoxSPF.lineStyle(2, 0xafafaf);
+    valueBoxSPF.drawRect(marginLeft, yPos + height, width, height);
+
+
+    // Second column, CPI
+    const headerBoxCPI = new Graphics();
+    headerBoxCPI.beginFill(0xffffff);
+    headerBoxCPI.lineStyle(2, 0xafafaf);
+    headerBoxCPI.drawRect(marginLeft + width, yPos, width, height);
+
+    const headerTextCPI = new Text("Cogspeed Score", {fill: 0x00000, fontSize: 14})
+    headerTextCPI.position.set(screenWidth * 0.105 + width, yPos + 8);
+
+    const valueBoxCPI = new Graphics();
+    colour = this._getMapValue(_cogspeedScoreMap, cpiScore);
+    valueBoxCPI.beginFill(colour);
+    valueBoxCPI.lineStyle(2, 0xafafaf);
+    valueBoxCPI.drawRect(marginLeft + width, yPos + height, width, height);
+    
+    // Third column, BRD
+    const headerBoxBRD = new Graphics();
+    headerBoxBRD.beginFill(0xffffff);
+    headerBoxBRD.lineStyle(2, 0xafafaf);
+    headerBoxBRD.drawRect(marginLeft + width * 2, yPos, width, height);
+
+    const headerTextBRD = new Text("BRD Duration", {fill: 0x00000, fontSize: 14})
+    headerTextBRD.position.set(screenWidth * 0.12 + width * 2, yPos + 8);
+
+    const valueBoxBRD = new Graphics();
+    colour = this._getMapValue(_blockingRoundDurationMap, blockingRoundDuration);
+    valueBoxBRD.beginFill(colour);
+    valueBoxBRD.lineStyle(2, 0xafafaf);
+    valueBoxBRD.drawRect(marginLeft + width * 2, yPos + height, width, height);
+
+
+    container.addChild(headerBoxSPF);
+    container.addChild(valueBoxSPF);
+    container.addChild(headerBoxCPI);
+    container.addChild(valueBoxCPI);
+    container.addChild(headerBoxBRD);
+    container.addChild(valueBoxBRD);
+
+    container.addChild(headerTextSPF);
+    container.addChild(headerTextCPI);
+    container.addChild(headerTextBRD);
+
+
+
+    return container;
   }
 
   public createButton(content: string, x: number, y: number, width: number, height: number, fontSize: number = 24): Container {
