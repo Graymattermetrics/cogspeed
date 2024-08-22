@@ -162,17 +162,16 @@ export class CogSpeedGraphicsHandler {
     
     // Blocking Round Duration Mapping
     const _blockingRoundDurationMap = {
-      1800: 0xF4B4B4,   // >1800 ms
-      1690: 0xff644e,   // 1690-1789 ms
-      1525: 0xFFB05C,   // 1525-1668 ms
+      1800: 0x7CE8FF,   // >1800 ms  
+      1690: 0xA7EA63,   // 1690-1789 ms  
+      1525: 0xC1F46A,   // 1525-1668 ms  
       1250: 0xFFEE67,   // 1250-1514 ms
-      975: 0xC1F46A,    // 975-1239 ms
-      810: 0xA7EA63,    // 810-964 ms
-      700: 0x7CE8FF     // 700-799 ms
+      975: 0xFFB05C,    // 975-1239 ms
+      810: 0xff644e,    // 810-964 ms
+      700:  0xF4B4B4    // 700-799 ms
     };
 
     const container = new Container();
-
 
     const screenWidth = this.app.screen.width;
     const screenHeight = this.app.screen.height;
@@ -191,6 +190,9 @@ export class CogSpeedGraphicsHandler {
     const headerTextSPF = new Text("S-PF Score", {fill: 0x00000, fontSize: 14})
     headerTextSPF.position.set(screenWidth * 0.135, yPos + 8);
 
+    const valueTextSPF = new Text(spfScore, {fill: 0x00000, fontSize: 18})
+    valueTextSPF.position.set(screenWidth * 0.135 + 30, yPos + 50);
+
     const valueBoxSPF = new Graphics();
     let colour = _spfScoreMap[spfScore];
     valueBoxSPF.beginFill(colour);
@@ -207,6 +209,9 @@ export class CogSpeedGraphicsHandler {
     const headerTextCPI = new Text("CogSpeed Score", {fill: 0x00000, fontSize: 14})
     headerTextCPI.position.set(screenWidth * 0.105 + width, yPos + 8);
 
+    const valueTextCPI = new Text(cpiScore.toString(), {fill: 0x00000, fontSize: 18})
+    valueTextCPI.position.set(screenWidth * 0.105 + width + 30, yPos + 50);
+
     const valueBoxCPI = new Graphics();
     colour = this._getMapValue(_cogspeedScoreMap, cpiScore);
     valueBoxCPI.beginFill(colour);
@@ -221,6 +226,9 @@ export class CogSpeedGraphicsHandler {
 
     const headerTextBRD = new Text("BRD", {fill: 0x00000, fontSize: 14})
     headerTextBRD.position.set(screenWidth * 0.12 + width * 2, yPos + 8);
+
+    const valueTextBRD = new Text(blockingRoundDuration.toString(), {fill: 0x00000, fontSize: 18});
+    valueTextBRD.position.set(screenWidth * 0.12 + width * 2 + 30, yPos + 50);
 
     const valueBoxBRD = new Graphics();
     colour = this._getMapValue(_blockingRoundDurationMap, blockingRoundDuration);
@@ -240,7 +248,9 @@ export class CogSpeedGraphicsHandler {
     container.addChild(headerTextCPI);
     container.addChild(headerTextBRD);
 
-
+    container.addChild(valueTextSPF);
+    container.addChild(valueTextCPI);
+    container.addChild(valueTextBRD);
 
     return container;
   }

@@ -277,10 +277,6 @@ export class ProcessResultsPage {
       normalizedLocation,
     };
 
-    data.sleepData.fatigueLevel = 2;
-    data.cognitiveProcessingIndex = 20;
-    data.blockingRoundDuration = 3000;
-    
     // Add table to top of page
     const resultsTableContainer = this.ui.createResultsTable(data.sleepData.fatigueLevel, data.cognitiveProcessingIndex, data.blockingRoundDuration, this.app.screen.height * 0.15);
 
