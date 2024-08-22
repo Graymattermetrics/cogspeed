@@ -219,6 +219,9 @@ export class ProcessResultsPage {
   }
 
   public async showSummaryPage(data: { [key: string]: any }, config: Config) {
+    const resultsTableContainer = this.ui.createResultsTable(data.sleepData.fatigueLevel, data.cognitiveProcessingIndex, data.blockingRoundDuration, this.app.screen.height * 0.10);
+    this.app.stage.addChild(resultsTableContainer)
+
     const textSummary = new Text(`Test summary
       Test version: ${config.version}
       Account ID: ...
@@ -234,7 +237,7 @@ export class ProcessResultsPage {
       wordWrapWidth: this.app.screen.width * 0.8
     });
     textSummary.position.set(this.app.screen.width * 0.5,
-      this.app.screen.height * 0.18);
+      this.app.screen.height * 0.35);
 
     textSummary.anchor.set(0.5);
     this.app.stage.addChild(textSummary);
@@ -242,7 +245,7 @@ export class ProcessResultsPage {
     const backButtonContainer = this.ui.createButton(
       "Go back",
       this.app.screen.width * 0.5,
-      this.app.screen.height * 0.85,
+      this.app.screen.height * 0.9,
       this.app.screen.width * 0.6,
       this.app.screen.height * 0.2
     );
@@ -256,8 +259,8 @@ export class ProcessResultsPage {
     }
 
     const graphSprite = new Sprite(this.resultsGraphTexture);
-    graphSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.55)
-    graphSprite.scale.set(0.7);
+    graphSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.65)
+    graphSprite.scale.set(0.5);
     graphSprite.anchor.set(0.5, 0.5)
 
     this.app.stage.addChild(graphSprite);
