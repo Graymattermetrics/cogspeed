@@ -188,7 +188,7 @@ export class CogSpeedGraphicsHandler {
     headerBoxSPF.lineStyle(2, 0xafafaf);
     headerBoxSPF.drawRect(marginLeft, yPos, width, height);
 
-    const headerTextSPF = new Text("S-P-F Score", {fill: 0x00000, fontSize: 14})
+    const headerTextSPF = new Text("S-PF Score", {fill: 0x00000, fontSize: 14})
     headerTextSPF.position.set(screenWidth * 0.135, yPos + 8);
 
     const valueBoxSPF = new Graphics();
@@ -204,7 +204,7 @@ export class CogSpeedGraphicsHandler {
     headerBoxCPI.lineStyle(2, 0xafafaf);
     headerBoxCPI.drawRect(marginLeft + width, yPos, width, height);
 
-    const headerTextCPI = new Text("Cogspeed Score", {fill: 0x00000, fontSize: 14})
+    const headerTextCPI = new Text("CogSpeed Score", {fill: 0x00000, fontSize: 14})
     headerTextCPI.position.set(screenWidth * 0.105 + width, yPos + 8);
 
     const valueBoxCPI = new Graphics();
@@ -219,7 +219,7 @@ export class CogSpeedGraphicsHandler {
     headerBoxBRD.lineStyle(2, 0xafafaf);
     headerBoxBRD.drawRect(marginLeft + width * 2, yPos, width, height);
 
-    const headerTextBRD = new Text("BRD Duration", {fill: 0x00000, fontSize: 14})
+    const headerTextBRD = new Text("BRD", {fill: 0x00000, fontSize: 14})
     headerTextBRD.position.set(screenWidth * 0.12 + width * 2, yPos + 8);
 
     const valueBoxBRD = new Graphics();

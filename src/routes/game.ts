@@ -9,7 +9,7 @@ import { ProcessResultsPage } from "./results";
 import { v4 as uuidv4 } from "uuid";
 
 /**
- * Cogspeed game that handles button clicks,
+ * CogSpeed game that handles button clicks,
  * Starting and stopping the game and rounds
  *
  * Note the order of the rounds is as follows:

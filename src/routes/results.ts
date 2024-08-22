@@ -225,8 +225,7 @@ export class ProcessResultsPage {
       Date/time: ${data._date}
       Location: ${data.location.normalizedLocation}
       Status: ${data.status}
-      Message: ${data.statusCode}
-      Blocking duration: ${data.blockingRoundDuration}`, {
+      Test duration: ${data.testDuration}s`, {
       fontFamily: "Trebuchet",
       fontSize: 18,
       fill: 0xffffff,
