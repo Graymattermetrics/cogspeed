@@ -184,7 +184,7 @@ export class CogSpeedGraphicsHandler {
     // First column, SPF
     const headerBoxSPF = new Graphics();
     headerBoxSPF.beginFill(0xffffff);
-    headerBoxSPF.lineStyle(2, 0xafafaf);
+    headerBoxSPF.lineStyle(4, 0xafafaf);
     headerBoxSPF.drawRect(marginLeft, yPos, width, height);
 
     const headerTextSPF = new Text("S-PF Score", {fill: 0x00000, fontSize: 14})
@@ -196,14 +196,14 @@ export class CogSpeedGraphicsHandler {
     const valueBoxSPF = new Graphics();
     let colour = _spfScoreMap[spfScore];
     valueBoxSPF.beginFill(colour);
-    valueBoxSPF.lineStyle(2, 0xafafaf);
+    valueBoxSPF.lineStyle(4, 0xafafaf);
     valueBoxSPF.drawRect(marginLeft, yPos + height, width, height);
 
 
     // Second column, CPI
     const headerBoxCPI = new Graphics();
     headerBoxCPI.beginFill(0xffffff);
-    headerBoxCPI.lineStyle(2, 0xafafaf);
+    headerBoxCPI.lineStyle(4, 0xafafaf);
     headerBoxCPI.drawRect(marginLeft + width, yPos, width, height);
 
     const headerTextCPI = new Text("CogSpeed Score", {fill: 0x00000, fontSize: 14})
@@ -215,13 +215,13 @@ export class CogSpeedGraphicsHandler {
     const valueBoxCPI = new Graphics();
     colour = this._getMapValue(_cogspeedScoreMap, cpiScore);
     valueBoxCPI.beginFill(colour);
-    valueBoxCPI.lineStyle(2, 0xafafaf);
+    valueBoxCPI.lineStyle(4, 0xafafaf);
     valueBoxCPI.drawRect(marginLeft + width, yPos + height, width, height);
     
     // Third column, BRD
     const headerBoxBRD = new Graphics();
     headerBoxBRD.beginFill(0xffffff);
-    headerBoxBRD.lineStyle(2, 0xafafaf);
+    headerBoxBRD.lineStyle(4, 0xafafaf);
     headerBoxBRD.drawRect(marginLeft + width * 2, yPos, width, height);
 
     const headerTextBRD = new Text("BRD", {fill: 0x00000, fontSize: 14})
@@ -233,7 +233,7 @@ export class CogSpeedGraphicsHandler {
     const valueBoxBRD = new Graphics();
     colour = this._getMapValue(_blockingRoundDurationMap, blockingRoundDuration);
     valueBoxBRD.beginFill(colour);
-    valueBoxBRD.lineStyle(2, 0xafafaf);
+    valueBoxBRD.lineStyle(4, 0xafafaf);
     valueBoxBRD.drawRect(marginLeft + width * 2, yPos + height, width, height);
 
 
