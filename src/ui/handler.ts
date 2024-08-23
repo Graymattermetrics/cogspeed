@@ -162,13 +162,13 @@ export class CogSpeedGraphicsHandler {
     
     // Blocking Round Duration Mapping
     const _blockingRoundDurationMap = {
-      1800: 0x7CE8FF,   // >1800 ms  
-      1690: 0xA7EA63,   // 1690-1789 ms  
-      1525: 0xC1F46A,   // 1525-1668 ms  
+      1800: 0xF4B4B4,   // >1800 ms
+      1690: 0xff644e,   // 1690-1789 ms
+      1525: 0xFFB05C,   // 1525-1668 ms
       1250: 0xFFEE67,   // 1250-1514 ms
-      975: 0xFFB05C,    // 975-1239 ms
-      810: 0xff644e,    // 810-964 ms
-      700:  0xF4B4B4    // 700-799 ms
+      975: 0xC1F46A,    // 975-1239 ms
+      810: 0xA7EA63,    // 810-964 ms
+      700: 0x7CE8FF     // 700-799 ms
     };
 
     const container = new Container();
