@@ -49,7 +49,7 @@ async function loadConfig(): Promise<Config> {
  * @param config 
  * @param startNow Called from restart. Bypasses sleep data
  */
-export async function startUp(config: Config | null = null, startNow: boolean = false) {
+export async function startUp(config: Config | null = null, startNowData: Record<string, any> | false = false) {
   if (config === null) {
     config = await loadConfig();
     if (config.error) throw new Error(config.reason);
@@ -81,10 +81,10 @@ export async function startUp(config: Config | null = null, startNow: boolean = 
 
   // Display the home page
   const startPage = new StartPage(config, app, graphicsManager);
-  if (!startNow) await startPage.displayHomePage();
+  if (startNowData == false) await startPage.displayHomePage();
 
   // Display start page
-  const sleepData = await startPage.start(startNow);
+  const sleepData = await startPage.start(startNowData);
   if (!sleepData) throw new Error("No sleep data");
 
   // Game phase - called after start button is clicked

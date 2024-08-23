@@ -339,10 +339,10 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
    * TODO: Seperate pages better
    * @returns {Promise<SleepData>} The test data
    */
-  public async start(skipToDisplay: boolean): Promise<SleepData | false> {
+  public async start(sleepData: Record<string, any> | false): Promise<SleepData | false> {
     if (process.env.NODE_ENV === "development") return {fatigueLevel: -1};
 
-    if (skipToDisplay) {
+    if (sleepData != false) {
       await this.displayReadyDemo(Infinity);
       return {fatigueLevel: 1};
     }

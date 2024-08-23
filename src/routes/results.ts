@@ -228,7 +228,7 @@ export class ProcessResultsPage {
       Date/time: ${data._date}
       Location: ${data.location.normalizedLocation}
       Status: ${data.status}
-      Test duration: ${data.testDuration}s`, {
+      Test duration: ${data.testDuration/60}s`, {
       fontFamily: "Trebuchet",
       fontSize: 18,
       fill: 0xffffff,
@@ -320,7 +320,7 @@ export class ProcessResultsPage {
     restartTestButtonContainer.on("pointerdown", () => {
       // TODO: Send back to home page
       this.app.destroy();
-      startUp(config, true);
+      startUp(config, data.sleepData);
     });
 
     const homeButton = this.ui.createButton(
