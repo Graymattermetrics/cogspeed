@@ -228,7 +228,7 @@ export class ProcessResultsPage {
       Date/time: ${data._date}
       Location: ${data.location.normalizedLocation}
       Status: ${data.status}
-      Test duration: ${data.testDuration/60}s`, {
+      Test duration: ${data.testDuration/1000}s`, {
       fontFamily: "Trebuchet",
       fontSize: 18,
       fill: 0xffffff,
