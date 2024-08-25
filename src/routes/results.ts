@@ -228,7 +228,11 @@ export class ProcessResultsPage {
       Date/time: ${data._date}
       Location: ${data.location.normalizedLocation}
       Status: ${data.status}
-      Test duration: ${data.testDuration/1000}s`, {
+      Test duration: ${data.testDuration/1000}s
+      Number of rounds: ${data.numberOfRounds}
+      Number of blocks: ${data.blocking.blockCount}
+      Block range: ${data.blocking.blockRange}ms
+      Final block difference: ${data.blocking.finalBlockDiff}ms`, {
       fontFamily: "Trebuchet",
       fontSize: 18,
       fill: 0xffffff,
