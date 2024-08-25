@@ -222,8 +222,7 @@ export class ProcessResultsPage {
     const resultsTableContainer = this.ui.createResultsTable(data.sleepData.fatigueLevel, data.cognitiveProcessingIndex, data.blockingRoundDuration, this.app.screen.height * 0.10);
     this.app.stage.addChild(resultsTableContainer)
 
-    const textSummary = new Text(`Test summary
-      Test version: ${config.version}
+    const textSummary = new Text(`Test version: ${config.version}
       Account ID: ...
       Date/time: ${data._date}
       Location: ${data.location.normalizedLocation}
@@ -241,7 +240,7 @@ export class ProcessResultsPage {
       wordWrapWidth: this.app.screen.width * 0.8
     });
     textSummary.position.set(this.app.screen.width * 0.5,
-      this.app.screen.height * 0.35);
+      this.app.screen.height * 0.4);
 
     textSummary.anchor.set(0.5);
     this.app.stage.addChild(textSummary);
@@ -249,7 +248,7 @@ export class ProcessResultsPage {
     const backButtonContainer = this.ui.createButton(
       "Go back",
       this.app.screen.width * 0.5,
-      this.app.screen.height * 0.9,
+      this.app.screen.height * 0.92,
       this.app.screen.width * 0.6,
       this.app.screen.height * 0.2
     );
@@ -263,7 +262,7 @@ export class ProcessResultsPage {
     }
 
     const graphSprite = new Sprite(this.resultsGraphTexture);
-    graphSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.65)
+    graphSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.7)
     graphSprite.scale.set(0.5);
     graphSprite.anchor.set(0.5, 0.5)
 
