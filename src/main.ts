@@ -4,6 +4,7 @@ import { CogSpeedGame } from "./routes/game";
 import { StartPage } from "./routes/start";
 import { Config } from "./types/Config";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
+import { SleepData } from "./types/SleepData";
 
 
 function createApp(): Application {
@@ -49,7 +50,7 @@ async function loadConfig(): Promise<Config> {
  * @param config 
  * @param startNow Called from restart. Bypasses sleep data
  */
-export async function startUp(config: Config | null = null, startNowData: Record<string, any> | false = false) {
+export async function startUp(config: Config | null = null, startNowData: SleepData | false = false) {
   if (config === null) {
     config = await loadConfig();
     if (config.error) throw new Error(config.reason);
