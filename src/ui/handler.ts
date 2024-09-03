@@ -129,7 +129,7 @@ export class CogSpeedGraphicsHandler {
       if (inverse) {
         if (value < Number.parseInt(key)) v = value_;
       } else {
-        if (value > Number.parseInt(key)) v = value_;
+        if (value >= Number.parseInt(key)) v = value_;
       }
     }
     if (v == null) {
