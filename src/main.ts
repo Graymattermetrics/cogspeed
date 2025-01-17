@@ -86,7 +86,7 @@ export async function startUp(config: Config | null = null, startNowData: SleepD
 
   // Display start page
   const sleepData = await startPage.start(startNowData);
-  if (!sleepData) throw new Error("No sleep data");
+  if (!sleepData) return;
 
   // Game phase - called after start button is clicked
   const game = new CogSpeedGame(config, app, graphicsManager, sleepData);

@@ -219,28 +219,29 @@ export class ProcessResultsPage {
   }
 
   public async showSummaryPage(data: { [key: string]: any }, config: Config) {
-    const resultsTableContainer = this.ui.createResultsTable(data.sleepData.fatigueLevel, data.cognitiveProcessingIndex, data.blockingRoundDuration, this.app.screen.height * 0.10);
+    const resultsTableContainer = this.ui.createResultsTable(data.sleepData.fatigueLevel, data.cognitiveProcessingIndex, data.blockingRoundDuration, this.app.screen.height * 0.05);
     this.app.stage.addChild(resultsTableContainer)
 
-    const textSummary = new Text(`Test version: ${config.version}
+    const textSummary = new Text(`
+      Test version: ${config.version}
       Account ID: ...
       Date/time: ${data._date}
       Location: ${data.location.normalizedLocation}
       Status: ${data.status}
-      Test duration: ${data.testDuration/1000}s
+      Test duration: ${Math.round(data.testDuration/100) / 10}s
       Number of rounds: ${data.numberOfRounds}
       Number of blocks: ${data.blocking.blockCount}
       Block range: ${data.blocking.blockRange}ms
       Final block difference: ${data.blocking.finalBlockDiff}ms`, {
       fontFamily: "Trebuchet",
-      fontSize: 18,
+      fontSize: 20,
       fill: 0xffffff,
       align: "center",
       wordWrap: true,
-      wordWrapWidth: this.app.screen.width * 0.8
+      wordWrapWidth: this.app.screen.width * 0.95
     });
     textSummary.position.set(this.app.screen.width * 0.5,
-      this.app.screen.height * 0.4);
+      this.app.screen.height * 0.33);
 
     textSummary.anchor.set(0.5);
     this.app.stage.addChild(textSummary);
@@ -284,6 +285,10 @@ export class ProcessResultsPage {
     };
 
     // Add table to top of page
+    if (data.status === "failed") {
+      data.cognitiveProcessingIndex = "N/A";
+      data.blockingRoundDuration = "N/A";
+    }
     const resultsTableContainer = this.ui.createResultsTable(data.sleepData.fatigueLevel, data.cognitiveProcessingIndex, data.blockingRoundDuration, this.app.screen.height * 0.15);
 
     const summaryPageButtonContainer = this.ui.createButton(

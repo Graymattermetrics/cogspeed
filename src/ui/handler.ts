@@ -138,7 +138,7 @@ export class CogSpeedGraphicsHandler {
     return v;
   }
 
-  public createResultsTable(spfScore: 1 | 2 | 3 | 4 | 5 | 6 | 7, cpiScore: number, blockingRoundDuration: number, yPos: number): Container {
+  public createResultsTable(spfScore: 1 | 2 | 3 | 4 | 5 | 6 | 7, cpiScore: number | "N/A", blockingRoundDuration: number | "N/A", yPos: number): Container {
     const _spfScoreMap = {
       1: 0xF4B4B4,
       2: 0xff644e,
@@ -213,7 +213,8 @@ export class CogSpeedGraphicsHandler {
     valueTextCPI.position.set(screenWidth * 0.105 + width + 30, yPos + 50);
 
     const valueBoxCPI = new Graphics();
-    colour = this._getMapValue(_cogspeedScoreMap, cpiScore);
+    if (cpiScore === "N/A") colour = 0xffffff;
+    else colour = this._getMapValue(_cogspeedScoreMap, cpiScore);
     valueBoxCPI.beginFill(colour);
     valueBoxCPI.lineStyle(4, 0xafafaf);
     valueBoxCPI.drawRect(marginLeft + width, yPos + height, width, height);
@@ -231,7 +232,8 @@ export class CogSpeedGraphicsHandler {
     valueTextBRD.position.set(screenWidth * 0.12 + width * 2 + 30, yPos + 50);
 
     const valueBoxBRD = new Graphics();
-    colour = this._getMapValue(_blockingRoundDurationMap, blockingRoundDuration);
+    if (blockingRoundDuration === "N/A") colour = 0xffffff;
+    else colour = this._getMapValue(_blockingRoundDurationMap, blockingRoundDuration);
     valueBoxBRD.beginFill(colour);
     valueBoxBRD.lineStyle(4, 0xafafaf);
     valueBoxBRD.drawRect(marginLeft + width * 2, yPos + height, width, height);
