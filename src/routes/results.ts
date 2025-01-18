@@ -218,16 +218,31 @@ export class ProcessResultsPage {
     return container;
   }
 
-  public async showXPage(data: { [key: string]: any }, config: Config) {
+  public async showCompareScores(data: { [key: string]: any }, config: Config) {
     const resultsTableContainer = this.ui.createResultsTable(data.sleepData.fatigueLevel, data.cognitiveProcessingIndex, data.blockingRoundDuration, this.app.screen.height * 0.05);
     this.app.stage.addChild(resultsTableContainer)
+
+    const textDescription = new Text(`
+      RELATIONSHIP OF EXPECTED COGNITIVE PERFORMANCE BETWEEN SUBJECTIVE AND OBJECTIVE SCORES`, {
+      fontFamily: "Trebuchet",
+      fontSize: 24,
+      fill: 0xffffff,
+      align: "center",
+      wordWrap: true,
+      wordWrapWidth: this.app.screen.width * 0.8
+    });
+    textDescription.position.set(this.app.screen.width * 0.5,
+      this.app.screen.height * 0.28);
+
+      textDescription.anchor.set(0.5);
+    this.app.stage.addChild(textDescription);
 
     if (!this.resultsGraphTexture) {
       throw new Error("Results graph texture is not loaded.");
     }
 
     const graphSprite = new Sprite(this.resultsGraphTexture);
-    graphSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.55)
+    graphSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.65)
     graphSprite.scale.set(0.5, 0.65);
     graphSprite.anchor.set(0.5, 0.5)
 
@@ -278,16 +293,16 @@ export class ProcessResultsPage {
     textSummary.anchor.set(0.5);
     this.app.stage.addChild(textSummary);
 
-    const xButtonContainer = this.ui.createButton(
-      "Go back",
+    const compareScoresButtonContainer = this.ui.createButton(
+      "Compare Scores",
       this.app.screen.width * 0.5,
       this.app.screen.height * 0.80,
       this.app.screen.width * 0.6,
       this.app.screen.height * 0.2
     );
-    xButtonContainer.on("pointerdown", () => {
+    compareScoresButtonContainer.on("pointerdown", () => {
       this.ui.removeAllStageChildren();
-      this.showXPage(data, config);
+      this.showCompareScores(data, config);
     });
 
     const backButtonContainer = this.ui.createButton(
@@ -302,7 +317,7 @@ export class ProcessResultsPage {
       this.show(data, config, {shouldLoad: false});
     });
 
-    this.app.stage.addChild(xButtonContainer);
+    this.app.stage.addChild(compareScoresButtonContainer);
     this.app.stage.addChild(backButtonContainer);
   }
 
