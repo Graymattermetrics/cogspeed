@@ -218,23 +218,55 @@ export class ProcessResultsPage {
     return container;
   }
 
-  public async showSummaryPage(data: { [key: string]: any }, config: Config) {
+  public async showXPage(data: { [key: string]: any }, config: Config) {
     const resultsTableContainer = this.ui.createResultsTable(data.sleepData.fatigueLevel, data.cognitiveProcessingIndex, data.blockingRoundDuration, this.app.screen.height * 0.05);
     this.app.stage.addChild(resultsTableContainer)
 
+    if (!this.resultsGraphTexture) {
+      throw new Error("Results graph texture is not loaded.");
+    }
+
+    const graphSprite = new Sprite(this.resultsGraphTexture);
+    graphSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.55)
+    graphSprite.scale.set(0.5, 0.65);
+    graphSprite.anchor.set(0.5, 0.5)
+
+    this.app.stage.addChild(graphSprite);
+
+    const backButtonContainer = this.ui.createButton(
+      "Go back",
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.92,
+      this.app.screen.width * 0.6,
+      this.app.screen.height * 0.2
+    );
+    backButtonContainer.on("pointerdown", () => {
+      this.ui.removeAllStageChildren();
+      this.showSummaryPage(data, config);
+    });
+
+    this.app.stage.addChild(backButtonContainer);
+  }
+
+  public async showSummaryPage(data: { [key: string]: any }, config: Config) {
+    const blockRangeText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.blockRange*10)/10}ms`;
+    const finalBlockDiffText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.finalBlockDiff*10)/10}ms`
+
+    const time = data._date.split("T")[1].split(".")[0];
     const textSummary = new Text(`
-      Test version: ${config.version}
-      Account ID: ...
-      Date/time: ${data._date}
+      Test version: ${config.version.slice(0, 7)}
+      Account ID: N/A
+      Date: ${data._date.split("T")[0]}
+      Time: ${time}
       Location: ${data.location.normalizedLocation}
       Status: ${data.status}
       Test duration: ${Math.round(data.testDuration/100) / 10}s
       Number of rounds: ${data.numberOfRounds}
       Number of blocks: ${data.blocking.blockCount}
-      Block range: ${data.blocking.blockRange}ms
-      Final block difference: ${data.blocking.finalBlockDiff}ms`, {
+      Block range: ${blockRangeText}
+      Final block difference: ${finalBlockDiffText}`, {
       fontFamily: "Trebuchet",
-      fontSize: 20,
+      fontSize: 28,
       fill: 0xffffff,
       align: "center",
       wordWrap: true,
@@ -245,6 +277,18 @@ export class ProcessResultsPage {
 
     textSummary.anchor.set(0.5);
     this.app.stage.addChild(textSummary);
+
+    const xButtonContainer = this.ui.createButton(
+      "Go back",
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.80,
+      this.app.screen.width * 0.6,
+      this.app.screen.height * 0.2
+    );
+    xButtonContainer.on("pointerdown", () => {
+      this.ui.removeAllStageChildren();
+      this.showXPage(data, config);
+    });
 
     const backButtonContainer = this.ui.createButton(
       "Go back",
@@ -258,16 +302,7 @@ export class ProcessResultsPage {
       this.show(data, config, {shouldLoad: false});
     });
 
-    if (!this.resultsGraphTexture) {
-      throw new Error("Results graph texture is not loaded.");
-    }
-
-    const graphSprite = new Sprite(this.resultsGraphTexture);
-    graphSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.7)
-    graphSprite.scale.set(0.5);
-    graphSprite.anchor.set(0.5, 0.5)
-
-    this.app.stage.addChild(graphSprite);
+    this.app.stage.addChild(xButtonContainer);
     this.app.stage.addChild(backButtonContainer);
   }
 
