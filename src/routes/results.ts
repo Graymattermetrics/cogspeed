@@ -279,14 +279,12 @@ CogSpeed thinking...`, {
     const blockRangeText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.blockRange*10)/10}ms`;
     const finalBlockDiffText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.finalBlockDiff*10)/10}ms`
 
-    const time = data._date.split("T")[1].split(".")[0];
     let message = data.status === "failed" ? `(${data.message})` : "";
-     
     const textSummary = new Text(`
       Test version: ${config.version.slice(0, 7)}
       Account ID: N/A
-      Date: ${data._date.split("T")[0]}
-      Time: ${time}
+      Date: ${data._date.split(", ")[0]}
+      Time: ${data._date.split(", ")[1]}
       Location: ${data.location.normalizedLocation}
       Status: ${data.status} ${message}
       Test duration: ${Math.round(data.testDuration/100) / 10}s

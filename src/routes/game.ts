@@ -631,7 +631,7 @@ export class CogSpeedGame {
         meanCorrectMachinePacedAnswerTime,
       },
       answerLogs: this.previousAnswers,
-      _date: new Date().toISOString(),
+      _date: new Date().toLocaleString(),
       _date_minute_offset: new Date().getTimezoneOffset(),
       _id: v4(),
     };
