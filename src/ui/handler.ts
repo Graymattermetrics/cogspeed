@@ -118,8 +118,9 @@ export class CogSpeedGraphicsHandler {
     this.inputButtons = [];
   }
 
-  public async emulateLoadingTime() {
-    const loadingTime = process.env.NODE_ENV === "development" ? 0 : 3000;
+  public async emulateLoadingTime(loadingTime_: number = 3000) {
+    let loadingTime = loadingTime_;
+    if (process.env.NODE_ENV === "development") loadingTime = 0;
     await new Promise((resolve) => setTimeout(resolve, loadingTime));
   }
 
@@ -144,8 +145,8 @@ export class CogSpeedGraphicsHandler {
       2: 0xff644e,
       3: 0xFFB05C,
       4: 0xFFEE67,
-      5: 0xC1F46A,
-      6: 0xA7EA63,
+      5: 0x8DFA01,
+      6: 0x1DB201,
       7: 0x7CE8FF
     };
     
@@ -155,8 +156,8 @@ export class CogSpeedGraphicsHandler {
       1: 0xff644e,   // 10 - 1
       11: 0xFFB05C,  // 25 - 11
       26: 0xFFEE67,  // 50 - 26
-      51: 0xC1F46A,  // 75 - 51
-      76: 0xA7EA63,  // 90 - 76
+      51: 0x8DFA01,  // 75 - 51
+      76: 0x1DB201,  // 90 - 76
       91: 0x7CE8FF   // 100 - 91
     };
     

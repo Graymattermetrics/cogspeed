@@ -183,7 +183,7 @@ export class ProcessResultsPage {
    * Displays a loading screen in order to
    * process data such as current position
    */
-  public loadingScreen(): Container {
+  public loadingScreen(): [Container, Text] {
     const container = new Container();
     this.app.stage.addChild(container);
 
@@ -215,7 +215,20 @@ export class ProcessResultsPage {
     graphics.closePath();
     container.addChild(graphics);
 
-    return container;
+    const text = new Text(`WAIT!...
+CogSpeed thinking...
+RESULTS COMING SHORTLY`, {
+      fontFamily: "Trebuchet",
+      fontSize: 16,
+      fill: 0xffffff,
+      align: "center",
+    });
+    text.anchor.set(0.5, 0.5)
+    text.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.5)
+
+    container.addChild(text)
+
+    return [container, text];
   }
 
   public async showCompareScores(data: { [key: string]: any }, config: Config) {
@@ -268,13 +281,15 @@ export class ProcessResultsPage {
     const finalBlockDiffText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.finalBlockDiff*10)/10}ms`
 
     const time = data._date.split("T")[1].split(".")[0];
+    let message = data.status === "failed" ? `(${data.message})` : "";
+     
     const textSummary = new Text(`
       Test version: ${config.version.slice(0, 7)}
       Account ID: N/A
       Date: ${data._date.split("T")[0]}
       Time: ${time}
       Location: ${data.location.normalizedLocation}
-      Status: ${data.status}
+      Status: ${data.status} ${message}
       Test duration: ${Math.round(data.testDuration/100) / 10}s
       Number of rounds: ${data.numberOfRounds}
       Number of blocks: ${data.blocking.blockCount}
@@ -322,12 +337,6 @@ export class ProcessResultsPage {
   }
 
   public async show(data: { [key: string]: any }, config: Config, args: { shouldLoad: boolean} = {shouldLoad: true}) {
-    let loadingContainer;
-    if (args.shouldLoad) {
-      loadingContainer = this.loadingScreen();
-      this.resultsGraphTexture = Texture.from(resultsGraph);
-    }
-
     const [geolocation, normalizedLocation] = await this.getCurrentPosition();
     data.location = {
       geolocation,
@@ -394,8 +403,18 @@ export class ProcessResultsPage {
       startUp(config, false);
     });
 
-    if (args.shouldLoad && loadingContainer) {
-      await this.ui.emulateLoadingTime();
+    if (args.shouldLoad) {
+      const m = this.loadingScreen();
+      const loadingContainer = m[0];
+      const loadingContainerText = m[1];
+      this.resultsGraphTexture = Texture.from(resultsGraph);
+
+      await this.ui.emulateLoadingTime(2500);
+      loadingContainerText.text = `Test ${data.status[0].toUpperCase() + data.status.slice(1, data.status.length)}`;
+      if (data.status === "success") loadingContainerText.tint = 0x00FF00;
+      else loadingContainerText.tint = 0xFF0000;
+
+      await this.ui.emulateLoadingTime(2000);
       loadingContainer.destroy();
     }
 
