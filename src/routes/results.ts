@@ -216,10 +216,9 @@ export class ProcessResultsPage {
     container.addChild(graphics);
 
     const text = new Text(`WAIT!...
-CogSpeed thinking...
-RESULTS COMING SHORTLY`, {
+CogSpeed thinking...`, {
       fontFamily: "Trebuchet",
-      fontSize: 16,
+      fontSize: 23,
       fill: 0xffffff,
       align: "center",
     });
