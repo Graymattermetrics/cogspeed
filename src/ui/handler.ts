@@ -167,8 +167,8 @@ export class CogSpeedGraphicsHandler {
       1690: 0xff644e,   // 1690-1789 ms
       1525: 0xFFB05C,   // 1525-1668 ms
       1250: 0xFFEE67,   // 1250-1514 ms
-      975: 0xC1F46A,    // 975-1239 ms
-      810: 0xA7EA63,    // 810-964 ms
+      975: 0x8DFA01,    // 975-1239 ms
+      810: 0x1DB201,    // 810-964 ms
       700: 0x7CE8FF     // 700-799 ms
     };
 
