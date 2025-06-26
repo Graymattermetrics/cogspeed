@@ -105,7 +105,7 @@ export async function startUp(config: Config | null = null, startNowData: SleepD
 
   const app = await createApp();
 
-  // await displayGmmlogo(app);
+  await displayGmmlogo(app);
 
   const graphicsManager = new CogSpeedGraphicsHandler(app, config);
   await graphicsManager.loadAssets();
