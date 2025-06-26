@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Application, Container, Graphics, Point, Sprite, Text, Texture, Ticker } from "pixi.js";
+import { Application, Assets, Container, Graphics, Point, Sprite, Text, Texture, Ticker } from "pixi.js";
 
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { table } from "table";
@@ -12,13 +12,13 @@ import resultsGraph from "../assets/results_graph.png";
 export class ProcessResultsPage {
   public resultsGraphTexture: Texture | undefined;
 
-  constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {}
+  constructor(private app: Application, private ui: CogSpeedGraphicsHandler) { }
 
   private formatKey(key: string, capitalise: boolean = false): string {
     let result = capitalise ? key[0].toUpperCase() : key[0];
     let i = 0;
     for (const letter of key.slice(1)) {
-      i ++;
+      i++;
       if (letter === "_") {
         continue;
       }
@@ -31,7 +31,7 @@ export class ProcessResultsPage {
     }
     return result;
   }
-  
+
   private formatKeys(keys: string[]): string {
     let result = "";
     for (const key of keys) {
@@ -46,12 +46,12 @@ export class ProcessResultsPage {
     let formattedData = ``;
     for (const [key, value] of Object.entries(data)) {
       if (["answerLogs"].includes(key)) continue;
-      
+
       // Add the keys
       let copyKeys = null;
       if (keys !== null) copyKeys = [...keys, key];
       if (typeof value === "object") formattedData += this.formatObject(value, copyKeys);
-      else formattedData += `${copyKeys ? this.formatKeys(copyKeys): key} = ${value}\n`;
+      else formattedData += `${copyKeys ? this.formatKeys(copyKeys) : key} = ${value}\n`;
     }
     return formattedData;
   }
@@ -87,7 +87,7 @@ export class ProcessResultsPage {
     const displayData = JSON.parse(JSON.stringify(data));
     displayData["localDate"] = new Date(data["_date"]).toLocaleDateString();
     displayData["localTime"] = new Date(data["_date"]).toLocaleTimeString();
-    
+
     return (
       `${this.formatObject(displayData)}\n` +
       table(tableDataObj, {
@@ -174,8 +174,8 @@ export class ProcessResultsPage {
     const geolocation = coords ? `${coords.latitude},${coords.longitude}` : null;
     // prettier-ignore
     const normalizedLocation = coords ? (await axios.get(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${coords.latitude},${coords.longitude}`
-      )).data[0].display_name : "Could not get location";
+      `https://nominatim.openstreetmap.org/search?format=json&q=${coords.latitude},${coords.longitude}`
+    )).data[0].display_name : "Could not get location";
 
     return [geolocation, normalizedLocation];
   }
@@ -198,30 +198,39 @@ export class ProcessResultsPage {
         loadingGearSprite.position.set(dynamicScreenWidth * (x === 0 ? 2 : 8), dynamicScreenHeight * (y === 0 ? 4 : 6));
         loadingGearSprite.scale = new Point(0.4, 0.4);
 
-        this.app.ticker.add((delta) => {
-          loadingGearSprite.rotation += 0.1 * delta.lastTime;
+        // UPDATED: The ticker callback now receives the Ticker instance.
+        // For time-based animation, use ticker.deltaMS.
+        // The original `delta.lastTime` was likely an error; this provides smooth, frame-rate independent rotation.
+        this.app.ticker.add((ticker) => {
+          loadingGearSprite.rotation += 0.005 * ticker.deltaMS;
         });
         container.addChild(loadingGearSprite);
       }
     }
 
     const graphics = new Graphics();
-    graphics.lineStyle(1, 0x457bda, 1);
 
+    // UPDATED: The drawing path must be defined *before* applying the stroke.
     graphics.moveTo(dynamicScreenWidth * 2, dynamicScreenHeight * 4);
     graphics.lineTo(dynamicScreenWidth * 8, dynamicScreenHeight * 4);
     graphics.lineTo(dynamicScreenWidth * 8, dynamicScreenHeight * 6);
     graphics.lineTo(dynamicScreenWidth * 2, dynamicScreenHeight * 6);
-
     graphics.closePath();
+
+    // Now apply the stroke to the path that was just defined.
+    graphics.stroke({ width: 1, color: 0x457bda });
+
     container.addChild(graphics);
 
-    const text = new Text(`WAIT!...
-CogSpeed thinking...`, {
-      fontFamily: "Trebuchet",
-      fontSize: 23,
-      fill: 0xffffff,
-      align: "center",
+    // UPDATED: Text constructor now takes an object with `text` and `style` properties.
+    const text = new Text({
+      text: `WAIT!...\nCogSpeed thinking...`,
+      style: {
+        fontFamily: "Trebuchet",
+        fontSize: 23,
+        fill: 0xffffff,
+        align: "center",
+      }
     });
     text.anchor.set(0.5, 0.5)
     text.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.5)
@@ -247,7 +256,7 @@ CogSpeed thinking...`, {
     textDescription.position.set(this.app.screen.width * 0.5,
       this.app.screen.height * 0.28);
 
-      textDescription.anchor.set(0.5);
+    textDescription.anchor.set(0.5);
     this.app.stage.addChild(textDescription);
 
     if (!this.resultsGraphTexture) {
@@ -277,8 +286,8 @@ CogSpeed thinking...`, {
   }
 
   public async showSummaryPage(data: { [key: string]: any }, config: Config) {
-    const blockRangeText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.blockRange*10)/10}ms`;
-    const finalBlockDiffText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.finalBlockDiff*10)/10}ms`
+    const blockRangeText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.blockRange * 10) / 10}ms`;
+    const finalBlockDiffText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.finalBlockDiff * 10) / 10}ms`
 
     let message = data.status === "failed" ? `(${data.message})` : "";
     const textSummary = new Text(`
@@ -288,7 +297,7 @@ CogSpeed thinking...`, {
       Time: ${data._date.split(", ")[1]}
       Location: ${data.location.normalizedLocation}
       Status: ${data.status} ${message}
-      Test duration: ${Math.round(data.testDuration/100) / 10}s
+      Test duration: ${Math.round(data.testDuration / 100) / 10}s
       Number of rounds: ${data.numberOfRounds}
       Number of blocks: ${data.blocking.blockCount}
       Block range: ${blockRangeText}
@@ -327,14 +336,14 @@ CogSpeed thinking...`, {
     );
     backButtonContainer.on("pointerdown", () => {
       this.ui.removeAllStageChildren();
-      this.show(data, config, {shouldLoad: false});
+      this.show(data, config, { shouldLoad: false });
     });
 
     this.app.stage.addChild(compareScoresButtonContainer);
     this.app.stage.addChild(backButtonContainer);
   }
 
-  public async show(data: { [key: string]: any }, config: Config, args: { shouldLoad: boolean} = {shouldLoad: true}) {
+  public async show(data: { [key: string]: any }, config: Config, args: { shouldLoad: boolean } = { shouldLoad: true }) {
     const [geolocation, normalizedLocation] = await this.getCurrentPosition();
     data.location = {
       geolocation,
@@ -405,7 +414,7 @@ CogSpeed thinking...`, {
       const m = this.loadingScreen();
       const loadingContainer = m[0];
       const loadingContainerText = m[1];
-      this.resultsGraphTexture = Texture.from(resultsGraph);
+      this.resultsGraphTexture = await Assets.load(resultsGraph);
 
       await this.ui.emulateLoadingTime(2500);
       loadingContainerText.text = `Test ${data.status[0].toUpperCase() + data.status.slice(1, data.status.length)}`;

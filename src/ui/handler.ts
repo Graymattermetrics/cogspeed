@@ -209,87 +209,59 @@ export class CogSpeedGraphicsHandler {
     };
 
     const container = new Container();
-
     const screenWidth = this.app.screen.width;
     const screenHeight = this.app.screen.height;
-
     const width = screenWidth * 0.28;
     const height = screenHeight * 0.05;
-
     const marginLeft = screenWidth * 0.08;
 
+    const createBox = (x: number, y: number, w: number, h: number, fillColor: number, strokeWidth: number, strokeColor: number) => {
+      const box = new Graphics();
+      box.rect(x, y, w, h); // 1. Define shape
+      box.fill(fillColor);  // 2. Apply fill
+      box.stroke({ width: strokeWidth, color: strokeColor }); // 3. Apply stroke
+      return box;
+    };
+
+    const createText = (content: string | number, style: any) => new Text({ text: content.toString(), style });
+
     // First column, SPF
-    const headerBoxSPF = new Graphics();
-    headerBoxSPF.beginFill(0xffffff);
-    headerBoxSPF.lineStyle(4, 0xafafaf);
-    headerBoxSPF.drawRect(marginLeft, yPos, width, height);
-
-    const headerTextSPF = new Text("S-PF Score", { fill: 0x00000, fontSize: 14 })
+    const headerBoxSPF = createBox(marginLeft, yPos, width, height, 0xffffff, 4, 0xafafaf);
+    const headerTextSPF = createText("S-PF Score", { fill: 0x00000, fontSize: 14 });
     headerTextSPF.position.set(screenWidth * 0.135, yPos + 8);
-
-    const valueTextSPF = new Text(spfScore, { fill: 0x00000, fontSize: 18 })
+    const valueTextSPF = createText(spfScore, { fill: 0x00000, fontSize: 18 });
     valueTextSPF.position.set(screenWidth * 0.135 + 30, yPos + 50);
 
-    const valueBoxSPF = new Graphics();
     let colour = _spfScoreMap[spfScore];
-    valueBoxSPF.beginFill(colour);
-    valueBoxSPF.lineStyle(4, 0xafafaf);
-    valueBoxSPF.drawRect(marginLeft, yPos + height, width, height);
-
+    const valueBoxSPF = createBox(marginLeft, yPos + height, width, height, colour, 4, 0xafafaf);
 
     // Second column, CPI
-    const headerBoxCPI = new Graphics();
-    headerBoxCPI.beginFill(0xffffff);
-    headerBoxCPI.lineStyle(4, 0xafafaf);
-    headerBoxCPI.drawRect(marginLeft + width, yPos, width, height);
-
-    const headerTextCPI = new Text("CogSpeed Score", { fill: 0x00000, fontSize: 14 })
+    const headerBoxCPI = createBox(marginLeft + width, yPos, width, height, 0xffffff, 4, 0xafafaf);
+    const headerTextCPI = createText("CogSpeed Score", { fill: 0x00000, fontSize: 14 });
     headerTextCPI.position.set(screenWidth * 0.105 + width, yPos + 8);
-
-    const valueTextCPI = new Text(cpiScore.toString(), { fill: 0x00000, fontSize: 18 })
+    const valueTextCPI = createText(cpiScore, { fill: 0x00000, fontSize: 18 });
     valueTextCPI.position.set(screenWidth * 0.105 + width + 30, yPos + 50);
 
-    const valueBoxCPI = new Graphics();
     if (cpiScore === "N/A") colour = 0xffffff;
     else colour = this._getMapValue(_cogspeedScoreMap, cpiScore);
-    valueBoxCPI.beginFill(colour);
-    valueBoxCPI.lineStyle(4, 0xafafaf);
-    valueBoxCPI.drawRect(marginLeft + width, yPos + height, width, height);
+    const valueBoxCPI = createBox(marginLeft + width, yPos + height, width, height, colour, 4, 0xafafaf);
 
     // Third column, BRD
-    const headerBoxBRD = new Graphics();
-    headerBoxBRD.beginFill(0xffffff);
-    headerBoxBRD.lineStyle(4, 0xafafaf);
-    headerBoxBRD.drawRect(marginLeft + width * 2, yPos, width, height);
-
-    const headerTextBRD = new Text("BRD", { fill: 0x00000, fontSize: 14 })
+    const headerBoxBRD = createBox(marginLeft + width * 2, yPos, width, height, 0xffffff, 4, 0xafafaf);
+    const headerTextBRD = createText("BRD", { fill: 0x00000, fontSize: 14 });
     headerTextBRD.position.set(screenWidth * 0.12 + width * 2, yPos + 8);
-
-    const valueTextBRD = new Text(blockingRoundDuration.toString(), { fill: 0x00000, fontSize: 18 });
+    const valueTextBRD = createText(blockingRoundDuration, { fill: 0x00000, fontSize: 18 });
     valueTextBRD.position.set(screenWidth * 0.12 + width * 2 + 30, yPos + 50);
 
-    const valueBoxBRD = new Graphics();
     if (blockingRoundDuration === "N/A") colour = 0xffffff;
     else colour = this._getMapValue(_blockingRoundDurationMap, blockingRoundDuration);
-    valueBoxBRD.beginFill(colour);
-    valueBoxBRD.lineStyle(4, 0xafafaf);
-    valueBoxBRD.drawRect(marginLeft + width * 2, yPos + height, width, height);
+    const valueBoxBRD = createBox(marginLeft + width * 2, yPos + height, width, height, colour, 4, 0xafafaf);
 
-
-    container.addChild(headerBoxSPF);
-    container.addChild(valueBoxSPF);
-    container.addChild(headerBoxCPI);
-    container.addChild(valueBoxCPI);
-    container.addChild(headerBoxBRD);
-    container.addChild(valueBoxBRD);
-
-    container.addChild(headerTextSPF);
-    container.addChild(headerTextCPI);
-    container.addChild(headerTextBRD);
-
-    container.addChild(valueTextSPF);
-    container.addChild(valueTextCPI);
-    container.addChild(valueTextBRD);
+    container.addChild(
+      headerBoxSPF, valueBoxSPF, headerBoxCPI, valueBoxCPI, headerBoxBRD, valueBoxBRD,
+      headerTextSPF, headerTextCPI, headerTextBRD,
+      valueTextSPF, valueTextCPI, valueTextBRD
+    );
 
     return container;
   }
@@ -304,11 +276,14 @@ export class CogSpeedGraphicsHandler {
     button.width = width;
     button.height = height;
 
-    const text = new Text(content, {
-      fontFamily: "Trebuchet",
-      fontSize: fontSize,
-      fill: 0xc4e4ff,
-      align: "center",
+    const text = new Text({
+      text: content,
+      style: {
+        fontFamily: "Trebuchet",
+        fontSize: fontSize,
+        fill: 0xc4e4ff,
+        align: "center",
+      }
     });
     text.anchor.set(0.5);
     text.position.set(x, y);
