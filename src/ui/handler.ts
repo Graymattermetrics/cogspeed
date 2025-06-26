@@ -66,7 +66,7 @@ export class CogSpeedGraphicsHandler {
   public numbersInverted: { [key: number]: Sprite } = {};
   public dotsInverted: { [key: number]: Sprite } = {};
 
-  public smallButtons: Texture[] = [];
+  public smallButtons: Rectangle[] = [];
 
   public gearWellTexture: Texture;
   public gearTexture: Texture;
@@ -282,12 +282,12 @@ export class CogSpeedGraphicsHandler {
     return container;
   }
 
-  private loadButtons(): Texture[] {
+  private loadButtons(): Rectangle[] {
     const buttons = [];
     const spaceBetween = 128;
 
     for (let i = 0; i < 2; i++) {
-      const smallButtonTexture = new Texture(this.smallButtonTextures.baseTexture, new Rectangle(i * spaceBetween, 0, 128, 96));
+      const smallButtonTexture = new Rectangle(i * spaceBetween, 0, 128, 96);
       buttons.push(smallButtonTexture);
     }
     return buttons;
@@ -307,7 +307,7 @@ export class CogSpeedGraphicsHandler {
 
       // Split up numbers and dots png into separate sprites
 
-      const numberOrDotTexture = new Texture(texture.baseTexture, new Rectangle(posX, posY, spaceBetween, spaceBetween));
+      const numberOrDotTexture = new Rectangle(posX, posY, spaceBetween, spaceBetween);
       const numberOrDot = new Sprite(numberOrDotTexture);
 
       numberOrDot.anchor.set(0.5);

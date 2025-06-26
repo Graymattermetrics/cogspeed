@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Application, Container, Graphics, Point, Sprite, Text, Texture } from "pixi.js";
+import { Application, Container, Graphics, Point, Sprite, Text, Texture, Ticker } from "pixi.js";
 
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { table } from "table";
@@ -144,6 +144,7 @@ export class ProcessResultsPage {
 
     const pdfBytes = await pdfDoc.save();
 
+    // @ts-ignore
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
 
     const url = URL.createObjectURL(blob);
@@ -197,8 +198,8 @@ export class ProcessResultsPage {
         loadingGearSprite.position.set(dynamicScreenWidth * (x === 0 ? 2 : 8), dynamicScreenHeight * (y === 0 ? 4 : 6));
         loadingGearSprite.scale = new Point(0.4, 0.4);
 
-        this.app.ticker.add((delta: number) => {
-          loadingGearSprite.rotation += 0.1 * delta;
+        this.app.ticker.add((delta) => {
+          loadingGearSprite.rotation += 0.1 * delta.lastTime;
         });
         container.addChild(loadingGearSprite);
       }

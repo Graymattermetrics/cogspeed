@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Application, Text } from "pixi.js";
+import { Application, Assets, Sprite, Text, VideoResource } from "pixi.js";
 import { CogSpeedGame } from "./routes/game";
 import { StartPage } from "./routes/start";
 import { Config } from "./types/Config";
@@ -7,19 +7,20 @@ import { CogSpeedGraphicsHandler } from "./ui/handler";
 import { SleepData } from "./types/SleepData";
 
 
-function createApp(): Application {
+async function createApp(): Promise<Application> {
   const gameWidth = window.innerWidth;
   const gameHeight = window.innerHeight;
 
-  const app = new Application<HTMLCanvasElement>({
+  const app = new Application();
+  await app.init({
     width: gameWidth,
     height: gameHeight,
-  });
+  })
 
   const appDiv = document.querySelector(".App");
   if (!appDiv) throw new Error("No app div found");
   appDiv.innerHTML = "";  // TODO: Fix(?)
-  appDiv.appendChild(app.view);
+  appDiv.appendChild(app.canvas);
 
   return app;
 }
@@ -45,6 +46,55 @@ async function loadConfig(): Promise<Config> {
 }
 
 
+async function displayGmmlogo(app: Application) {
+  const cleanup = () => {
+    console.log("Video ended, cleaning up...");
+    videoSprite.destroy();
+    window.removeEventListener('resize', resizeAndCenter);
+  };
+
+  await new Promise(r => setTimeout(r, 500))
+  // Use PixiJS's modern Assets loader for better caching and handling.
+  // We pass resourceOptions to configure the underlying HTMLVideoElement.
+  const videoTexture = await Assets.load({
+    src: "/assets/gmmLoadingAnimation.mp4",
+    data: {
+      autoPlay: true,
+      muted: true,
+      playsinline: true,
+      // It's also good practice to add crossOrigin for assets from other domains
+      crossOrigin: 'anonymous',
+    },
+  });
+
+  // Create the sprite from the video texture
+  const videoSprite = new Sprite(videoTexture);
+  videoSprite.anchor.set(0.5);
+
+  // Resize and center function
+  const resizeAndCenter = () => {
+    videoSprite.x = app.renderer.width / 2;
+    videoSprite.y = app.renderer.height / 2;
+    const scale = Math.min(
+      app.renderer.width / videoSprite.texture.width,
+      app.renderer.height / videoSprite.texture.height
+    );
+    videoSprite.scale.set(scale);
+  };
+
+  resizeAndCenter();
+  app.stage.addChild(videoSprite);
+
+  // Handle window resize to keep it centered
+  const onResize = () => {
+    resizeAndCenter();
+  };
+  window.addEventListener('resize', onResize);
+
+  videoTexture.source.resource.addEventListener('ended', cleanup)
+}
+
+
 /**
  * 
  * @param config 
@@ -56,7 +106,9 @@ export async function startUp(config: Config | null = null, startNowData: SleepD
     if (config.error) throw new Error(config.reason);
   }
 
-  const app = createApp();
+  const app = await createApp();
+
+  await displayGmmlogo(app);
 
   // Show GMM Logo while loading all textures
   // Temp text instead of logo for now
