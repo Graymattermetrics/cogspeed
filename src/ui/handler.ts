@@ -1,4 +1,4 @@
-import { Application, Container, Graphics, Point, Rectangle, Sprite, Text, Texture } from "pixi.js";
+import { Application, Assets, Container, Graphics, Point, Rectangle, Sprite, Text, Texture } from "pixi.js";
 
 import buttonTextureImage from "../assets/button.png";
 import invertedButtonTextureImage from "../assets/button_inverted.png";
@@ -66,44 +66,83 @@ export class CogSpeedGraphicsHandler {
   public numbersInverted: { [key: number]: Sprite } = {};
   public dotsInverted: { [key: number]: Sprite } = {};
 
-  public smallButtons: Rectangle[] = [];
+  // Textures - These are now initialized in loadAssets()
+  public gearWellTexture!: Texture;
+  public gearTexture!: Texture;
+  public buttonWellTexture!: Texture;
+  public buttonTexture!: Texture;
+  public invertedButtonTexture!: Texture;
+  public numbersAndDotsTexture!: Texture;
+  public numbersAndDotsInvertedTexture!: Texture;
+  public bgCarbonTexture!: Texture;
+  public bgSteelTexture!: Texture;
+  public smallButtonTextures!: Texture;
+  public largeButtonTexture!: Texture;
+  public loadingGearTexture!: Texture;
+  public readyDemoTextures!: Texture[];
+  public logoTexture!: Texture;
 
-  public gearWellTexture: Texture;
-  public gearTexture: Texture;
-  public buttonWellTexture: Texture;
-  public buttonTexture: Texture;
-  public invertedButtonTexture: Texture;
-  public numbersAndDotsTexture: Texture;
-  public numbersAndDotsInvertedTexture: Texture;
-  public bgCarbonTexture: Texture;
-  public bgSteelTexture: Texture;
-  public smallButtonTextures: Texture;
-  public largeButtonTexture: Texture;
-  public loadingGearTexture: Texture;
-  public logoTexture: Texture;
-  public readyDemoTextures: Texture[];
+  // Note: The type of smallButtons has changed from Rectangle[] to Texture[]
+  public smallButtons: Texture[] = [];
 
   answerSprite: Sprite | null;
   inputButtons: Sprite[];
 
+  // The constructor is now much simpler.
   constructor(public app: Application) {
-    this.gearWellTexture = Texture.from(gearWellTextureImage);
-    this.gearTexture = Texture.from(gearTextureImage);
-    this.buttonWellTexture = Texture.from(buttonWellTextureImage);
-    this.buttonTexture = Texture.from(buttonTextureImage);
-    this.invertedButtonTexture = Texture.from(invertedButtonTextureImage);
-    this.numbersAndDotsTexture = Texture.from(numbersAndDotsTextureImage);
-    this.numbersAndDotsInvertedTexture = Texture.from(numbersAndDotsInvertedTextureImage);
-    this.bgCarbonTexture = Texture.from(bgCarbonImage);
-    this.bgSteelTexture = Texture.from(bgSteelImage);
-    this.smallButtonTextures = Texture.from(smallButtonTextureImage);
-    this.largeButtonTexture = Texture.from(largeButtonTextureImage);
-    this.loadingGearTexture = Texture.from(loadingGearImage);
-    this.readyDemoTextures = [Texture.from(readyDemoImageTwo), 
-      Texture.from(readyDemoImageThree), Texture.from(readyDemoImageFinal)];
-    this.logoTexture = Texture.from(logoWithGearsImage);
+    this.answerSprite = null;
+    this.inputButtons = [];
+  }
 
-    // Load number and dot assets
+  /**
+   * NEW: This method handles all asynchronous asset loading.
+   * It must be called and awaited after creating an instance of this class.
+   */
+  public async loadAssets() {
+    // Bundle all assets for a single loading request
+    const assetsToLoad = {
+      gearWell: gearWellTextureImage,
+      gear: gearTextureImage,
+      buttonWell: buttonWellTextureImage,
+      button: buttonTextureImage,
+      invertedButton: invertedButtonTextureImage,
+      numbersAndDots: numbersAndDotsTextureImage,
+      numbersAndDotsInverted: numbersAndDotsInvertedTextureImage,
+      bgCarbon: bgCarbonImage,
+      bgSteel: bgSteelImage,
+      smallButtons: smallButtonTextureImage,
+      largeButton: largeButtonTextureImage,
+      loadingGear: loadingGearImage,
+      logo: logoWithGearsImage,
+      readyDemoTwo: readyDemoImageTwo,
+      readyDemoThree: readyDemoImageThree,
+      readyDemoFinal: readyDemoImageFinal,
+    };
+
+    // Use Assets.load to load everything and wait for it to complete
+    const loadedTextures = await Assets.load(Object.values(assetsToLoad));
+
+    // Now that assets are loaded, assign them to class properties
+    this.gearWellTexture = loadedTextures[assetsToLoad.gearWell];
+    this.gearTexture = loadedTextures[assetsToLoad.gear];
+    this.buttonWellTexture = loadedTextures[assetsToLoad.buttonWell];
+    this.buttonTexture = loadedTextures[assetsToLoad.button];
+    this.invertedButtonTexture = loadedTextures[assetsToLoad.invertedButton];
+    this.numbersAndDotsTexture = loadedTextures[assetsToLoad.numbersAndDots];
+    this.numbersAndDotsInvertedTexture = loadedTextures[assetsToLoad.numbersAndDotsInverted];
+    this.bgCarbonTexture = loadedTextures[assetsToLoad.bgCarbon];
+    this.bgSteelTexture = loadedTextures[assetsToLoad.bgSteel];
+    this.smallButtonTextures = loadedTextures[assetsToLoad.smallButtons];
+    this.largeButtonTexture = loadedTextures[assetsToLoad.largeButton];
+    this.loadingGearTexture = loadedTextures[assetsToLoad.loadingGear];
+    this.logoTexture = loadedTextures[assetsToLoad.logo];
+    this.readyDemoTextures = [
+      loadedTextures[assetsToLoad.readyDemoTwo],
+      loadedTextures[assetsToLoad.readyDemoThree],
+      loadedTextures[assetsToLoad.readyDemoFinal]
+    ];
+
+    // Now that textures are available, we can parse the spritesheets
     const { numbers, dots } = this.loadNumbersAndDots(false);
     const { numbers: numbersInverted, dots: dotsInverted } = this.loadNumbersAndDots(true);
 
@@ -112,19 +151,16 @@ export class CogSpeedGraphicsHandler {
     this.numbersInverted = numbersInverted;
     this.dotsInverted = dotsInverted;
 
-    // Load button assets
     this.smallButtons = this.loadButtons();
-    this.answerSprite = null;
-    this.inputButtons = [];
   }
 
   public async emulateLoadingTime(loadingTime_: number = 3000) {
     let loadingTime = loadingTime_;
-    if (process.env.NODE_ENV === "development") loadingTime = 0;
+    // if (process.env.NODE_ENV === "development") loadingTime = 0;
     await new Promise((resolve) => setTimeout(resolve, loadingTime));
   }
 
-  private _getMapValue(map: Record<number, number>, value: number, inverse=false): number {
+  private _getMapValue(map: Record<number, number>, value: number, inverse = false): number {
     let v = null;
     for (const [key, value_] of Object.entries(map)) {
       if (inverse) {
@@ -149,7 +185,7 @@ export class CogSpeedGraphicsHandler {
       6: 0x1DB201,
       7: 0x7CE8FF
     };
-    
+
     // COGSPEED Score Mapping
     const _cogspeedScoreMap = {
       0: 0xF4B4B4,   // 0 - < 0
@@ -160,7 +196,7 @@ export class CogSpeedGraphicsHandler {
       76: 0x1DB201,  // 90 - 76
       91: 0x7CE8FF   // 100 - 91
     };
-    
+
     // Blocking Round Duration Mapping
     const _blockingRoundDurationMap = {
       1800: 0xF4B4B4,   // >1800 ms
@@ -181,17 +217,17 @@ export class CogSpeedGraphicsHandler {
     const height = screenHeight * 0.05;
 
     const marginLeft = screenWidth * 0.08;
-    
+
     // First column, SPF
     const headerBoxSPF = new Graphics();
     headerBoxSPF.beginFill(0xffffff);
     headerBoxSPF.lineStyle(4, 0xafafaf);
     headerBoxSPF.drawRect(marginLeft, yPos, width, height);
 
-    const headerTextSPF = new Text("S-PF Score", {fill: 0x00000, fontSize: 14})
+    const headerTextSPF = new Text("S-PF Score", { fill: 0x00000, fontSize: 14 })
     headerTextSPF.position.set(screenWidth * 0.135, yPos + 8);
 
-    const valueTextSPF = new Text(spfScore, {fill: 0x00000, fontSize: 18})
+    const valueTextSPF = new Text(spfScore, { fill: 0x00000, fontSize: 18 })
     valueTextSPF.position.set(screenWidth * 0.135 + 30, yPos + 50);
 
     const valueBoxSPF = new Graphics();
@@ -207,10 +243,10 @@ export class CogSpeedGraphicsHandler {
     headerBoxCPI.lineStyle(4, 0xafafaf);
     headerBoxCPI.drawRect(marginLeft + width, yPos, width, height);
 
-    const headerTextCPI = new Text("CogSpeed Score", {fill: 0x00000, fontSize: 14})
+    const headerTextCPI = new Text("CogSpeed Score", { fill: 0x00000, fontSize: 14 })
     headerTextCPI.position.set(screenWidth * 0.105 + width, yPos + 8);
 
-    const valueTextCPI = new Text(cpiScore.toString(), {fill: 0x00000, fontSize: 18})
+    const valueTextCPI = new Text(cpiScore.toString(), { fill: 0x00000, fontSize: 18 })
     valueTextCPI.position.set(screenWidth * 0.105 + width + 30, yPos + 50);
 
     const valueBoxCPI = new Graphics();
@@ -219,17 +255,17 @@ export class CogSpeedGraphicsHandler {
     valueBoxCPI.beginFill(colour);
     valueBoxCPI.lineStyle(4, 0xafafaf);
     valueBoxCPI.drawRect(marginLeft + width, yPos + height, width, height);
-    
+
     // Third column, BRD
     const headerBoxBRD = new Graphics();
     headerBoxBRD.beginFill(0xffffff);
     headerBoxBRD.lineStyle(4, 0xafafaf);
     headerBoxBRD.drawRect(marginLeft + width * 2, yPos, width, height);
 
-    const headerTextBRD = new Text("BRD", {fill: 0x00000, fontSize: 14})
+    const headerTextBRD = new Text("BRD", { fill: 0x00000, fontSize: 14 })
     headerTextBRD.position.set(screenWidth * 0.12 + width * 2, yPos + 8);
 
-    const valueTextBRD = new Text(blockingRoundDuration.toString(), {fill: 0x00000, fontSize: 18});
+    const valueTextBRD = new Text(blockingRoundDuration.toString(), { fill: 0x00000, fontSize: 18 });
     valueTextBRD.position.set(screenWidth * 0.12 + width * 2 + 30, yPos + 50);
 
     const valueBoxBRD = new Graphics();
@@ -282,13 +318,18 @@ export class CogSpeedGraphicsHandler {
     return container;
   }
 
-  private loadButtons(): Rectangle[] {
+  private loadButtons(): Texture[] {
     const buttons = [];
     const spaceBetween = 128;
 
     for (let i = 0; i < 2; i++) {
-      const smallButtonTexture = new Rectangle(i * spaceBetween, 0, 128, 96);
-      buttons.push(smallButtonTexture);
+      const frame = new Rectangle(i * spaceBetween, 0, 128, 96);
+      // Create a new texture from the base spritesheet texture and the frame
+      const buttonTexture = new Texture({
+        source: this.smallButtonTextures.source,
+        frame,
+      });
+      buttons.push(buttonTexture);
     }
     return buttons;
   }
@@ -496,7 +537,7 @@ export class CogSpeedGraphicsHandler {
     this.app.stage.removeChild(this.app.stage.getChildByName("background") as Sprite);
 
     const background = new Sprite(texture === "carbon" ? this.bgCarbonTexture : this.bgSteelTexture);
-    background.name = "background";
+    // background.name = "background";
     background.width = this.app.screen.width;
     background.height = this.app.screen.height;
 
@@ -558,7 +599,7 @@ export class CogSpeedGraphicsHandler {
     // Create input gear
     this.createInputGear(0.5, 0.75, game);
   }
-  
+
   /**
    * Wait for a click on a sprite
    */
@@ -579,7 +620,7 @@ export class CogSpeedGraphicsHandler {
       // Timed out
       if (performance.now() > startTime + timeout) return null;
       await new Promise((resolve) => setTimeout(resolve, 100));
-      i ++;
+      i++;
     }
     return true;
   }

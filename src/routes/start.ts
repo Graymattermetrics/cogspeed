@@ -341,7 +341,7 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
    * @returns {Promise<SleepData>} The test data
    */
   public async start(sleepData: SleepData | false): Promise<SleepData | false> {
-    if (process.env.NODE_ENV === "development") return {fatigueLevel: -1};
+    // if (process.env.NODE_ENV === "development") return {fatigueLevel: -1};
 
     if (sleepData != false) {
       await this.displayReadyDemo(Infinity);

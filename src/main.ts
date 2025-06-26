@@ -48,7 +48,6 @@ async function loadConfig(): Promise<Config> {
 
 async function displayGmmlogo(app: Application) {
   const cleanup = () => {
-    console.log("Video ended, cleaning up...");
     videoSprite.destroy();
     window.removeEventListener('resize', resizeAndCenter);
   };
@@ -91,7 +90,12 @@ async function displayGmmlogo(app: Application) {
   };
   window.addEventListener('resize', onResize);
 
-  videoTexture.source.resource.addEventListener('ended', cleanup)
+  await new Promise<void>((resolve) => {
+    videoTexture.source.resource.addEventListener('ended', () => {
+      setTimeout(cleanup, 500);
+      resolve();
+    });
+  });
 }
 
 
@@ -110,27 +114,10 @@ export async function startUp(config: Config | null = null, startNowData: SleepD
 
   await displayGmmlogo(app);
 
-  // Show GMM Logo while loading all textures
-  // Temp text instead of logo for now
-  const loadingText = new Text("Loading", {
-    fontFamily: "Trebuchet",
-    fontSize: 24,
-    fill: 0xffffff,
-    align: "center",
-  });
-  loadingText.anchor.set(0.5);
-  loadingText.position.set(app.screen.width * 0.5, app.screen.height * 0.5);
-  app.stage.addChild(loadingText);
-  app.ticker.add((delta) => {
-    loadingText.text = "Loading" + ".".repeat((Math.floor(app.ticker.lastTime / 1000) % 3) + 1);
-  });
-
   const graphicsManager = new CogSpeedGraphicsHandler(app);
+  await graphicsManager.loadAssets()
 
-  // Load screen while displaying loading text
-  await graphicsManager.emulateLoadingTime();
   graphicsManager.setBackground("carbon");
-  app.stage.removeChild(loadingText);
 
   // Display the home page
   const startPage = new StartPage(config, app, graphicsManager);
