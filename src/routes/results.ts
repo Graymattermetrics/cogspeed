@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Application, Assets, Container, Graphics, Point, Sprite, Text, Texture, Ticker } from "pixi.js";
+import { Application, Assets, Container, Graphics, Point, Sprite, Text, Texture } from "pixi.js";
 
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { table } from "table";

@@ -114,7 +114,7 @@ export async function startUp(config: Config | null = null, startNowData: SleepD
 
   // Display the home page
   const startPage = new StartPage(config, app, graphicsManager);
-  if (startNowData == false) await startPage.displayHomePage();
+  if (startNowData === false) await startPage.displayHomePage();
 
   // Display start page
   const sleepData = await startPage.start(startNowData);

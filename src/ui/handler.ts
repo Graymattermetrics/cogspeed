@@ -170,8 +170,8 @@ export class CogSpeedGraphicsHandler {
         if (value >= Number.parseInt(key)) v = value_;
       }
     }
-    if (v == null) {
-      return inverse ? 0xf4b4b4 : 0x7ce8ff;
+    if (v === null) {
+      return inverse ? 0xF4B4B4 : 0x7CE8FF;
     }
     return v;
   }
