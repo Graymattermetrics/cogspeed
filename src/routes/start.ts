@@ -10,11 +10,7 @@ type GraphicList = [Graphics, number, number, number, number];
 export class StartPage {
   private container: Container;
 
-  constructor(
-    private config: Config,
-    private app: Application,
-    private ui: CogSpeedGraphicsHandler,
-  ) {
+  constructor(private config: Config, private app: Application, private ui: CogSpeedGraphicsHandler) {
     this.container = new Container();
     this.app.stage.addChild(this.container);
   }
@@ -34,7 +30,7 @@ export class StartPage {
         fontFamily: "Trebuchet",
         fontSize: 30,
         fill: 0xffffff,
-      }
+      },
     });
     yesText.anchor.set(0.5);
     yesText.position.set(this.app.screen.width * 0.7, this.app.screen.height * 0.85);
@@ -60,7 +56,7 @@ export class StartPage {
         fontFamily: "Trebuchet",
         fontSize: 30,
         fill: 0xffffff,
-      }
+      },
     });
     noText.anchor.set(0.5);
     noText.position.set(this.app.screen.width * 0.3, this.app.screen.height * 0.85);
@@ -71,7 +67,13 @@ export class StartPage {
     return keypress === yesBorder || keypress === yesText;
   }
 
-  private createText(text: string, x: number, y: number, fontSize: number, { wordWrap = true, centre = false, fill = 0xffffff, anchor = true }) {
+  private createText(
+    text: string,
+    x: number,
+    y: number,
+    fontSize: number,
+    { wordWrap = true, centre = false, fill = 0xffffff, anchor = true }
+  ) {
     const textObject = new Text({
       text,
       style: {
@@ -81,7 +83,7 @@ export class StartPage {
         align: "center",
         wordWrap: wordWrap,
         wordWrapWidth: this.app.screen.width * 0.9,
-      }
+      },
     });
     textObject.position.set(x, y);
     if (anchor) textObject.anchor.set(0.5);
@@ -112,8 +114,10 @@ export class StartPage {
   /**
    * Wait for a click on a sprite
    */
-  private async waitForKeyPress(sprite: Sprite | Container = this.container,
-    secondSprites: (Sprite | Container)[] = []): Promise<Sprite | Container | null> {
+  private async waitForKeyPress(
+    sprite: Sprite | Container = this.container,
+    secondSprites: (Sprite | Container)[] = []
+  ): Promise<Sprite | Container | null> {
     // Set each sprite to dynamic and listen for pointerdown event
     [sprite, ...secondSprites].forEach((sprite_) => {
       if (sprite_ !== null) {
@@ -155,29 +159,45 @@ export class StartPage {
     this.container.addChild(logoSprite);
 
     // Test now button
-    const testNowContainer = this.ui.createButton("Test now!", this.app.screen.width * 0.5, this.app.screen.height * 0.7, 
-    this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8, this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25, 36)
+    const testNowContainer = this.ui.createButton(
+      "Test now!",
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.7,
+      this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8,
+      this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25,
+      36
+    );
     this.container.addChild(testNowContainer);
 
     // Privacy policies
-    const privacyPoliciesText = this.createText("View our pivacy policies", this.app.screen.width * 0.5, this.app.screen.height * 0.87, 21, {wordWrap: true});
+    const privacyPoliciesText = this.createText(
+      "View our pivacy policies",
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.87,
+      21,
+      { wordWrap: true }
+    );
     privacyPoliciesText.eventMode = "dynamic";
     // privacyPoliciesText.
-    privacyPoliciesText.on('pointertap', () => {
-      window.open("https://cogspeedfiles.s3.us-east-2.amazonaws.com/PRIVACY+POLICY+06_19_2023.pdf")
+    privacyPoliciesText.on("pointertap", () => {
+      window.open("https://cogspeedfiles.s3.us-east-2.amazonaws.com/PRIVACY+POLICY+06_19_2023.pdf");
     });
 
     // Terms of service
-    const tosText = this.createText("View our TOS", this.app.screen.width * 0.5, this.app.screen.height * 0.93, 21, {wordWrap: true});
+    const tosText = this.createText("View our TOS", this.app.screen.width * 0.5, this.app.screen.height * 0.93, 21, {
+      wordWrap: true,
+    });
     tosText.eventMode = "dynamic";
     // privacyPoliciesText.
-    tosText.on('pointertap', () => {
+    tosText.on("pointertap", () => {
       window.open("https://cogspeedfiles.s3.us-east-2.amazonaws.com/TOS+06_19_2023.pdf");
     });
 
     // Version text
-    this.createText(`Version ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.03, 14, {wordWrap: true});
-    
+    this.createText(`Version ${this.config.version}`, this.app.screen.width * 0.5, this.app.screen.height * 0.03, 14, {
+      wordWrap: true,
+    });
+
     await this.waitForKeyPress(testNowContainer);
   }
 
@@ -194,7 +214,7 @@ export class StartPage {
       this.app.screen.width * 0.5,
       this.app.screen.height * 0.1,
       24,
-      { wordWrap: true },
+      { wordWrap: true }
     );
 
     this.createText("Ready?", this.app.screen.width * 0.5, this.app.screen.height * 0.5, 48, {
@@ -221,7 +241,7 @@ export class StartPage {
    * Must click yes to continue
    * @returns {Promise<boolean>} Whether the data is correct
    */
-private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boolean> {
+  private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boolean> {
     return await this.confirm("Confirm", "Back");
   }
 
@@ -238,7 +258,7 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
     const [graphic, x, y, width, height] = graphic_;
     graphic.clear();
 
-    graphic.rect(x, y, width, height); 
+    graphic.rect(x, y, width, height);
     graphic.fill(colour);
     graphic.stroke({ width: 2, color: 0x628fc2 });
   }
@@ -253,8 +273,10 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
   public async displaySamnPerelliChecklist(): Promise<number> {
     var level = 0;
 
-    this.createText(`Samn-Perelli Fatigue Scale`, this.app.screen.width * 0.5, this.app.screen.height * 0.05, 20, { wordWrap: true })
-    this.createText(`S-PFS`, this.app.screen.width * 0.5, this.app.screen.height * 0.1, 24, { wordWrap: true })
+    this.createText(`Samn-Perelli Fatigue Scale`, this.app.screen.width * 0.5, this.app.screen.height * 0.05, 20, {
+      wordWrap: true,
+    });
+    this.createText(`S-PFS`, this.app.screen.width * 0.5, this.app.screen.height * 0.1, 24, { wordWrap: true });
 
     const levels = [
       "Fully alert, wide awake",
@@ -268,17 +290,17 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
 
     const graphics: GraphicList[] = [];
     for (let index = levels.length - 1; index >= 0; index--) {
-      const y = this.app.screen.height * 0.15 + (index * this.app.screen.height * 0.09);
+      const y = this.app.screen.height * 0.15 + index * this.app.screen.height * 0.09;
       const x = this.app.screen.width * 0.1;
       const width = this.app.screen.width * 0.8;
       const height = this.app.screen.height * 0.09;
 
       const graphic = new Graphics();
-      
+
       graphic.rect(x, y, width, height);
       graphic.fill(0x0000);
       graphic.stroke({ width: 2, color: 0x628fc2 });
-      
+
       graphics.push([graphic, x, y, width, height]);
 
       graphic.eventMode = "dynamic";
@@ -288,11 +310,19 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
       });
       this.container.addChild(graphic);
 
-      this.createText(`${7 - index}. ${levels[index]}`, x + 10, y + this.app.screen.height * 0.0405 - 8.55, 16, {anchor: false});
+      this.createText(`${7 - index}. ${levels[index]}`, x + 10, y + this.app.screen.height * 0.0405 - 8.55, 16, {
+        anchor: false,
+      });
     }
 
-    this.createText(`Samn, S. & Perelli, L. (1981). Estimating Aircrew Fatigue: A Technique with Application to 
-    // Airlift Operations. SAM-TR-82-2.`, this.app.screen.width * 0.5, this.app.screen.height * 0.94, 12, { wordWrap: true });
+    this.createText(
+      `Samn, S. & Perelli, L. (1981). Estimating Aircrew Fatigue: A Technique with Application to 
+    // Airlift Operations. SAM-TR-82-2.`,
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.94,
+      12,
+      { wordWrap: true }
+    );
 
     await this.waitForKeyPressNoDestroy(graphics.map((graphic) => graphic[0]));
     await this.confirm("Ok");
@@ -302,11 +332,11 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
   /**
    * Display the ready demo screen.
    * This consists of 6-7 refresher screens to remind how the buttons
-   * and numbers correlate to different parts of the screen. 
+   * and numbers correlate to different parts of the screen.
    */
   public async displayReadyDemo(numberOfScreens: number) {
     let continueButton;
-    for (let i = 0; i < numberOfScreens; i ++ ) {
+    for (let i = 0; i < numberOfScreens; i++) {
       if (i >= this.ui.readyDemoTextures.length - 1) break;
 
       const size = 512;
@@ -317,13 +347,27 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
       readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
       readyDemo.anchor.set(0.5);
 
-      continueButton = this.ui.createButton("Continue", this.app.screen.width * 0.3, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2, 18);
-      const skipToTest = this.ui.createButton("Skip", this.app.screen.width * 0.7, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2, 18)
-      
+      continueButton = this.ui.createButton(
+        "Continue",
+        this.app.screen.width * 0.3,
+        this.app.screen.height * 0.85,
+        this.app.screen.width * 0.6,
+        this.app.screen.height * 0.2,
+        18
+      );
+      const skipToTest = this.ui.createButton(
+        "Skip",
+        this.app.screen.width * 0.7,
+        this.app.screen.height * 0.85,
+        this.app.screen.width * 0.6,
+        this.app.screen.height * 0.2,
+        18
+      );
+
       this.container.addChild(continueButton);
       this.container.addChild(readyDemo);
       this.container.addChild(skipToTest);
-      if (await this.waitForKeyPress(skipToTest, [this.container]) === skipToTest) break;
+      if ((await this.waitForKeyPress(skipToTest, [this.container])) === skipToTest) break;
     }
 
     // TODO: Simplify
@@ -336,8 +380,14 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
     readyDemo.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.45);
     readyDemo.anchor.set(0.5);
 
-    const skipToTest = this.ui.createButton("Start now", this.app.screen.width * 0.5, this.app.screen.height * 0.85, this.app.screen.width * 0.6, this.app.screen.height * 0.2)
-    
+    const skipToTest = this.ui.createButton(
+      "Start now",
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.85,
+      this.app.screen.width * 0.6,
+      this.app.screen.height * 0.2
+    );
+
     this.container.addChild(readyDemo);
     this.container.addChild(skipToTest);
     await this.waitForKeyPress();
@@ -350,7 +400,7 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
    * @returns {Promise<SleepData>} The test data
    */
   public async start(sleepData: SleepData | false): Promise<SleepData | false> {
-    // if (process.env.NODE_ENV === "development") return {fatigueLevel: -1};
+    if (process.env.NODE_ENV === "development") return {fatigueLevel: -1};
 
     if (sleepData != false) {
       await this.displayReadyDemo(Infinity);
@@ -384,7 +434,7 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
     }
 
     return {
-      fatigueLevel
-        };
+      fatigueLevel,
+    };
   }
 }

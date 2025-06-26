@@ -113,7 +113,8 @@ export class CogSpeedGame {
     this.answer = answerLocation;
 
     // Randomize query number and number or dots again excluding the previous answer
-    const queryNumber = Math.floor(Math.random() * 9) + 1;
+    const queryNumber = Math.floor(Math.random() * this.config.number_of_dots_upper) + 1;
+    
     let numbersOrDots: "dots" | "numbers" = Math.random() > 0.5 ? "numbers" : "dots";
     // The query number is the same as last round, so invert the numbersordots
     if (queryNumber === this.query["queryNumber"]) {
@@ -168,10 +169,7 @@ export class CogSpeedGame {
       this.currentRound = 1;
       return this.practiceMode();
     }
-    this.currentRoundTimeout = setTimeout(
-      this.displayCorrectAnswer.bind(this),
-      this.config.timeouts.max_initial_no_response
-    );
+    this.currentRoundTimeout = setTimeout(this.displayCorrectAnswer.bind(this), this.config.timeouts.max_initial_no_response);
   }
 
   /**
@@ -196,26 +194,21 @@ export class CogSpeedGame {
     // 1) Set no response timeout (roughly 6000ms)
     clearTimeout(this.currentRoundTimeout);
 
-    this.currentRoundTimeout = setTimeout(
-      this.displayCorrectAnswer.bind(this),
-      this.config.practice_mode.no_response_duration
-    );
+    this.currentRoundTimeout = setTimeout(this.displayCorrectAnswer.bind(this), this.config.practice_mode.no_response_duration);
 
     const practiceTestAnswers = this.previousAnswers.filter((answer) => answer.roundType === 1);
 
     const lastNAnswers = practiceTestAnswers.slice(-this.config.practice_mode.max_right_count);
     // 2) If there have been (roughly 4) correct answers in a row under (roughly 2600ms), continue to self-paced
     if (
-      lastNAnswers.filter((answer) => answer.status === "correct").length ===
-        this.config.practice_mode.max_right_count &&
+      lastNAnswers.filter((answer) => answer.status === "correct").length === this.config.practice_mode.max_right_count &&
       lastNAnswers.reduce((a, b) => a + b.timeTaken, 0) / this.config.practice_mode.max_right_count <
         this.config.practice_mode.right_count_art_less_than
     ) {
       this.currentRound = 2;
       this.currentTimeout =
         Math.min(
-          lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) /
-            this.config.practice_mode.max_right_count,
+          lastNAnswers.map((answer) => answer.timeTaken).reduce((a, b) => a + b, 0) / this.config.practice_mode.max_right_count,
           this.config.machine_paced.max_start_duration
         ) - this.config.machine_paced.initial_speedup_amount; // Minimum response time (roughly 100ms)
       return this.machinePacedRound();
@@ -259,12 +252,10 @@ export class CogSpeedGame {
       if (lastAnswer.status === "correct") {
         // If the answer is correct, speed up the timeout
         let speedupAmount =
-          (this.config.machine_paced.correct.x * lastAnswer.ratio - this.config.machine_paced.correct.y) *
-          this.currentTimeout;
+          (this.config.machine_paced.correct.x * lastAnswer.ratio - this.config.machine_paced.correct.y) * this.currentTimeout;
 
         // If the speedup time is greater than 0, limit it to the max speedup amount
-        if (speedupAmount > 0)
-          speedupAmount = Math.min(speedupAmount, this.config.machine_paced.correct.max_slowdown_amount);
+        if (speedupAmount > 0) speedupAmount = Math.min(speedupAmount, this.config.machine_paced.correct.max_slowdown_amount);
         // If the speedup time is less than 0, limit it to the max slowdown amount
         else speedupAmount = Math.max(speedupAmount, -this.config.machine_paced.correct.max_speedup_amount);
         this.currentTimeout += speedupAmount;
@@ -355,10 +346,7 @@ export class CogSpeedGame {
       return this.stop(2);
 
     clearTimeout(this.currentRoundTimeout);
-    this.currentRoundTimeout = setTimeout(
-      this.stop.bind(this),
-      this.config.machine_paced.blocking.no_response_duration
-    );
+    this.currentRoundTimeout = setTimeout(this.stop.bind(this), this.config.machine_paced.blocking.no_response_duration);
   }
 
   /**
@@ -528,7 +516,7 @@ export class CogSpeedGame {
   public async start(time: number | null = null) {
     this.ui?.setupGame(this);
     this.startTime = time === null ? performance.now() : time;
-    
+
     // if (process.env.NODE_ENV === "development") return this.stop(1);
 
     this.maxTestTimeout = setTimeout(this.stop.bind(this), this.config.timeouts.max_test_duration);
@@ -579,9 +567,7 @@ export class CogSpeedGame {
     const lowestBlockTime = Math.min(...this.previousBlockTimeouts.slice(1, blockCount + 1));
     const highestBlockTime = Math.max(...this.previousBlockTimeouts.slice(1, blockCount + 1));
 
-    const firstMachinePacedRound: GameAnswer | undefined = this.previousAnswers.filter(
-      (answer) => answer.roundType === 2
-    )[0];
+    const firstMachinePacedRound: GameAnswer | undefined = this.previousAnswers.filter((answer) => answer.roundType === 2)[0];
 
     const totalMachinePacedAnswers = filterByRoundType(this.previousAnswers, 2);
     const correctMachinePacedAnswers = filterByStatus(totalMachinePacedAnswers, "correct");

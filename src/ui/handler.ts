@@ -19,6 +19,7 @@ import readyDemoImageFinal from "../assets/ready_demo_final.png";
 import bgCarbonImage from "../assets/bg_carbon.jpg";
 import bgSteelImage from "../assets/bg_steel.jpg";
 import { CogSpeedGame } from "../routes/game";
+import { Config } from "../types/Config";
 
 // Width, height of gear
 export const buttonPositions: { [key: number]: any } = {
@@ -89,7 +90,7 @@ export class CogSpeedGraphicsHandler {
   inputButtons: Sprite[];
 
   // The constructor is now much simpler.
-  constructor(public app: Application) {
+  constructor(public app: Application, public config: Config) {
     this.answerSprite = null;
     this.inputButtons = [];
   }
@@ -139,7 +140,7 @@ export class CogSpeedGraphicsHandler {
     this.readyDemoTextures = [
       loadedTextures[assetsToLoad.readyDemoTwo],
       loadedTextures[assetsToLoad.readyDemoThree],
-      loadedTextures[assetsToLoad.readyDemoFinal]
+      loadedTextures[assetsToLoad.readyDemoFinal],
     ];
 
     // Now that textures are available, we can parse the spritesheets
@@ -170,42 +171,47 @@ export class CogSpeedGraphicsHandler {
       }
     }
     if (v == null) {
-      return inverse ? 0xF4B4B4 : 0x7CE8FF;
+      return inverse ? 0xf4b4b4 : 0x7ce8ff;
     }
     return v;
   }
 
-  public createResultsTable(spfScore: 1 | 2 | 3 | 4 | 5 | 6 | 7, cpiScore: number | "N/A", blockingRoundDuration: number | "N/A", yPos: number): Container {
+  public createResultsTable(
+    spfScore: 1 | 2 | 3 | 4 | 5 | 6 | 7,
+    cpiScore: number | "N/A",
+    blockingRoundDuration: number | "N/A",
+    yPos: number
+  ): Container {
     const _spfScoreMap = {
-      1: 0xF4B4B4,
+      1: 0xf4b4b4,
       2: 0xff644e,
-      3: 0xFFB05C,
-      4: 0xFFEE67,
-      5: 0x8DFA01,
-      6: 0x1DB201,
-      7: 0x7CE8FF
+      3: 0xffb05c,
+      4: 0xffee67,
+      5: 0x8dfa01,
+      6: 0x1db201,
+      7: 0x7ce8ff,
     };
 
     // COGSPEED Score Mapping
     const _cogspeedScoreMap = {
-      0: 0xF4B4B4,   // 0 - < 0
-      1: 0xff644e,   // 10 - 1
-      11: 0xFFB05C,  // 25 - 11
-      26: 0xFFEE67,  // 50 - 26
-      51: 0x8DFA01,  // 75 - 51
-      76: 0x1DB201,  // 90 - 76
-      91: 0x7CE8FF   // 100 - 91
+      0: 0xf4b4b4, // 0 - < 0
+      1: 0xff644e, // 10 - 1
+      11: 0xffb05c, // 25 - 11
+      26: 0xffee67, // 50 - 26
+      51: 0x8dfa01, // 75 - 51
+      76: 0x1db201, // 90 - 76
+      91: 0x7ce8ff, // 100 - 91
     };
 
     // Blocking Round Duration Mapping
     const _blockingRoundDurationMap = {
-      1800: 0xF4B4B4,   // >1800 ms
-      1690: 0xff644e,   // 1690-1789 ms
-      1525: 0xFFB05C,   // 1525-1668 ms
-      1250: 0xFFEE67,   // 1250-1514 ms
-      975: 0x8DFA01,    // 975-1239 ms
-      810: 0x1DB201,    // 810-964 ms
-      700: 0x7CE8FF     // 700-799 ms
+      1800: 0xf4b4b4, // >1800 ms
+      1690: 0xff644e, // 1690-1789 ms
+      1525: 0xffb05c, // 1525-1668 ms
+      1250: 0xffee67, // 1250-1514 ms
+      975: 0x8dfa01, // 975-1239 ms
+      810: 0x1db201, // 810-964 ms
+      700: 0x7ce8ff, // 700-799 ms
     };
 
     const container = new Container();
@@ -215,10 +221,18 @@ export class CogSpeedGraphicsHandler {
     const height = screenHeight * 0.05;
     const marginLeft = screenWidth * 0.08;
 
-    const createBox = (x: number, y: number, w: number, h: number, fillColor: number, strokeWidth: number, strokeColor: number) => {
+    const createBox = (
+      x: number,
+      y: number,
+      w: number,
+      h: number,
+      fillColor: number,
+      strokeWidth: number,
+      strokeColor: number
+    ) => {
       const box = new Graphics();
       box.rect(x, y, w, h); // 1. Define shape
-      box.fill(fillColor);  // 2. Apply fill
+      box.fill(fillColor); // 2. Apply fill
       box.stroke({ width: strokeWidth, color: strokeColor }); // 3. Apply stroke
       return box;
     };
@@ -258,9 +272,18 @@ export class CogSpeedGraphicsHandler {
     const valueBoxBRD = createBox(marginLeft + width * 2, yPos + height, width, height, colour, 4, 0xafafaf);
 
     container.addChild(
-      headerBoxSPF, valueBoxSPF, headerBoxCPI, valueBoxCPI, headerBoxBRD, valueBoxBRD,
-      headerTextSPF, headerTextCPI, headerTextBRD,
-      valueTextSPF, valueTextCPI, valueTextBRD
+      headerBoxSPF,
+      valueBoxSPF,
+      headerBoxCPI,
+      valueBoxCPI,
+      headerBoxBRD,
+      valueBoxBRD,
+      headerTextSPF,
+      headerTextCPI,
+      headerTextBRD,
+      valueTextSPF,
+      valueTextCPI,
+      valueTextBRD
     );
 
     return container;
@@ -283,7 +306,7 @@ export class CogSpeedGraphicsHandler {
         fontSize: fontSize,
         fill: 0xc4e4ff,
         align: "center",
-      }
+      },
     });
     text.anchor.set(0.5);
     text.position.set(x, y);
@@ -322,7 +345,7 @@ export class CogSpeedGraphicsHandler {
       const posY = Math.floor(i / 4) * spaceBetween;
 
       // Split up numbers and dots png into separate sprites
-      
+
       const frame = new Rectangle(posX, posY, spaceBetween, spaceBetween);
       const numberOrDotTexture = new Texture({
         source: texture.source,
@@ -412,9 +435,9 @@ export class CogSpeedGraphicsHandler {
       answerLocation > 3 ? this.leftGearContainer : this.rightGearContainer
     );
 
-    const numbers = Array.from({ length: 19 }, (x, i) => i);
+    const numbers = Array.from({ length: 2 * this.config.number_of_dots_upper + 1 }, (x, i) => i);
     delete numbers[queryNumber];
-    delete numbers[queryNumber + 9];
+    delete numbers[queryNumber + this.config.number_of_dots_upper];
     delete numbers[0];
 
     for (let i = 0; i < 6; i++) {
@@ -424,7 +447,11 @@ export class CogSpeedGraphicsHandler {
       const number = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
       delete numbers[number];
 
-      const randomIncorrectSprite = this.getSprite(number > 9 ? "dots" : "numbers", number > 9 ? number - 9 : number, true);
+      const randomIncorrectSprite = this.getSprite(
+        number > this.config.number_of_dots_upper ? "dots" : "numbers",
+        number > this.config.number_of_dots_upper ? number - this.config.number_of_dots_upper : number,
+        true
+      );
 
       this.setSpritePosition(
         randomIncorrectSprite,

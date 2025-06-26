@@ -12,7 +12,7 @@ import resultsGraph from "../assets/results_graph.png";
 export class ProcessResultsPage {
   public resultsGraphTexture: Texture | undefined;
 
-  constructor(private app: Application, private ui: CogSpeedGraphicsHandler) { }
+  constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {}
 
   private formatKey(key: string, capitalise: boolean = false): string {
     let result = capitalise ? key[0].toUpperCase() : key[0];
@@ -37,7 +37,7 @@ export class ProcessResultsPage {
     for (const key of keys) {
       result += this.formatKey(key, key !== keys[0]);
     }
-    return result
+    return result;
   }
 
   private formatObject(data: Record<string, any>, keys: string[] | null = null): string {
@@ -225,18 +225,23 @@ export class ProcessResultsPage {
         fontSize: 23,
         fill: 0xffffff,
         align: "center",
-      }
+      },
     });
-    text.anchor.set(0.5, 0.5)
-    text.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.5)
+    text.anchor.set(0.5, 0.5);
+    text.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.5);
 
-    container.addChild(text)
+    container.addChild(text);
 
     return [container, text];
   }
 
   public async showCompareScores(data: { [key: string]: any }, config: Config) {
-    const resultsTableContainer = this.ui.createResultsTable(data.sleepData.fatigueLevel, data.cognitiveProcessingIndex, data.blockingRoundDuration, this.app.screen.height * 0.05);
+    const resultsTableContainer = this.ui.createResultsTable(
+      data.sleepData.fatigueLevel,
+      data.cognitiveProcessingIndex,
+      data.blockingRoundDuration,
+      this.app.screen.height * 0.05
+    );
     this.app.stage.addChild(resultsTableContainer);
 
     const textDescription = new Text({
@@ -248,10 +253,9 @@ export class ProcessResultsPage {
         align: "center",
         wordWrap: true,
         wordWrapWidth: this.app.screen.width * 0.8,
-      }
+      },
     });
-    textDescription.position.set(this.app.screen.width * 0.5,
-      this.app.screen.height * 0.28);
+    textDescription.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.28);
 
     textDescription.anchor.set(0.5);
     this.app.stage.addChild(textDescription);
@@ -261,9 +265,9 @@ export class ProcessResultsPage {
     }
 
     const graphSprite = new Sprite(this.resultsGraphTexture);
-    graphSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.65)
+    graphSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.65);
     graphSprite.scale.set(0.5, 0.65);
-    graphSprite.anchor.set(0.5, 0.5)
+    graphSprite.anchor.set(0.5, 0.5);
 
     this.app.stage.addChild(graphSprite);
 
@@ -283,8 +287,8 @@ export class ProcessResultsPage {
   }
 
   public async showSummaryPage(data: { [key: string]: any }, config: Config) {
-    const blockRangeText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.blockRange * 10) / 10}ms`;
-    const finalBlockDiffText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.finalBlockDiff * 10) / 10}ms`;
+    const blockRangeText = data.status === "failed" ? "N/A" : `${Math.round(data.blocking.blockRange * 10) / 10}ms`;
+    const finalBlockDiffText = data.status === "failed" ? "N/A" : `${Math.round(data.blocking.finalBlockDiff * 10) / 10}ms`;
 
     let message = data.status === "failed" ? `(${data.message})` : "";
 
@@ -306,11 +310,10 @@ Final block difference: ${finalBlockDiffText}`,
         fill: 0xffffff,
         align: "center",
         wordWrap: true,
-        wordWrapWidth: this.app.screen.width * 0.95
-      }
+        wordWrapWidth: this.app.screen.width * 0.95,
+      },
     });
-    textSummary.position.set(this.app.screen.width * 0.5,
-      this.app.screen.height * 0.33);
+    textSummary.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.33);
 
     textSummary.anchor.set(0.5);
     this.app.stage.addChild(textSummary);
@@ -318,7 +321,7 @@ Final block difference: ${finalBlockDiffText}`,
     const compareScoresButtonContainer = this.ui.createButton(
       "Compare Scores",
       this.app.screen.width * 0.5,
-      this.app.screen.height * 0.80,
+      this.app.screen.height * 0.8,
       this.app.screen.width * 0.6,
       this.app.screen.height * 0.2
     );
@@ -355,12 +358,17 @@ Final block difference: ${finalBlockDiffText}`,
       data.cognitiveProcessingIndex = "N/A";
       data.blockingRoundDuration = "N/A";
     }
-    const resultsTableContainer = this.ui.createResultsTable(data.sleepData.fatigueLevel, data.cognitiveProcessingIndex, data.blockingRoundDuration, this.app.screen.height * 0.15);
+    const resultsTableContainer = this.ui.createResultsTable(
+      data.sleepData.fatigueLevel,
+      data.cognitiveProcessingIndex,
+      data.blockingRoundDuration,
+      this.app.screen.height * 0.15
+    );
 
     const summaryPageButtonContainer = this.ui.createButton(
       "Test summary",
       this.app.screen.width * 0.5,
-      this.app.screen.height * 0.40,
+      this.app.screen.height * 0.4,
       this.app.screen.width * 0.6,
       this.app.screen.height * 0.2
     );
@@ -418,8 +426,8 @@ Final block difference: ${finalBlockDiffText}`,
 
       await this.ui.emulateLoadingTime(2500);
       loadingContainerText.text = `Test ${data.status[0].toUpperCase() + data.status.slice(1, data.status.length)}`;
-      if (data.status === "success") loadingContainerText.tint = 0x00FF00;
-      else loadingContainerText.tint = 0xFF0000;
+      if (data.status === "success") loadingContainerText.tint = 0x00ff00;
+      else loadingContainerText.tint = 0xff0000;
 
       await this.ui.emulateLoadingTime(2000);
       loadingContainer.destroy();
