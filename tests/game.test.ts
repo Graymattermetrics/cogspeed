@@ -7,10 +7,8 @@ import axios from "axios";
 import { CogSpeedGame } from "../src/routes/game";
 import { Config } from "../src/types/Config";
 
-
 jest.useFakeTimers();
 jest.spyOn(global, "setTimeout");
-
 
 let config: Config;
 beforeAll(async () => {
@@ -44,7 +42,7 @@ const practiceTestGame = () => {
     game.buttonClicked(0); // We don't care where it is clicked
   }
   return game;
-}
+};
 
 /**
  * Creates a game that has completed the self paced startup rounds

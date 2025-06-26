@@ -6,7 +6,6 @@ import { Config } from "./types/Config";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
 import { SleepData } from "./types/SleepData";
 
-
 async function createApp(): Promise<Application> {
   const gameWidth = window.innerWidth;
   const gameHeight = window.innerHeight;
@@ -15,16 +14,15 @@ async function createApp(): Promise<Application> {
   await app.init({
     width: gameWidth,
     height: gameHeight,
-  })
+  });
 
   const appDiv = document.querySelector(".App");
   if (!appDiv) throw new Error("No app div found");
-  appDiv.innerHTML = "";  // TODO: Fix(?)
+  appDiv.innerHTML = ""; // TODO: Fix(?)
   appDiv.appendChild(app.canvas);
 
   return app;
 }
-
 
 /**
  * Loads the config from the backend
@@ -45,14 +43,13 @@ async function loadConfig(): Promise<Config> {
   return await request.data;
 }
 
-
 async function displayGmmlogo(app: Application) {
   const cleanup = () => {
     videoSprite.destroy();
-    window.removeEventListener('resize', resizeAndCenter);
+    window.removeEventListener("resize", resizeAndCenter);
   };
 
-  await new Promise(r => setTimeout(r, 500))
+  await new Promise((r) => setTimeout(r, 500));
   // Use PixiJS's modern Assets loader for better caching and handling.
   // We pass resourceOptions to configure the underlying HTMLVideoElement.
   const videoTexture = await Assets.load({
@@ -62,7 +59,7 @@ async function displayGmmlogo(app: Application) {
       muted: true,
       playsinline: true,
       // It's also good practice to add crossOrigin for assets from other domains
-      crossOrigin: 'anonymous',
+      crossOrigin: "anonymous",
     },
   });
 
@@ -74,10 +71,7 @@ async function displayGmmlogo(app: Application) {
   const resizeAndCenter = () => {
     videoSprite.x = app.renderer.width / 2;
     videoSprite.y = app.renderer.height / 2;
-    const scale = Math.min(
-      app.renderer.width / videoSprite.texture.width,
-      app.renderer.height / videoSprite.texture.height
-    );
+    const scale = Math.min(app.renderer.width / videoSprite.texture.width, app.renderer.height / videoSprite.texture.height);
     videoSprite.scale.set(scale);
   };
 
@@ -88,20 +82,19 @@ async function displayGmmlogo(app: Application) {
   const onResize = () => {
     resizeAndCenter();
   };
-  window.addEventListener('resize', onResize);
+  window.addEventListener("resize", onResize);
 
   await new Promise<void>((resolve) => {
-    videoTexture.source.resource.addEventListener('ended', () => {
+    videoTexture.source.resource.addEventListener("ended", () => {
       setTimeout(cleanup, 500);
       resolve();
     });
   });
 }
 
-
 /**
- * 
- * @param config 
+ *
+ * @param config
  * @param startNow Called from restart. Bypasses sleep data
  */
 export async function startUp(config: Config | null = null, startNowData: SleepData | false = false) {
@@ -114,8 +107,8 @@ export async function startUp(config: Config | null = null, startNowData: SleepD
 
   await displayGmmlogo(app);
 
-  const graphicsManager = new CogSpeedGraphicsHandler(app);
-  await graphicsManager.loadAssets()
+  const graphicsManager = new CogSpeedGraphicsHandler(app, config);
+  await graphicsManager.loadAssets();
 
   graphicsManager.setBackground("carbon");
 
@@ -130,4 +123,4 @@ export async function startUp(config: Config | null = null, startNowData: SleepD
   // Game phase - called after start button is clicked
   const game = new CogSpeedGame(config, app, graphicsManager, sleepData);
   game.start();
-};
+}
