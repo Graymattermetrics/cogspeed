@@ -53,7 +53,7 @@ async function displayGmmlogo(app: Application) {
   // Use PixiJS's modern Assets loader for better caching and handling.
   // We pass resourceOptions to configure the underlying HTMLVideoElement.
   const videoTexture = await Assets.load({
-    src: "/assets/gmmLoadingAnimation.mp4",
+    src: process.env.PUBLIC_URL + "/assets/gmmLoadingAnimation.mp4",
     data: {
       autoPlay: true,
       muted: true,
