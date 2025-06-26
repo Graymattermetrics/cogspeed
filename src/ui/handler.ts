@@ -347,8 +347,12 @@ export class CogSpeedGraphicsHandler {
       const posY = Math.floor(i / 4) * spaceBetween;
 
       // Split up numbers and dots png into separate sprites
-
-      const numberOrDotTexture = new Rectangle(posX, posY, spaceBetween, spaceBetween);
+      
+      const frame = new Rectangle(posX, posY, spaceBetween, spaceBetween);
+      const numberOrDotTexture = new Texture({
+        source: texture.source,
+        frame,
+      });
       const numberOrDot = new Sprite(numberOrDotTexture);
 
       numberOrDot.anchor.set(0.5);
