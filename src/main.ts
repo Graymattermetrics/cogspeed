@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Application, Assets, Sprite, Text, VideoResource } from "pixi.js";
+import { Application, Assets, Sprite } from "pixi.js";
 import { CogSpeedGame } from "./routes/game";
 import { StartPage } from "./routes/start";
 import { Config } from "./types/Config";
@@ -45,7 +45,9 @@ async function loadConfig(): Promise<Config> {
 
 async function displayGmmlogo(app: Application) {
   const cleanup = () => {
-    videoSprite.destroy();
+    videoTexture.source.resource.removeEventListener("ended", cleanup);
+    Assets.unload(videoTexture).catch(() => {});
+    videoSprite.destroy({ children: true });
     window.removeEventListener("resize", resizeAndCenter);
   };
 
@@ -83,7 +85,7 @@ async function displayGmmlogo(app: Application) {
     resizeAndCenter();
   };
   window.addEventListener("resize", onResize);
-
+  
   await new Promise<void>((resolve) => {
     videoTexture.source.resource.addEventListener("ended", () => {
       setTimeout(cleanup, 500);
@@ -98,14 +100,20 @@ async function displayGmmlogo(app: Application) {
  * @param startNow Called from restart. Bypasses sleep data
  */
 export async function startUp(config: Config | null = null, startNowData: SleepData | false = false) {
+  let showLoadingGMMLogo = false;
   if (config === null) {
+    // Either restart or home called
+    showLoadingGMMLogo = true;
+
     config = await loadConfig();
     if (config.error) throw new Error(config.reason);
   }
 
   const app = await createApp();
 
-  await displayGmmlogo(app);
+  // TODO: Fix reload bug
+  // if (showLoadingGMMLogo) await displayGmmlogo(app);
+  
 
   const graphicsManager = new CogSpeedGraphicsHandler(app, config);
   await graphicsManager.loadAssets();
