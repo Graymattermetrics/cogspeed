@@ -198,9 +198,6 @@ export class ProcessResultsPage {
         loadingGearSprite.position.set(dynamicScreenWidth * (x === 0 ? 2 : 8), dynamicScreenHeight * (y === 0 ? 4 : 6));
         loadingGearSprite.scale = new Point(0.4, 0.4);
 
-        // UPDATED: The ticker callback now receives the Ticker instance.
-        // For time-based animation, use ticker.deltaMS.
-        // The original `delta.lastTime` was likely an error; this provides smooth, frame-rate independent rotation.
         this.app.ticker.add((ticker) => {
           loadingGearSprite.rotation += 0.005 * ticker.deltaMS;
         });
@@ -210,7 +207,6 @@ export class ProcessResultsPage {
 
     const graphics = new Graphics();
 
-    // UPDATED: The drawing path must be defined *before* applying the stroke.
     graphics.moveTo(dynamicScreenWidth * 2, dynamicScreenHeight * 4);
     graphics.lineTo(dynamicScreenWidth * 8, dynamicScreenHeight * 4);
     graphics.lineTo(dynamicScreenWidth * 8, dynamicScreenHeight * 6);
@@ -222,7 +218,6 @@ export class ProcessResultsPage {
 
     container.addChild(graphics);
 
-    // UPDATED: Text constructor now takes an object with `text` and `style` properties.
     const text = new Text({
       text: `WAIT!...\nCogSpeed thinking...`,
       style: {
@@ -242,16 +237,18 @@ export class ProcessResultsPage {
 
   public async showCompareScores(data: { [key: string]: any }, config: Config) {
     const resultsTableContainer = this.ui.createResultsTable(data.sleepData.fatigueLevel, data.cognitiveProcessingIndex, data.blockingRoundDuration, this.app.screen.height * 0.05);
-    this.app.stage.addChild(resultsTableContainer)
+    this.app.stage.addChild(resultsTableContainer);
 
-    const textDescription = new Text(`
-      RELATIONSHIP OF EXPECTED COGNITIVE PERFORMANCE BETWEEN SUBJECTIVE AND OBJECTIVE SCORES`, {
-      fontFamily: "Trebuchet",
-      fontSize: 24,
-      fill: 0xffffff,
-      align: "center",
-      wordWrap: true,
-      wordWrapWidth: this.app.screen.width * 0.8
+    const textDescription = new Text({
+      text: `RELATIONSHIP OF EXPECTED COGNITIVE PERFORMANCE BETWEEN SUBJECTIVE AND OBJECTIVE SCORES`,
+      style: {
+        fontFamily: "Trebuchet",
+        fontSize: 24,
+        fill: 0xffffff,
+        align: "center",
+        wordWrap: true,
+        wordWrapWidth: this.app.screen.width * 0.8,
+      }
     });
     textDescription.position.set(this.app.screen.width * 0.5,
       this.app.screen.height * 0.28);
@@ -287,27 +284,30 @@ export class ProcessResultsPage {
 
   public async showSummaryPage(data: { [key: string]: any }, config: Config) {
     const blockRangeText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.blockRange * 10) / 10}ms`;
-    const finalBlockDiffText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.finalBlockDiff * 10) / 10}ms`
+    const finalBlockDiffText = (data.status === "failed") ? "N/A" : `${Math.round(data.blocking.finalBlockDiff * 10) / 10}ms`;
 
     let message = data.status === "failed" ? `(${data.message})` : "";
-    const textSummary = new Text(`
-      Test version: ${config.version.slice(0, 7)}
-      Account ID: N/A
-      Date: ${data._date.split(", ")[0]}
-      Time: ${data._date.split(", ")[1]}
-      Location: ${data.location.normalizedLocation}
-      Status: ${data.status} ${message}
-      Test duration: ${Math.round(data.testDuration / 100) / 10}s
-      Number of rounds: ${data.numberOfRounds}
-      Number of blocks: ${data.blocking.blockCount}
-      Block range: ${blockRangeText}
-      Final block difference: ${finalBlockDiffText}`, {
-      fontFamily: "Trebuchet",
-      fontSize: 28,
-      fill: 0xffffff,
-      align: "center",
-      wordWrap: true,
-      wordWrapWidth: this.app.screen.width * 0.95
+
+    const textSummary = new Text({
+      text: `Test version: ${config.version.slice(0, 7)}
+Account ID: N/A
+Date: ${data._date.split(", ")[0]}
+Time: ${data._date.split(", ")[1]}
+Location: ${data.location.normalizedLocation}
+Status: ${data.status} ${message}
+Test duration: ${Math.round(data.testDuration / 100) / 10}s
+Number of rounds: ${data.numberOfRounds}
+Number of blocks: ${data.blocking.blockCount}
+Block range: ${blockRangeText}
+Final block difference: ${finalBlockDiffText}`,
+      style: {
+        fontFamily: "Trebuchet",
+        fontSize: 28,
+        fill: 0xffffff,
+        align: "center",
+        wordWrap: true,
+        wordWrapWidth: this.app.screen.width * 0.95
+      }
     });
     textSummary.position.set(this.app.screen.width * 0.5,
       this.app.screen.height * 0.33);
