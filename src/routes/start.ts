@@ -28,10 +28,13 @@ export class StartPage {
     yesBorder.position.set(this.app.screen.width * 0.7, this.app.screen.height * 0.85);
     this.container.addChild(yesBorder);
 
-    const yesText = new Text(confirmText, {
-      fontFamily: "Trebuchet",
-      fontSize: 30,
-      fill: 0xffffff,
+    const yesText = new Text({
+      text: confirmText,
+      style: {
+        fontFamily: "Trebuchet",
+        fontSize: 30,
+        fill: 0xffffff,
+      }
     });
     yesText.anchor.set(0.5);
     yesText.position.set(this.app.screen.width * 0.7, this.app.screen.height * 0.85);
@@ -51,10 +54,13 @@ export class StartPage {
     noBorder.position.set(this.app.screen.width * 0.3, this.app.screen.height * 0.85);
     this.container.addChild(noBorder);
 
-    const noText = new Text(denyText, {
-      fontFamily: "Trebuchet",
-      fontSize: 30,
-      fill: 0xffffff,
+    const noText = new Text({
+      text: denyText,
+      style: {
+        fontFamily: "Trebuchet",
+        fontSize: 30,
+        fill: 0xffffff,
+      }
     });
     noText.anchor.set(0.5);
     noText.position.set(this.app.screen.width * 0.3, this.app.screen.height * 0.85);
@@ -66,19 +72,19 @@ export class StartPage {
   }
 
   private createText(text: string, x: number, y: number, fontSize: number, { wordWrap = true, centre = false, fill = 0xffffff, anchor = true }) {
-    const textObject = new Text(text, {
-      fontFamily: "Trebuchet",
-      fontSize: fontSize,
-      fill: fill,
-      align: "center",
+    const textObject = new Text({
+      text,
+      style: {
+        fontFamily: "Trebuchet",
+        fontSize,
+        fill,
+        align: "center",
+        wordWrap: wordWrap,
+        wordWrapWidth: this.app.screen.width * 0.9,
+      }
     });
     textObject.position.set(x, y);
     if (anchor) textObject.anchor.set(0.5);
-
-    if (wordWrap) {
-      textObject.style.wordWrap = true;
-      textObject.style.wordWrapWidth = this.app.screen.width * 0.9;
-    }
 
     this.container.addChild(textObject);
     return textObject;
@@ -231,9 +237,10 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
     }
     const [graphic, x, y, width, height] = graphic_;
     graphic.clear();
-    graphic.beginFill(colour);
-    graphic.lineStyle(2, 0x628fc2);
-    graphic.drawRect(x, y, width, height);
+
+    graphic.rect(x, y, width, height); 
+    graphic.fill(colour);
+    graphic.stroke({ width: 2, color: 0x628fc2 });
   }
 
   /**
@@ -267,9 +274,11 @@ private async confirmSleepData(sleepData: { [key: string]: any }): Promise<boole
       const height = this.app.screen.height * 0.09;
 
       const graphic = new Graphics();
-      graphic.beginFill(0x0000);
-      graphic.lineStyle(2, 0x628fc2);
-      graphic.drawRect(x, y, width, height);
+      
+      graphic.rect(x, y, width, height);
+      graphic.fill(0x0000);
+      graphic.stroke({ width: 2, color: 0x628fc2 });
+      
       graphics.push([graphic, x, y, width, height]);
 
       graphic.eventMode = "dynamic";
