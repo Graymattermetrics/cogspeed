@@ -114,7 +114,7 @@ export class CogSpeedGame {
 
     // Randomize query number and number or dots again excluding the previous answer
     const queryNumber = Math.floor(Math.random() * this.config.number_of_dots_upper) + 1;
-    
+
     let numbersOrDots: "dots" | "numbers" = Math.random() > 0.5 ? "numbers" : "dots";
     // The query number is the same as last round, so invert the numbersordots
     if (queryNumber === this.query["queryNumber"]) {

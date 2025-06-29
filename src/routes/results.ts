@@ -266,7 +266,7 @@ export class ProcessResultsPage {
 
     const graphSprite = new Sprite(this.resultsGraphTexture);
     graphSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.65);
-    graphSprite.scale.set(0.5, 0.65);
+    graphSprite.scale.set(0.6, 0.8);
     graphSprite.anchor.set(0.5, 0.5);
 
     this.app.stage.addChild(graphSprite);
