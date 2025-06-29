@@ -181,7 +181,7 @@ export class CogSpeedGraphicsHandler {
       }
     }
     if (v === null) {
-      return inverse ? 0xf4b4b4 : 0x7ce8ff;
+      return inverse ? 0xff94ca : 0x56c1fe;
     }
     return v;
   }
@@ -193,35 +193,35 @@ export class CogSpeedGraphicsHandler {
     yPos: number
   ): Container {
     const _spfScoreMap = {
-      1: 0xf4b4b4,
-      2: 0xff644e,
-      3: 0xffb05c,
-      4: 0xffee67,
-      5: 0x8dfa01,
-      6: 0x1db201,
-      7: 0x7ce8ff,
+      1: 0xff94ca,
+      2: 0xfe634d,
+      3: 0xfdad00,
+      4: 0xfff056,
+      5: 0x8df900,
+      6: 0x1cb000,
+      7: 0x56c1fe,
     };
 
     // COGSPEED Score Mapping
     const _cogspeedScoreMap = {
-      0: 0xf4b4b4, // 0 - < 0
-      1: 0xff644e, // 10 - 1
-      11: 0xffb05c, // 25 - 11
-      26: 0xffee67, // 50 - 26
-      51: 0x8dfa01, // 75 - 51
-      76: 0x1db201, // 90 - 76
-      91: 0x7ce8ff, // 100 - 91
+      0: 0xff94ca, // 0 - < 0
+      1: 0xfe634d, // 10 - 1
+      11: 0xfdad00, // 25 - 11
+      26: 0xfff056, // 50 - 26
+      51: 0x8df900, // 75 - 51
+      76: 0x1cb000, // 90 - 76
+      91: 0x56c1fe, // 100 - 91
     };
 
     // Blocking Round Duration Mapping
     const _blockingRoundDurationMap = {
-      2400: 0xf4b4b4, // >1800 ms
-      2200: 0xff644e, // 1690-1789 ms
-      1960: 0xffb05c, // 1525-1668 ms
-      1500: 0xffee67, // 1250-1514 ms
-      1050: 0x8dfa01, // 975-1239 ms
-      800: 0x1db201, // 810-964 ms
-      600: 0x7ce8ff, // 700-799 ms
+      2400: 0xff94ca, // >1800 ms
+      2200: 0xfe634d, // 1690-1789 ms
+      1960: 0xfdad00, // 1525-1668 ms
+      1500: 0xfff056, // 1250-1514 ms
+      1050: 0x8df900, // 975-1239 ms
+      800: 0x1cb000, // 810-964 ms
+      600: 0x56c1fe, // 700-799 ms
     };
     
     const container = new Container();
@@ -251,11 +251,11 @@ export class CogSpeedGraphicsHandler {
       wordWrap: true,
     };
 
-    spfScore = 1;
     let rowData;
     if (blockingRoundDuration === "N/A") rowData = "No values"
     else rowData = this._getMapValue(this.performanceData, blockingRoundDuration)
 
+    spfScore = 3;
     const spfScoreColour = _spfScoreMap[spfScore];
 
     let brdColour;
@@ -307,6 +307,7 @@ export class CogSpeedGraphicsHandler {
       container.addChild(headerCell);
 
       // Create and add Value Cell
+      console.log(col.colour)
       if (typeof col.colour !== "number" ) throw new Error("Colour must be number")
       const valueCell = createCell(currentX, yPos + headerHeight, colWidth, valueRowHeight, col.colour, col.value, valueTextStyle);
       container.addChild(valueCell);
