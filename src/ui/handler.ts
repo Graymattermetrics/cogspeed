@@ -95,6 +95,16 @@ export class CogSpeedGraphicsHandler {
     this.inputButtons = [];
   }
 
+  private readonly performanceData = {
+    2400: "FUNCTIONING\nEXCEPTIONALLY WELL",
+    2200: "FUNCTIONING\nVERY WELL",
+    1960: "FUNCTIONING\nNORMALLY",
+    1500: "FUNCTIONING\nSLIGHTLY LESS THAN NORMAL",
+    1050: "FUNCTIONING\nSTARTING TO SLOW",
+    800: "DIFFICULT TO FUNCTION\nBECOMING UNSAFE",
+    600: "UNABLE TO FUNCTION\nDEFINITELY UNSAFE",
+  };
+
   /**
    * NEW: This method handles all asynchronous asset loading.
    * It must be called and awaited after creating an instance of this class.
@@ -161,7 +171,7 @@ export class CogSpeedGraphicsHandler {
     await new Promise((resolve) => setTimeout(resolve, loadingTime));
   }
 
-  private _getMapValue(map: Record<number, number>, value: number, inverse = false): number {
+  private _getMapValue(map: Record<number, number | string>, value: number, inverse = false): number | string {
     let v = null;
     for (const [key, value_] of Object.entries(map)) {
       if (inverse) {
@@ -171,7 +181,7 @@ export class CogSpeedGraphicsHandler {
       }
     }
     if (v === null) {
-      return inverse ? 0xF4B4B4 : 0x7CE8FF;
+      return inverse ? 0xff94ca : 0x56c1fe;
     }
     return v;
   }
@@ -183,108 +193,127 @@ export class CogSpeedGraphicsHandler {
     yPos: number
   ): Container {
     const _spfScoreMap = {
-      1: 0xf4b4b4,
-      2: 0xff644e,
-      3: 0xffb05c,
-      4: 0xffee67,
-      5: 0x8dfa01,
-      6: 0x1db201,
-      7: 0x7ce8ff,
+      1: 0xff94ca,
+      2: 0xfe634d,
+      3: 0xfdad00,
+      4: 0xfff056,
+      5: 0x8df900,
+      6: 0x1cb000,
+      7: 0x56c1fe,
     };
 
     // COGSPEED Score Mapping
     const _cogspeedScoreMap = {
-      0: 0xf4b4b4, // 0 - < 0
-      1: 0xff644e, // 10 - 1
-      11: 0xffb05c, // 25 - 11
-      26: 0xffee67, // 50 - 26
-      51: 0x8dfa01, // 75 - 51
-      76: 0x1db201, // 90 - 76
-      91: 0x7ce8ff, // 100 - 91
+      0: 0xff94ca, // 0 - < 0
+      1: 0xfe634d, // 10 - 1
+      11: 0xfdad00, // 25 - 11
+      26: 0xfff056, // 50 - 26
+      51: 0x8df900, // 75 - 51
+      76: 0x1cb000, // 90 - 76
+      91: 0x56c1fe, // 100 - 91
     };
 
     // Blocking Round Duration Mapping
     const _blockingRoundDurationMap = {
-      1800: 0xf4b4b4, // >1800 ms
-      1690: 0xff644e, // 1690-1789 ms
-      1525: 0xffb05c, // 1525-1668 ms
-      1250: 0xffee67, // 1250-1514 ms
-      975: 0x8dfa01, // 975-1239 ms
-      810: 0x1db201, // 810-964 ms
-      700: 0x7ce8ff, // 700-799 ms
+      2400: 0xff94ca, // >1800 ms
+      2200: 0xfe634d, // 1690-1789 ms
+      1960: 0xfdad00, // 1525-1668 ms
+      1500: 0xfff056, // 1250-1514 ms
+      1050: 0x8df900, // 975-1239 ms
+      800: 0x1cb000, // 810-964 ms
+      600: 0x56c1fe, // 700-799 ms
     };
-
+    
     const container = new Container();
     const screenWidth = this.app.screen.width;
-    const screenHeight = this.app.screen.height;
-    const width = screenWidth * 0.28;
-    const height = screenHeight * 0.05;
-    const marginLeft = screenWidth * 0.08;
 
-    const createBox = (
-      x: number,
-      y: number,
-      w: number,
-      h: number,
-      fillColor: number,
-      strokeWidth: number,
-      strokeColor: number
-    ) => {
-      const box = new Graphics();
-      box.rect(x, y, w, h); // 1. Define shape
-      box.fill(fillColor); // 2. Apply fill
-      box.stroke({ width: strokeWidth, color: strokeColor }); // 3. Apply stroke
-      return box;
+    const totalTableWidth = screenWidth * 0.95; // Use 95% of screen width for the table
+    const tableX = (screenWidth - totalTableWidth) / 2; // Center the table
+    const headerHeight = screenWidth * 0.13; // Generous height for multiline headers
+    const valueRowHeight = screenWidth * 0.1;
+    const strokeOptions = { width: 2, colour: 0x000000 };
+    const headerFillColour = 0xffffff;
+
+    const headerTextStyle = {
+      fontFamily: "Arial",
+      fontSize: screenWidth * 0.03,
+      fontWeight: "bold",
+      fill: 0x000000,
+      align: "center",
+      wordWrap: true,
+    };
+    const valueTextStyle = {
+      fontFamily: "Arial",
+      fontSize: screenWidth * 0.035,
+      fontWeight: "bold",
+      fill: 0x000000,
+      align: "center",
+      wordWrap: true,
     };
 
-    const createText = (content: string | number, style: any) => new Text({ text: content.toString(), style });
+    let rowData;
+    if (blockingRoundDuration === "N/A") rowData = "No values"
+    else rowData = this._getMapValue(this.performanceData, blockingRoundDuration)
 
-    // First column, SPF
-    const headerBoxSPF = createBox(marginLeft, yPos, width, height, 0xffffff, 4, 0xafafaf);
-    const headerTextSPF = createText("S-PF Score", { fill: 0x00000, fontSize: 14 });
-    headerTextSPF.position.set(screenWidth * 0.135, yPos + 8);
-    const valueTextSPF = createText(spfScore, { fill: 0x00000, fontSize: 18 });
-    valueTextSPF.position.set(screenWidth * 0.135 + 30, yPos + 50);
+    spfScore = 3;
+    const spfScoreColour = _spfScoreMap[spfScore];
 
-    let colour = _spfScoreMap[spfScore];
-    const valueBoxSPF = createBox(marginLeft, yPos + height, width, height, colour, 4, 0xafafaf);
+    let brdColour;
+    if (blockingRoundDuration === "N/A") brdColour = 0xffffff;
+    else brdColour = this._getMapValue(_blockingRoundDurationMap, blockingRoundDuration);
 
-    // Second column, CPI
-    const headerBoxCPI = createBox(marginLeft + width, yPos, width, height, 0xffffff, 4, 0xafafaf);
-    const headerTextCPI = createText("CogSpeed Score", { fill: 0x00000, fontSize: 14 });
-    headerTextCPI.position.set(screenWidth * 0.105 + width, yPos + 8);
-    const valueTextCPI = createText(cpiScore, { fill: 0x00000, fontSize: 18 });
-    valueTextCPI.position.set(screenWidth * 0.105 + width + 30, yPos + 50);
+    let cpiColour;
+    if (cpiScore === "N/A") cpiColour = 0xffffff;
+    else cpiColour = this._getMapValue(_cogspeedScoreMap, cpiScore);
 
-    if (cpiScore === "N/A") colour = 0xffffff;
-    else colour = this._getMapValue(_cogspeedScoreMap, cpiScore);
-    const valueBoxCPI = createBox(marginLeft + width, yPos + height, width, height, colour, 4, 0xafafaf);
+    const columns = [
+      { header: "S-PF Score", value: spfScore, width: 0.13, colour: spfScoreColour },
+      { header: "Cognitive Processing Index (CPI)", value: cpiScore, width: 0.24, colour: cpiColour },
+      { header: "Blocking Round Duration (BRD) ms", value: blockingRoundDuration, width: 0.24, colour: brdColour },
+      { header: "Cognitive Performance Capability *", value: rowData, width: 0.39, colour: cpiColour },
+    ];
 
-    // Third column, BRD
-    const headerBoxBRD = createBox(marginLeft + width * 2, yPos, width, height, 0xffffff, 4, 0xafafaf);
-    const headerTextBRD = createText("BRD", { fill: 0x00000, fontSize: 14 });
-    headerTextBRD.position.set(screenWidth * 0.12 + width * 2, yPos + 8);
-    const valueTextBRD = createText(blockingRoundDuration, { fill: 0x00000, fontSize: 18 });
-    valueTextBRD.position.set(screenWidth * 0.12 + width * 2 + 30, yPos + 50);
+    let currentX = tableX;
 
-    if (blockingRoundDuration === "N/A") colour = 0xffffff;
-    else colour = this._getMapValue(_blockingRoundDurationMap, blockingRoundDuration);
-    const valueBoxBRD = createBox(marginLeft + width * 2, yPos + height, width, height, colour, 4, 0xafafaf);
+    const createCell = (x: number, y: number, w: number, h: number, fill: number, textContent: string | number, style: any) => {
+      const cellContainer = new Container();
 
-    container.addChild(
-      headerBoxSPF,
-      valueBoxSPF,
-      headerBoxCPI,
-      valueBoxCPI,
-      headerBoxBRD,
-      valueBoxBRD,
-      headerTextSPF,
-      headerTextCPI,
-      headerTextBRD,
-      valueTextSPF,
-      valueTextCPI,
-      valueTextBRD
-    );
+      const box = new Graphics();
+      box.rect(0, 0, w, h);
+      box.fill({
+        color: fill,
+        alpha: 1
+      });
+      box.stroke(strokeOptions);
+
+      const cellText = new Text({
+        text: textContent.toString(),
+        style: { ...style, wordWrapWidth: w * 0.9 }, // Set wrap width relative to cell
+      });
+      cellText.anchor.set(0.5);
+      cellText.position.set(w / 2, h / 2);
+
+      cellContainer.position.set(x, y);
+      cellContainer.addChild(box, cellText);
+      return cellContainer;
+    };
+
+    // --- Generate Table Columns ---
+    for (const col of columns) {
+      const colWidth = totalTableWidth * col.width;
+
+      // Create and add Header Cell
+      const headerCell = createCell(currentX, yPos, colWidth, headerHeight, headerFillColour, col.header, headerTextStyle);
+      container.addChild(headerCell);
+
+      // Create and add Value Cell
+      console.log(col.colour)
+      if (typeof col.colour !== "number" ) throw new Error("Colour must be number")
+      const valueCell = createCell(currentX, yPos + headerHeight, colWidth, valueRowHeight, col.colour, col.value, valueTextStyle);
+      container.addChild(valueCell);
+
+      currentX += colWidth;
+    }
 
     return container;
   }

@@ -85,7 +85,7 @@ async function displayGmmlogo(app: Application) {
     resizeAndCenter();
   };
   window.addEventListener("resize", onResize);
-  
+
   await new Promise<void>((resolve) => {
     videoTexture.source.resource.addEventListener("ended", () => {
       setTimeout(cleanup, 500);
@@ -113,7 +113,6 @@ export async function startUp(config: Config | null = null, startNowData: SleepD
 
   // TODO: Fix reload bug
   // if (showLoadingGMMLogo) await displayGmmlogo(app);
-  
 
   const graphicsManager = new CogSpeedGraphicsHandler(app, config);
   await graphicsManager.loadAssets();
