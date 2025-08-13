@@ -3,11 +3,11 @@ import { Application, Assets, Container, Graphics, Point, Sprite, Text, Texture 
 
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { table } from "table";
-import { CogSpeedGraphicsHandler } from "../ui/handler";
+import { CogSpeedGraphicsHandler } from "src/cogspeed/ui/handler";
 import { startUp } from "../main";
-import { Config } from "../types/Config";
+import { Config } from "src/cogspeed/types/Config";
 
-import resultsGraph from "../assets/results_graph.png";
+import resultsGraph from "src/assets/results_graph.png";
 
 export class ProcessResultsPage {
   public resultsGraphTexture: Texture | undefined;

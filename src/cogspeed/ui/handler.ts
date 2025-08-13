@@ -1,25 +1,25 @@
 import { Application, Assets, Container, Graphics, Point, Rectangle, Sprite, Text, Texture } from "pixi.js";
 
-import buttonTextureImage from "../assets/button.png";
-import invertedButtonTextureImage from "../assets/button_inverted.png";
-import buttonWellTextureImage from "../assets/button_well.png";
-import gearTextureImage from "../assets/gear.png";
-import gearWellTextureImage from "../assets/gear_well.png";
-import largeButtonTextureImage from "../assets/large_button.png";
-import loadingGearImage from "../assets/loading_gear.png";
-import logoWithGearsImage from "../assets/logo_with_gears.png";
-import numbersAndDotsTextureImage from "../assets/numbers_and_dots.png";
-import numbersAndDotsInvertedTextureImage from "../assets/numbers_and_dots_inverted.png";
-import smallButtonTextureImage from "../assets/small_button.png";
+import buttonTextureImage from "src/assets/button.png";
+import invertedButtonTextureImage from "src/assets/button_inverted.png";
+import buttonWellTextureImage from "src/assets/button_well.png";
+import gearTextureImage from "src/assets/gear.png";
+import gearWellTextureImage from "src/assets/gear_well.png";
+import largeButtonTextureImage from "src/assets/large_button.png";
+import loadingGearImage from "src/assets/loading_gear.png";
+import logoWithGearsImage from "src/assets/logo_with_gears.png";
+import numbersAndDotsTextureImage from "src/assets/numbers_and_dots.png";
+import numbersAndDotsInvertedTextureImage from "src/assets/numbers_and_dots_inverted.png";
+import smallButtonTextureImage from "src/assets/small_button.png";
 
-import readyDemoImageTwo from "../assets/ready_demo_two.png";
-import readyDemoImageThree from "../assets/ready_demo_three.png";
-import readyDemoImageFinal from "../assets/ready_demo_final.png";
+import readyDemoImageTwo from "src/assets/ready_demo_two.png";
+import readyDemoImageThree from "src/assets/ready_demo_three.png";
+import readyDemoImageFinal from "src/assets/ready_demo_final.png";
 
-import bgCarbonImage from "../assets/bg_carbon.jpg";
-import bgSteelImage from "../assets/bg_steel.jpg";
-import { CogSpeedGame } from "../routes/game";
-import { Config } from "../types/Config";
+import bgCarbonImage from "src/assets/bg_carbon.jpg";
+import bgSteelImage from "src/assets/bg_steel.jpg";
+import { CogSpeedGame } from "src/cogspeed/routes/game";
+import { Config } from "src/cogspeed/types/Config";
 
 // Width, height of gear
 export const buttonPositions: { [key: number]: any } = {

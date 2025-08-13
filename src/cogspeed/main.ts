@@ -2,9 +2,9 @@ import axios from "axios";
 import { Application, Assets, Sprite } from "pixi.js";
 import { CogSpeedGame } from "./routes/game";
 import { StartPage } from "./routes/start";
-import { Config } from "./types/Config";
+import { Config } from "./cogspeed/types/Config";
 import { CogSpeedGraphicsHandler } from "./ui/handler";
-import { SleepData } from "./types/SleepData";
+import { SleepData } from "./cogspeed/types/SleepData";
 
 async function createApp(): Promise<Application> {
   const gameWidth = window.innerWidth;
