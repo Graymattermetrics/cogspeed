@@ -1,5 +1,6 @@
 import React from "react";
-import { LoginForm } from "../abc/LoginForm.tsx";
+import { LoginForm } from "../components/LoginForm.tsx";
+
 
 export const LoginPage = () => {
   const handleLogin = (data: any) => {

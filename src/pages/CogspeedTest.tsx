@@ -1,4 +1,4 @@
-import { startUp } from "../cogspeed/main";
+import { startUp } from "../cogspeed/main.ts";
 
 
 export const CogspeedTest = () => {
