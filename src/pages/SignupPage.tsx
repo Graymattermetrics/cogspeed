@@ -1,15 +1,26 @@
 import React from "react";
 import { SignupForm, SignupFormData } from "src/components/SignupForm.tsx";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card.tsx";
+import { useAuthStore } from "src/stores/auth.store.ts";
+import { AuthResponse } from "src/types/client.ts";
 
 
 export const SignupPage = () => {
+  const { setClient } = useAuthStore();
+
   const handleSignup = async (data: SignupFormData) => {
     console.log("Form data to be sent:", data);
 
-    const { _acceptedTermsOfConditions, ...payload } = data;
+    const { acceptedTermsOfConditions, ...payload } = data;
 
     try {
-      const response = await fetch("https://example.com/clients/signup", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/clients/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -17,14 +28,19 @@ export const SignupPage = () => {
         body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
+      const responseData: AuthResponse = await response.json();
+
+      if (response.ok && responseData.success) {
+        setClient(responseData.client);
+
         alert("Signup successful!");
-        console.log("Successfully created client.");
-        window.location.href = '/';
+        console.log("Successfully created client:", responseData.client);
+
+        window.location.href = "/";
+
       } else {
-        const errorData = await response.json();
-        console.error("Server responded with an error:", errorData);
-        alert(`Signup failed: ${errorData.detail || "Please try again."}`);
+        console.error("Server responded with an error:", responseData);
+        alert(`Signup failed: ${responseData.error || "Please try again."}`);
       }
     } catch (error) {
       console.error("An error occurred while making the request:", error);
@@ -33,8 +49,18 @@ export const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <SignupForm onSubmit={handleSignup} />
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Sign Up</CardTitle>
+          <CardDescription>
+            Create an account to get started.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SignupForm onSubmit={handleSignup} />
+        </CardContent>
+      </Card>
     </div>
   );
 };
