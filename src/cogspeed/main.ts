@@ -46,31 +46,6 @@ async function loadConfig(): Promise<Config> {
 }
 
 async function displayGmmlogo(app: Application) {
-  const cleanup = () => {
-    videoTexture.source.resource.removeEventListener("ended", cleanup);
-    Assets.unload(videoTexture).catch(() => {});
-    videoSprite.destroy({ children: true });
-    window.removeEventListener("resize", resizeAndCenter);
-  };
-
-  await new Promise((r) => setTimeout(r, 500));
-  // Use PixiJS's modern Assets loader for better caching and handling.
-  // We pass resourceOptions to configure the underlying HTMLVideoElement.
-  const videoTexture = await Assets.load({
-    src: "src/assets/gmmLoadingAnimation.mp4",
-    data: {
-      autoPlay: true,
-      muted: true,
-      playsinline: true,
-      // It's also good practice to add crossOrigin for assets from other domains
-      crossOrigin: "anonymous",
-    },
-  });
-
-  // Create the sprite from the video texture
-  const videoSprite = new Sprite(videoTexture);
-  videoSprite.anchor.set(0.5);
-
   // Resize and center function
   const resizeAndCenter = () => {
     videoSprite.x = app.renderer.width / 2;
@@ -79,13 +54,34 @@ async function displayGmmlogo(app: Application) {
     videoSprite.scale.set(scale);
   };
 
-  resizeAndCenter();
-  app.stage.addChild(videoSprite);
-
-  // Handle window resize to keep it centered
   const onResize = () => {
     resizeAndCenter();
   };
+  
+  const cleanup = () => {
+    videoTexture.source.resource.removeEventListener("ended", cleanup);
+    Assets.unload(videoTexture).catch(() => {});
+    videoSprite.destroy({ children: true });
+    window.removeEventListener("resize", resizeAndCenter);
+  };
+
+  await new Promise((r) => setTimeout(r, 500));
+  const videoTexture = await Assets.load({
+  src: "/gmmLoadingAnimation.mp4",
+  data: {
+    autoPlay: true,
+    muted: true,
+    playsinline: true,
+    crossOrigin: "anonymous",
+  },
+});
+  // Create the sprite from the video texture
+  const videoSprite = new Sprite(videoTexture);
+  videoSprite.anchor.set(0.5);
+
+  resizeAndCenter();
+  app.stage.addChild(videoSprite);
+
   window.addEventListener("resize", onResize);
 
   await new Promise<void>((resolve) => {
