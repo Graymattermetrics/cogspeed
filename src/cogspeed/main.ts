@@ -5,6 +5,8 @@ import { StartPage } from "./routes/start.ts";
 import { Config } from "./types/Config.ts";
 import { CogSpeedGraphicsHandler } from "./ui/handler.ts";
 import { SleepData } from "./types/SleepData.ts";
+import { Client } from 'src/types/client.ts';
+
 
 async function createApp(): Promise<Application> {
   const gameWidth = window.innerWidth;
@@ -55,7 +57,7 @@ async function displayGmmlogo(app: Application) {
   // Use PixiJS's modern Assets loader for better caching and handling.
   // We pass resourceOptions to configure the underlying HTMLVideoElement.
   const videoTexture = await Assets.load({
-    src: process.env.PUBLIC_URL + "/assets/gmmLoadingAnimation.mp4",
+    src: "src/assets/gmmLoadingAnimation.mp4",
     data: {
       autoPlay: true,
       muted: true,
@@ -94,13 +96,20 @@ async function displayGmmlogo(app: Application) {
   });
 }
 
-/**
- *
- * @param config
- * @param startNow Called from restart. Bypasses sleep data
- */
-export async function startUp(config: Config | null = null, startNowData: SleepData | false = false) {
+interface StartUpOptions {
+  config?: Config | null;
+  startNowData?: SleepData | false;
+}
+
+// The rewritten function signature
+export async function startUp(
+  client: Client | null,
+  logoutFunc: any,
+  options: StartUpOptions = {} 
+) {
+  let { config = null, startNowData = false } = options;
   let showLoadingGMMLogo = false;
+  
   if (config === null) {
     // Either restart or home called
     showLoadingGMMLogo = true;
@@ -112,7 +121,7 @@ export async function startUp(config: Config | null = null, startNowData: SleepD
   const app = await createApp();
 
   // TODO: Fix reload bug
-  // if (showLoadingGMMLogo) await displayGmmlogo(app);
+  if (showLoadingGMMLogo) await displayGmmlogo(app);
 
   const graphicsManager = new CogSpeedGraphicsHandler(app, config);
   await graphicsManager.loadAssets();
@@ -121,11 +130,13 @@ export async function startUp(config: Config | null = null, startNowData: SleepD
 
   // Display the home page
   const startPage = new StartPage(config, app, graphicsManager);
-  if (startNowData === false) await startPage.displayHomePage();
+  if (startNowData === false) await startPage.displayHomePage(client, logoutFunc);
 
   // Display start page
   const sleepData = await startPage.start(startNowData);
-  if (!sleepData) return;
+  if (!sleepData) {
+    // TODO: Start over
+  };
 
   // Game phase - called after start button is clicked
   const game = new CogSpeedGame(config, app, graphicsManager, sleepData);

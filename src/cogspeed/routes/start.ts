@@ -1,9 +1,9 @@
 import { Application, Container, Graphics, Point, Sprite, Text } from "pixi.js";
 
-import { Config } from "../types/Config";
-import { SleepData } from "../types/SleepData";
-import { CogSpeedGraphicsHandler } from "../ui/handler";
-import { startUp } from "../main";
+import { Config } from "src/cogspeed/types/Config.ts";
+import { SleepData } from "src/cogspeed/types/SleepData.ts";
+import { CogSpeedGraphicsHandler } from "src/cogspeed/ui/handler.ts";
+import { Client } from "@/src/types/client.ts";
 
 type GraphicList = [Graphics, number, number, number, number];
 
@@ -147,24 +147,53 @@ export class StartPage {
   /**
    * Display the home page
    */
-  public async displayHomePage() {
+  public async displayHomePage(client: Client | null, logoutFunc: any) {
     // GMM Logo
     const smallestScreenSize = Math.min(this.app.screen.width, this.app.screen.height);
-    const size = 512;
+    const size = 496;
 
     const logoSprite = new Sprite(this.ui.logoTexture);
     logoSprite.scale = new Point(smallestScreenSize / size, smallestScreenSize / size);
     logoSprite.anchor.set(0.5);
-    logoSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.315);
+    logoSprite.position.set(this.app.screen.width * 0.5, this.app.screen.height * 0.285);
     this.container.addChild(logoSprite);
+
+    const msg = client ? "Sign out" : "Sign in";
+    let buttonfunc;
+    if (client) {
+      buttonfunc = () => {
+        logoutFunc();
+        window.location.reload();
+      }
+    }
+    else {
+      buttonfunc = () => {
+        window.location.href = "/login"
+      }
+    }
+
+    const W_K = 0.75;
+    const H_K = 0.23;
+
+    // Either log in or log out button
+    const logInOrOutButton = this.ui.createButton(
+      msg,
+      this.app.screen.width * 0.5,
+      this.app.screen.height * 0.66,
+      this.app.screen.width * W_K > 400 ? 400 : this.app.screen.width * W_K,
+      this.app.screen.height * H_K > 200 ? 200 : this.app.screen.height * H_K,
+      36
+    );
+    this.container.addChild(logInOrOutButton);
+    logInOrOutButton.on("pointertap", buttonfunc)
 
     // Test now button
     const testNowContainer = this.ui.createButton(
       "Test now!",
       this.app.screen.width * 0.5,
-      this.app.screen.height * 0.7,
-      this.app.screen.width * 0.8 > 400 ? 400 : this.app.screen.width * 0.8,
-      this.app.screen.height * 0.25 > 200 ? 200 : this.app.screen.height * 0.25,
+      this.app.screen.height * 0.79,
+      this.app.screen.width * W_K > 400 ? 400 : this.app.screen.width * W_K,
+      this.app.screen.height * H_K > 200 ? 200 : this.app.screen.height * H_K,
       36
     );
     this.container.addChild(testNowContainer);
@@ -173,7 +202,7 @@ export class StartPage {
     const privacyPoliciesText = this.createText(
       "View our pivacy policies",
       this.app.screen.width * 0.5,
-      this.app.screen.height * 0.87,
+      this.app.screen.height * 0.89,
       21,
       { wordWrap: true }
     );
@@ -184,7 +213,7 @@ export class StartPage {
     });
 
     // Terms of service
-    const tosText = this.createText("View our TOS", this.app.screen.width * 0.5, this.app.screen.height * 0.93, 21, {
+    const tosText = this.createText("View our TOS", this.app.screen.width * 0.5, this.app.screen.height * 0.95, 21, {
       wordWrap: true,
     });
     tosText.eventMode = "dynamic";
@@ -411,7 +440,6 @@ export class StartPage {
     const ready = await this.displayTestDisclaimer();
     if (!ready) {
       this.app.destroy();
-      startUp();
       return false;
     }
 
