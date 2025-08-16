@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card.tsx";
 import { useAuthStore } from "src/stores/auth.store.ts";
 import { AuthResponse } from "src/types/client.ts";
+import { useAuthGuard } from "src/hooks/useAuthGuard.ts";
 
 
 export const SignupPage = () => {
@@ -47,6 +48,15 @@ export const SignupPage = () => {
       alert("Signup failed: Could not connect to the server.");
     }
   };
+
+  const isLoading = useAuthGuard();
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-gray-100 dark:bg-gray-900">
+        <p>Verifying session...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 p-4">

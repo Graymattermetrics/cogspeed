@@ -2,16 +2,18 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card.tsx";
 import { useAuthStore } from "src/stores/auth.store.ts";
 import { AuthResponse } from "src/types/client.ts";
 import { LoginForm, LoginFormData } from "../components/LoginForm.tsx";
+import { useAuthGuard } from "src/hooks/useAuthGuard.ts";
 
 
 export const LoginPage = () => {
-  const { setClient } = useAuthStore();
+  const { setClient, } = useAuthStore();
 
   const handleLogin = async (data: LoginFormData) => {
     try {
@@ -42,10 +44,18 @@ export const LoginPage = () => {
     }
   }
 
+  const isLoading = useAuthGuard();
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-gray-100 dark:bg-gray-900">
+        <p>Verifying session...</p>
+      </div>
+    );
+  }
+
   return (
-    // Use the same responsive, scrollable layout as the signup page
-    <div className="min-h-screen flex justify-center bg-gray-100 dark:bg-gray-900 p-4 py-12">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex justify-center items-center bg-gray-100 dark:bg-gray-900 p-4">
+      <Card className="w-full max-w-md h-fit">
         <CardHeader>
           <CardTitle>Login</CardTitle>
           <CardDescription>
@@ -55,6 +65,14 @@ export const LoginPage = () => {
         <CardContent>
           <LoginForm onSubmit={handleLogin} />
         </CardContent>
+        <CardFooter>
+          <p className="w-full text-center text-sm text-muted-foreground">
+            Don't have an account?{" "}
+            <a href="/signup" className="underline text-primary">
+              Create Account
+            </a>
+          </p>
+        </CardFooter>
       </Card>
     </div>
   );
