@@ -1,12 +1,13 @@
 import { Application } from "pixi.js";
-import { CogSpeedGraphicsHandler } from "../ui/handler";
+import { CogSpeedGraphicsHandler } from "src/cogspeed/ui/handler.ts";
 
 import { v4 } from "uuid";
-import { Config } from "../types/Config";
-import { GameAnswer } from "../types/GameAnswer";
-import { SleepData } from "../types/SleepData";
-import { ProcessResultsPage } from "./results";
+import { Config } from "src/cogspeed/types/Config.ts";
+import { GameAnswer } from "src/cogspeed/types/GameAnswer.ts";
+import { SleepData } from "src/cogspeed/types/SleepData.ts";
+import { ProcessResultsPage } from "src/cogspeed/routes/results.ts";
 import { v4 as uuidv4 } from "uuid";
+import { Client } from "src/types/client.ts";
 
 /**
  * CogSpeed game that handles button clicks,
@@ -60,7 +61,8 @@ export class CogSpeedGame {
   currentRoundID: string;
 
   constructor(
-    public config: Config,
+    private client: Client | null,
+    private config: Config,
     private app: Application | null = null,
     private ui: CogSpeedGraphicsHandler | null = null,
     private sleepData: SleepData | null = null
@@ -581,6 +583,8 @@ export class CogSpeedGame {
     const meanCorrectMachinePacedAnswerTime =
       correctMachinePacedAnswers.reduce((a, b) => a + b.timeTaken, 0) / correctMachinePacedAnswers.length;
 
+    const date = new Date();
+
     const data = {
       statusCode,
       status,
@@ -617,12 +621,14 @@ export class CogSpeedGame {
         meanCorrectMachinePacedAnswerTime,
       },
       answerLogs: this.previousAnswers,
-      _date: new Date().toLocaleString(),
-      _date_minute_offset: new Date().getTimezoneOffset(),
-      _id: v4(),
+      date: date.toISOString(),
+      localDate: date.toLocaleDateString(),
+      localTime: date.toLocaleTimeString(),
+      date_minute_offset: date.getTimezoneOffset(),
+      id: v4(),
     };
 
-    const resultsPage = new ProcessResultsPage(this.app, this.ui);
+    const resultsPage = new ProcessResultsPage(this.client, this.app, this.ui);
     await resultsPage.show(data, this.config);
   }
 }

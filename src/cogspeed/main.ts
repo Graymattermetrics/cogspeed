@@ -135,6 +135,6 @@ export async function startUp(
   };
 
   // Game phase - called after start button is clicked
-  const game = new CogSpeedGame(config, app, graphicsManager, sleepData);
+  const game = new CogSpeedGame(client, config, app, graphicsManager, sleepData);
   game.start();
 }
