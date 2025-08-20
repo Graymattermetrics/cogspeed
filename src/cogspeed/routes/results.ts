@@ -354,7 +354,7 @@ Final block difference: ${finalBlockDiffText}`,
   private async saveTestResult(data: { [key: string]: any }) {
     let url = `${import.meta.env.VITE_API_URL}/clients/cogspeed/tests`;
     data["client_id"] = this.client.client_id;
-    // Flatten data; move all nested objects to the top level
+
     for (const key in data) {
       if (key === "answerLogs") continue;
       if (typeof data[key] === "object" && data[key] !== null) {
@@ -365,9 +365,10 @@ Final block difference: ${finalBlockDiffText}`,
       }
     }
     data["rounds"] = data["answerLogs"];
-    console.log("Saving test data:", data)
+    console.log("Saving test data:", data);
 
-    const response = await fetch(url, {
+    try {
+      const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -376,8 +377,13 @@ Final block difference: ${finalBlockDiffText}`,
         },
         body: JSON.stringify(data),
       });
-    
+
       console.log("Response from saving test result:", response);
+      return response;
+    } catch (error) {
+      console.error("Failed to save test result:", error);
+      return null;
+    }
   }
 
   public async show(data: { [key: string]: any }, config: Config, args: { shouldLoad: boolean } = { shouldLoad: true }) {
@@ -459,7 +465,9 @@ Final block difference: ${finalBlockDiffText}`,
       this.resultsGraphTexture = await Assets.load(resultsGraph);
 
       // Save the test result to cogspeed api
-      await this.saveTestResult(data);
+      if (this.client) {
+        await this.saveTestResult(data);
+      }
 
       await this.ui.emulateLoadingTime(1000);
       loadingContainerText.text = `Test ${data.status[0].toUpperCase() + data.status.slice(1, data.status.length)}`;
