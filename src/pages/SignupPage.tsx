@@ -1,0 +1,76 @@
+import React from "react";
+import { SignupForm, SignupFormData } from "src/components/SignupForm.tsx";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card.tsx";
+import { useAuthStore } from "src/stores/auth.store.ts";
+import { AuthResponse } from "src/types/client.ts";
+import { useAuthGuard } from "src/hooks/useAuthGuard.ts";
+
+
+export const SignupPage = () => {
+  const { setClient } = useAuthStore();
+
+  const handleSignup = async (data: SignupFormData) => {
+    console.log("Form data to be sent:", data);
+
+    const { acceptedTermsOfConditions, ...payload } = data;
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/clients/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const responseData: AuthResponse = await response.json();
+
+      if (response.ok && responseData.success) {
+        setClient(responseData.client);
+
+        alert("Signup successful!");
+        console.log("Successfully created client:", responseData.client);
+
+        window.location.href = "/";
+
+      } else {
+        console.error("Server responded with an error:", responseData);
+        alert(`Signup failed: ${responseData.error || "Please try again."}`);
+      }
+    } catch (error) {
+      console.error("An error occurred while making the request:", error);
+      alert("Signup failed: Could not connect to the server.");
+    }
+  };
+
+  const isLoading = useAuthGuard();
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-gray-100 dark:bg-gray-900">
+        <p>Verifying session...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Sign Up</CardTitle>
+          <CardDescription>
+            Create an account to get started.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SignupForm onSubmit={handleSignup} />
+        </CardContent>
+      </Card>
+    </div>
+  );
+};

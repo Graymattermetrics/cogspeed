@@ -3,16 +3,18 @@ import { Application, Assets, Container, Graphics, Point, Sprite, Text, Texture 
 
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { table } from "table";
-import { CogSpeedGraphicsHandler } from "../ui/handler";
-import { startUp } from "../main";
-import { Config } from "../types/Config";
+import { CogSpeedGraphicsHandler } from "src/cogspeed/ui/handler.ts";
+import { startUp } from "src/cogspeed/main.ts";
 
-import resultsGraph from "../assets/results_graph.png";
+import { Config } from "src/cogspeed/types/Config.ts";
+import { Client } from "src/types/client.ts";
+
+import resultsGraph from "src/assets/results_graph.png";
 
 export class ProcessResultsPage {
   public resultsGraphTexture: Texture | undefined;
 
-  constructor(private app: Application, private ui: CogSpeedGraphicsHandler) {}
+  constructor(private client: Client, private app: Application, private ui: CogSpeedGraphicsHandler) { }
 
   private formatKey(key: string, capitalise: boolean = false): string {
     let result = capitalise ? key[0].toUpperCase() : key[0];
@@ -85,8 +87,6 @@ export class ProcessResultsPage {
 
     // Copy data into display data to also add the local date and time
     const displayData = JSON.parse(JSON.stringify(data));
-    displayData["localDate"] = new Date(data["_date"]).toLocaleDateString();
-    displayData["localTime"] = new Date(data["_date"]).toLocaleTimeString();
 
     return (
       `${this.formatObject(displayData)}\n` +
@@ -161,24 +161,29 @@ export class ProcessResultsPage {
   }
 
   private async getCurrentPosition(): Promise<(string | null)[]> {
-    const coords: GeolocationCoordinates | null = await new Promise((resolve, reject) => {
+    const coords: GeolocationCoordinates | null = await new Promise((resolve) => {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          resolve(position.coords);
-        },
-        (error) => {
-          resolve(null);
-        }
+        (position) => resolve(position.coords),
+        () => resolve(null)
       );
     });
-    const geolocation = coords ? `${coords.latitude},${coords.longitude}` : null;
-    // prettier-ignore
-    const normalizedLocation = coords ? (await axios.get(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${coords.latitude},${coords.longitude}`
-    )).data[0].display_name : "Could not get location";
 
+    const geolocation = coords ? `${coords.latitude},${coords.longitude}` : null;
+    let normalizedLocation: string | null = "Could not get location";
+
+    if (coords) {
+      try {
+        const response = await axios.get(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${coords.latitude},${coords.longitude}`
+        );
+        normalizedLocation = response.data?.[0]?.display_name || "Could not get location";
+      } catch {
+        normalizedLocation = "Could not get location";
+      }
+    }
     return [geolocation, normalizedLocation];
   }
+
 
   /**
    * Displays a loading screen in order to
@@ -346,6 +351,41 @@ Final block difference: ${finalBlockDiffText}`,
     this.app.stage.addChild(backButtonContainer);
   }
 
+  private async saveTestResult(data: { [key: string]: any }) {
+    let url = `${import.meta.env.VITE_API_URL}/clients/cogspeed/tests`;
+    data["client_id"] = this.client.client_id;
+
+    for (const key in data) {
+      if (key === "answerLogs") continue;
+      if (typeof data[key] === "object" && data[key] !== null) {
+        for (const subKey in data[key]) {
+          data[subKey] = data[key][subKey];
+        }
+        delete data[key];
+      }
+    }
+    data["rounds"] = data["answerLogs"];
+    console.log("Saving test data:", data);
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Client-ID": this.client.client_id,
+          "X-API-Key": this.client.api_key,
+        },
+        body: JSON.stringify(data),
+      });
+
+      console.log("Response from saving test result:", response);
+      return response;
+    } catch (error) {
+      console.error("Failed to save test result:", error);
+      return null;
+    }
+  }
+
   public async show(data: { [key: string]: any }, config: Config, args: { shouldLoad: boolean } = { shouldLoad: true }) {
     const [geolocation, normalizedLocation] = await this.getCurrentPosition();
     data.location = {
@@ -400,9 +440,9 @@ Final block difference: ${finalBlockDiffText}`,
       this.app.screen.height * 0.2
     );
     restartTestButtonContainer.on("pointerdown", () => {
-      // TODO: Send back to home page
-      this.app.destroy();
-      startUp(config, data.sleepData);
+      // TODO: Implement restart functionality
+      // this.app.destroy();
+      // startUp(config, data.sleepData);
     });
 
     const homeButton = this.ui.createButton(
@@ -414,8 +454,8 @@ Final block difference: ${finalBlockDiffText}`,
     );
     homeButton.on("pointerdown", () => {
       // TODO: Send back to home page
-      this.app.destroy();
-      startUp(config, false);
+      // this.app.destroy();
+      // startUp(config, false);
     });
 
     if (args.shouldLoad) {
@@ -424,7 +464,12 @@ Final block difference: ${finalBlockDiffText}`,
       const loadingContainerText = m[1];
       this.resultsGraphTexture = await Assets.load(resultsGraph);
 
-      await this.ui.emulateLoadingTime(2500);
+      // Save the test result to cogspeed api
+      if (this.client) {
+        await this.saveTestResult(data);
+      }
+
+      await this.ui.emulateLoadingTime(1000);
       loadingContainerText.text = `Test ${data.status[0].toUpperCase() + data.status.slice(1, data.status.length)}`;
       if (data.status === "success") loadingContainerText.tint = 0x00ff00;
       else loadingContainerText.tint = 0xff0000;

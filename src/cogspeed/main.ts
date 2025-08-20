@@ -1,10 +1,12 @@
 import axios from "axios";
 import { Application, Assets, Sprite } from "pixi.js";
-import { CogSpeedGame } from "./routes/game";
-import { StartPage } from "./routes/start";
-import { Config } from "./types/Config";
-import { CogSpeedGraphicsHandler } from "./ui/handler";
-import { SleepData } from "./types/SleepData";
+import { CogSpeedGame } from "./routes/game.ts";
+import { StartPage } from "./routes/start.ts";
+import { Config } from "./types/Config.ts";
+import { CogSpeedGraphicsHandler } from "./ui/handler.ts";
+import { SleepData } from "./types/SleepData.ts";
+import { Client } from 'src/types/client.ts';
+
 
 async function createApp(): Promise<Application> {
   const gameWidth = window.innerWidth;
@@ -44,31 +46,6 @@ async function loadConfig(): Promise<Config> {
 }
 
 async function displayGmmlogo(app: Application) {
-  const cleanup = () => {
-    videoTexture.source.resource.removeEventListener("ended", cleanup);
-    Assets.unload(videoTexture).catch(() => {});
-    videoSprite.destroy({ children: true });
-    window.removeEventListener("resize", resizeAndCenter);
-  };
-
-  await new Promise((r) => setTimeout(r, 500));
-  // Use PixiJS's modern Assets loader for better caching and handling.
-  // We pass resourceOptions to configure the underlying HTMLVideoElement.
-  const videoTexture = await Assets.load({
-    src: process.env.PUBLIC_URL + "/assets/gmmLoadingAnimation.mp4",
-    data: {
-      autoPlay: true,
-      muted: true,
-      playsinline: true,
-      // It's also good practice to add crossOrigin for assets from other domains
-      crossOrigin: "anonymous",
-    },
-  });
-
-  // Create the sprite from the video texture
-  const videoSprite = new Sprite(videoTexture);
-  videoSprite.anchor.set(0.5);
-
   // Resize and center function
   const resizeAndCenter = () => {
     videoSprite.x = app.renderer.width / 2;
@@ -77,13 +54,34 @@ async function displayGmmlogo(app: Application) {
     videoSprite.scale.set(scale);
   };
 
-  resizeAndCenter();
-  app.stage.addChild(videoSprite);
-
-  // Handle window resize to keep it centered
   const onResize = () => {
     resizeAndCenter();
   };
+  
+  const cleanup = () => {
+    videoTexture.source.resource.removeEventListener("ended", cleanup);
+    Assets.unload(videoTexture).catch(() => {});
+    videoSprite.destroy({ children: true });
+    window.removeEventListener("resize", resizeAndCenter);
+  };
+
+  await new Promise((r) => setTimeout(r, 500));
+  const videoTexture = await Assets.load({
+  src: "/gmmLoadingAnimation.mp4",
+  data: {
+    autoPlay: true,
+    muted: true,
+    playsinline: true,
+    crossOrigin: "anonymous",
+  },
+});
+  // Create the sprite from the video texture
+  const videoSprite = new Sprite(videoTexture);
+  videoSprite.anchor.set(0.5);
+
+  resizeAndCenter();
+  app.stage.addChild(videoSprite);
+
   window.addEventListener("resize", onResize);
 
   await new Promise<void>((resolve) => {
@@ -94,13 +92,20 @@ async function displayGmmlogo(app: Application) {
   });
 }
 
-/**
- *
- * @param config
- * @param startNow Called from restart. Bypasses sleep data
- */
-export async function startUp(config: Config | null = null, startNowData: SleepData | false = false) {
+interface StartUpOptions {
+  config?: Config | null;
+  startNowData?: SleepData | false;
+}
+
+// The rewritten function signature
+export async function startUp(
+  client: Client | null,
+  logoutFunc: any,
+  options: StartUpOptions = {} 
+) {
+  let { config = null, startNowData = false } = options;
   let showLoadingGMMLogo = false;
+  
   if (config === null) {
     // Either restart or home called
     showLoadingGMMLogo = true;
@@ -112,7 +117,7 @@ export async function startUp(config: Config | null = null, startNowData: SleepD
   const app = await createApp();
 
   // TODO: Fix reload bug
-  // if (showLoadingGMMLogo) await displayGmmlogo(app);
+  if (showLoadingGMMLogo) await displayGmmlogo(app);
 
   const graphicsManager = new CogSpeedGraphicsHandler(app, config);
   await graphicsManager.loadAssets();
@@ -121,13 +126,15 @@ export async function startUp(config: Config | null = null, startNowData: SleepD
 
   // Display the home page
   const startPage = new StartPage(config, app, graphicsManager);
-  if (startNowData === false) await startPage.displayHomePage();
+  if (startNowData === false) await startPage.displayHomePage(client, logoutFunc);
 
   // Display start page
   const sleepData = await startPage.start(startNowData);
-  if (!sleepData) return;
+  if (!sleepData) {
+    // TODO: Start over
+  };
 
   // Game phase - called after start button is clicked
-  const game = new CogSpeedGame(config, app, graphicsManager, sleepData);
+  const game = new CogSpeedGame(client, config, app, graphicsManager, sleepData);
   game.start();
 }
