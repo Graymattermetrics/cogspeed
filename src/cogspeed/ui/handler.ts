@@ -255,7 +255,6 @@ export class CogSpeedGraphicsHandler {
     if (blockingRoundDuration === "N/A") rowData = "No values"
     else rowData = this._getMapValue(this.performanceData, blockingRoundDuration)
 
-    spfScore = 3;
     const spfScoreColour = _spfScoreMap[spfScore];
 
     let brdColour;
