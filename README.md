@@ -8,6 +8,10 @@ You will begin to understand when you or your employee’s ability to concentrat
 Just think … a speedometer for the brain!
 
 
+### Take a look for yourself
+./assets/demo.mp4
+
+
 ### F U N C T I O N S
 
 #### Test
