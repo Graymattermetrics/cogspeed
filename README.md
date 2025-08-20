@@ -9,7 +9,7 @@ Just think … a speedometer for the brain!
 
 
 ### Take a look for yourself
-./assets/demo.mp4
+![](assets/demo.mp4)
 
 
 ### F U N C T I O N S
