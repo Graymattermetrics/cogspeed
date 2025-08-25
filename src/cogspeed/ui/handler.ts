@@ -96,13 +96,13 @@ export class CogSpeedGraphicsHandler {
   }
 
   private readonly performanceData = {
-    2400: "FUNCTIONING\nEXCEPTIONALLY WELL",
-    2200: "FUNCTIONING\nVERY WELL",
-    1960: "FUNCTIONING\nNORMALLY",
+    600: "FUNCTIONING\nEXCEPTIONALLY WELL",
+    800: "FUNCTIONING\nVERY WELL",
+    1050: "FUNCTIONING\nNORMALLY",
     1500: "FUNCTIONING\nSLIGHTLY LESS THAN NORMAL",
-    1050: "FUNCTIONING\nSTARTING TO SLOW",
-    800: "DIFFICULT TO FUNCTION\nBECOMING UNSAFE",
-    600: "UNABLE TO FUNCTION\nDEFINITELY UNSAFE",
+    1960: "FUNCTIONING\nSTARTING TO SLOW",
+    2200: "DIFFICULT TO FUNCTION\nBECOMING UNSAFE",
+    2400: "UNABLE TO FUNCTION\nDEFINITELY UNSAFE",
   };
 
   /**
@@ -306,7 +306,6 @@ export class CogSpeedGraphicsHandler {
       container.addChild(headerCell);
 
       // Create and add Value Cell
-      console.log(col.colour)
       if (typeof col.colour !== "number" ) throw new Error("Colour must be number")
       const valueCell = createCell(currentX, yPos + headerHeight, colWidth, valueRowHeight, col.colour, col.value, valueTextStyle);
       container.addChild(valueCell);
