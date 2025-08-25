@@ -429,7 +429,7 @@ export class StartPage {
    * @returns {Promise<SleepData>} The test data
    */
   public async start(sleepData: SleepData | false): Promise<SleepData | false> {
-    if (process.env.NODE_ENV === "development") return { fatigueLevel: -1 };
+    if (process.env.NODE_ENV === "development") return { fatigueLevel: 3 };
 
     if (sleepData !== false) {
       await this.displayReadyDemo(Infinity);

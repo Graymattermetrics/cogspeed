@@ -300,8 +300,8 @@ export class ProcessResultsPage {
     const textSummary = new Text({
       text: `Test version: ${config.version.slice(0, 7)}
 Account ID: N/A
-Date: ${data._date.split(", ")[0]}
-Time: ${data._date.split(", ")[1]}
+Date: ${data.date.split(", ")[0]}
+Time: ${data.date.split(", ")[1]}
 Location: ${data.location.normalizedLocation}
 Status: ${data.status} ${message}
 Test duration: ${Math.round(data.testDuration / 100) / 10}s
@@ -353,19 +353,21 @@ Final block difference: ${finalBlockDiffText}`,
 
   private async saveTestResult(data: { [key: string]: any }) {
     let url = `${import.meta.env.VITE_API_URL}/clients/cogspeed/tests`;
-    data["client_id"] = this.client.client_id;
+    // Full copy data
+    const copyData = JSON.parse(JSON.stringify(data));
+    copyData["client_id"] = this.client.client_id;
 
-    for (const key in data) {
+    for (const key in copyData) {
       if (key === "answerLogs") continue;
-      if (typeof data[key] === "object" && data[key] !== null) {
-        for (const subKey in data[key]) {
-          data[subKey] = data[key][subKey];
+      if (typeof copyData[key] === "object" && copyData[key] !== null) {
+        for (const subKey in copyData[key]) {
+          copyData[subKey] = copyData[key][subKey];
         }
-        delete data[key];
+        delete copyData[key];
       }
     }
-    data["rounds"] = data["answerLogs"];
-    console.log("Saving test data:", data);
+    copyData["rounds"] = copyData["answerLogs"];
+    console.log("Saving test data:", copyData);
 
     try {
       const response = await fetch(url, {
@@ -375,7 +377,7 @@ Final block difference: ${finalBlockDiffText}`,
           "X-Client-ID": this.client.client_id,
           "X-API-Key": this.client.api_key,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(copyData),
       });
 
       console.log("Response from saving test result:", response);
@@ -465,7 +467,7 @@ Final block difference: ${finalBlockDiffText}`,
       this.resultsGraphTexture = await Assets.load(resultsGraph);
 
       // Save the test result to cogspeed api
-      if (this.client) {
+      if (this.client && config.save_round_data) {
         await this.saveTestResult(data);
       }
 

@@ -196,12 +196,17 @@ export class CogSpeedGame {
     // 1) Set no response timeout (roughly 6000ms)
     clearTimeout(this.currentRoundTimeout);
 
+    // 2) Wait until there have been (roughly 20) answers before continuing
+    const practiceTestAnswers = this.previousAnswers.filter((answer) => answer.roundType === 1);
+    if (practiceTestAnswers.length < this.config.practice_mode.minimum_rounds) {
+      return;
+    }
+
     this.currentRoundTimeout = setTimeout(this.displayCorrectAnswer.bind(this), this.config.practice_mode.no_response_duration);
 
-    const practiceTestAnswers = this.previousAnswers.filter((answer) => answer.roundType === 1);
 
     const lastNAnswers = practiceTestAnswers.slice(-this.config.practice_mode.max_right_count);
-    // 2) If there have been (roughly 4) correct answers in a row under (roughly 2600ms), continue to self-paced
+    // 3) If there have been (roughly 4) correct answers in a row under (roughly 2600ms), continue to self-paced
     if (
       lastNAnswers.filter((answer) => answer.status === "correct").length === this.config.practice_mode.max_right_count &&
       lastNAnswers.reduce((a, b) => a + b.timeTaken, 0) / this.config.practice_mode.max_right_count <
@@ -479,7 +484,7 @@ export class CogSpeedGame {
       timeTaken,
       isCorrectOrIncorrectFromPrevious,
       ratio,
-      _id: this.currentRoundID,
+      id: this.currentRoundID,
       _time_epoch: timeClicked,
     };
 
@@ -495,7 +500,7 @@ export class CogSpeedGame {
       this.previousAnswers.length > 1 &&
       [0, 1].includes(this.currentRound) &&
       this.previousAnswers[this.previousAnswers.length - 2].status === "incorrect" &&
-      this.currentRoundID === this.previousAnswers[this.previousAnswers.length - 2]._id
+      this.currentRoundID === this.previousAnswers[this.previousAnswers.length - 2].id
     ) {
       // This function is called from the forced correct answer, so we will remove the last log
       this.previousAnswers.pop();
