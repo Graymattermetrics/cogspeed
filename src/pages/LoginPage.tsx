@@ -26,7 +26,7 @@ export const LoginPage = () => {
       });
 
       const responseData: AuthResponse = await response.json();
-      
+
       if (response.ok && responseData.success) {
         setClient(responseData.client);
 
@@ -65,11 +65,16 @@ export const LoginPage = () => {
         <CardContent>
           <LoginForm onSubmit={handleLogin} />
         </CardContent>
-        <CardFooter>
-          <p className="w-full text-center text-sm text-muted-foreground">
+        <CardFooter className="flex flex-col space-y-2">
+          <p className="text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
             <a href="/signup" className="underline text-primary">
               Create Account
+            </a>
+          </p>
+          <p className="text-center text-sm text-muted-foreground">
+            <a href="/" className="underline text-primary">
+              Back to Cogspeed Homepage
             </a>
           </p>
         </CardFooter>

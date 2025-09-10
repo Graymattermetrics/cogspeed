@@ -4,6 +4,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card.tsx";
@@ -70,6 +71,19 @@ export const SignupPage = () => {
         <CardContent>
           <SignupForm onSubmit={handleSignup} />
         </CardContent>
+        <CardFooter className="flex flex-col space-y-2">
+          <p className="text-center text-sm text-muted-foreground">
+            Already have an account? {" "}
+            <a href="/login" className="underline text-primary">
+              Log in
+            </a>
+          </p>
+          <p className="text-center text-sm text-muted-foreground">
+            <a href="/" className="underline text-primary">
+              Back to Cogspeed Homepage
+            </a>
+          </p>
+        </CardFooter>
       </Card>
     </div>
   );
