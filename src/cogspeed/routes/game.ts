@@ -484,6 +484,7 @@ export class CogSpeedGame {
       timeTaken,
       isCorrectOrIncorrectFromPrevious,
       ratio,
+      realTime10ms: Math.round(timeClicked / 10),
       id: this.currentRoundID,
       _time_epoch: timeClicked,
     };

@@ -30,6 +30,8 @@ export interface GameAnswer {
   ratio: number;
   // Unique id for each round (used in practice modes)
   id: string;
+  // Real time it was taken since start of test (100th of a second)
+  realTime10ms: number
   // Time of answer
   _time_epoch: number;
 }

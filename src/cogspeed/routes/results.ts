@@ -62,6 +62,7 @@ export class ProcessResultsPage {
     const keys = [
       ["Num", "roundNumber"],
       ["Type", "roundType"],
+      ["Rt100", "realTime10ms"],
       ["Duration", "duration"],
       ["Response", "timeTaken"],
       ["Status", "status"],
@@ -70,7 +71,6 @@ export class ProcessResultsPage {
       ["Query", "queryNumber"],
       ["Location", "answerLocation"],
       ["Clicked", "locationClicked"],
-      ["Previous", "isCorrectOrIncorrectFromPrevious"],
     ];
 
     const tableDataObj = [];
@@ -118,7 +118,9 @@ export class ProcessResultsPage {
         },
         header: {
           alignment: "center",
-          content: "Answer logs\n(Rm = rolling mean average)",
+          content: `Answer logs
+(Rm = rolling mean average)
+(Rt10ms = real time in milliseconds*10)`,
         },
       }) +
       `\n${this.formatObject(config, [])}`
