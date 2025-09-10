@@ -83,6 +83,11 @@ export const SignupPage = () => {
               Back to Cogspeed Homepage
             </a>
           </p>
+          <div className="mt-4 text-xs text-muted-foreground space-y-1 text-center">
+            <p>Parental consent is required for users under the age of 13.</p>
+            <p>All personal data is stored securely and will never be sold or commercially distributed.</p>
+            <p>This software is distributed under the GNU General Public License (GPL).</p>
+          </div>
         </CardFooter>
       </Card>
     </div>

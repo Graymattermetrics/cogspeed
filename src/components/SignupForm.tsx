@@ -72,11 +72,15 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
       </div>
 
       <div>
-        <Label>Date of Birth</Label>
+        <Label>Month and Year of Birth</Label>
         <Input
-          type="date"
+          type="month"
           {...register("date_of_birth", {
-            required: "Date of birth is required",
+            required: "Month and year of birth are required",
+            setValueAs: (value: string) => {
+              // "YYYY-MM" → convert to full date with day = 1
+              return value ? `${value}-01` : null;
+            },
           })}
         />
         {errors.date_of_birth && (

@@ -296,12 +296,26 @@ export class ProcessResultsPage {
     const finalBlockDiffText = data.status === "failed" ? "N/A" : `${Math.round(data.blocking.finalBlockDiff * 10) / 10}ms`;
 
     let message = data.status === "failed" ? `(${data.message})` : "";
+    const accountId = this.client?.client_id || "N/A"
+
+    const dateObj = new Date(data.date)
+    const formattedDate = dateObj.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+
+    const formattedTime = dateObj.toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
 
     const textSummary = new Text({
       text: `Test version: ${config.version.slice(0, 7)}
-Account ID: N/A
-Date: ${data.date.split(", ")[0]}
-Time: ${data.date.split(", ")[1]}
+Account ID: ${accountId}
+Date: ${formattedDate}
+Time: ${formattedTime}
 Location: ${data.location.normalizedLocation}
 Status: ${data.status} ${message}
 Test duration: ${Math.round(data.testDuration / 100) / 10}s
