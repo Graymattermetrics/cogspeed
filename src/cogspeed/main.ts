@@ -6,6 +6,7 @@ import { Config } from "./types/Config.ts";
 import { CogSpeedGraphicsHandler } from "./ui/handler.ts";
 import { SleepData } from "./types/SleepData.ts";
 import { Client } from 'src/types/client.ts';
+import { isSleepDataOlderThanOneHour, loadLatestSleepData as loadLatestSleepData } from "../stores/localstorage.store.ts";
 
 
 async function createApp(): Promise<Application> {
@@ -101,22 +102,16 @@ interface StartUpOptions {
 export async function startUp(
   client: Client | null,
   logoutFunc: any,
-  options: StartUpOptions = {} 
 ) {
-  let { config = null, startNowData = false } = options;
-  let showLoadingGMMLogo = false;
-  
-  if (config === null) {
-    // Either restart or home called
-    showLoadingGMMLogo = true;
+  const urlParams = new URLSearchParams(window.location.search);
+  const startNow = urlParams.get("startNow") === "true";
+  const showLoadingGMMLogo = true;
 
-    config = await loadConfig();
-    if (config.error) throw new Error(config.reason);
-  }
+  const config = await loadConfig();
+  if (config.error) throw new Error(config.reason);
 
   const app = await createApp();
 
-  // TODO: Fix reload bug
   if (showLoadingGMMLogo) await displayGmmlogo(app);
 
   const graphicsManager = new CogSpeedGraphicsHandler(app, config);
@@ -126,15 +121,22 @@ export async function startUp(
 
   // Display the home page
   const startPage = new StartPage(config, app, graphicsManager);
-  if (startNowData === false) await startPage.displayHomePage(client, logoutFunc);
+  if (!startNow) {
+    await startPage.displayHomePage(client, logoutFunc);
+  }
 
   // Display start page
-  const sleepData = await startPage.start(startNowData);
-  if (!sleepData) {
-    // TODO: Start over
-  };
+  const latestSleepData = loadLatestSleepData();
+  console.log("the latest sleep data", latestSleepData);
+  if (!latestSleepData || isSleepDataOlderThanOneHour(latestSleepData)) {
+    // Don't display this screen when already collected sleep data
+    await startPage.start(false);
+  } else {
+    // Only show the display ready test demo
+    await startPage.start(true);
+  }
 
   // Game phase - called after start button is clicked
-  const game = new CogSpeedGame(client, config, app, graphicsManager, sleepData);
+  const game = new CogSpeedGame(client, config, app, graphicsManager);
   game.start();
 }

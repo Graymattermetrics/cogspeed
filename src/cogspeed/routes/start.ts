@@ -4,6 +4,7 @@ import { Config } from "src/cogspeed/types/Config.ts";
 import { SleepData } from "src/cogspeed/types/SleepData.ts";
 import { CogSpeedGraphicsHandler } from "src/cogspeed/ui/handler.ts";
 import { Client } from "@/src/types/client.ts";
+import { saveSleepData } from "@/src/stores/localstorage.store.ts";
 
 type GraphicList = [Graphics, number, number, number, number];
 
@@ -363,7 +364,7 @@ export class StartPage {
    * This consists of 6-7 refresher screens to remind how the buttons
    * and numbers correlate to different parts of the screen.
    */
-  public async displayReadyDemo(numberOfScreens: number) {
+  public async displayDemoScreens(numberOfScreens: number) {
     let continueButton;
     for (let i = 0; i < numberOfScreens; i++) {
       if (i >= this.ui.readyDemoTextures.length - 1) break;
@@ -419,7 +420,7 @@ export class StartPage {
 
     this.container.addChild(readyDemo);
     this.container.addChild(skipToTest);
-    await this.waitForKeyPress();
+    return await this.waitForKeyPress();
   }
 
   /**
@@ -428,41 +429,43 @@ export class StartPage {
    * TODO: Seperate pages better
    * @returns {Promise<SleepData>} The test data
    */
-  public async start(sleepData: SleepData | false): Promise<SleepData | false> {
-    if (process.env.NODE_ENV === "development") return { fatigueLevel: 3 };
-
-    if (sleepData !== false) {
-      await this.displayReadyDemo(Infinity);
-      return sleepData;
+  public async start(onlyShowReadyDemo: boolean): Promise<boolean> {
+    if (onlyShowReadyDemo) {
+      const ready = await this.displayDemoScreens(Infinity);
+      return ready !== null;
     }
 
-    // Display the test disclaimer
-    const ready = await this.displayTestDisclaimer();
-    if (!ready) {
-      this.app.destroy();
-      return false;
+    let sleepData: SleepData;
+    if (process.env.NODE_ENV === "develoapment") {
+      sleepData = { fatigueLevel: 3 };
+    } else {
+      // Display the test disclaimer
+      const ready = await this.displayTestDisclaimer();
+      if (!ready) {
+        this.app.destroy();
+        return false;
+      }
+
+      // Get sleep data
+      // TODO: Implement
+      // let sleepData;
+      // while (true) {
+      //   sleepData = await this.displaySleepForm();
+      //   // Confirm sleep data
+      //   if (await this.confirmSleepData(sleepData)) break;
+      // }
+
+      // Display the Samn Perelli checklist
+      const fatigueLevel = await this.displaySamnPerelliChecklist();
+
+      if (this.config.display_refresher_screens) {
+        // Display the ready demo screen with one screen
+        await this.displayDemoScreens(Infinity);
+      }
+
+      sleepData = { fatigueLevel };
     }
-
-    // Get sleep data
-    // TODO: Implement
-    // let sleepData;
-    // while (true) {
-    //   sleepData = await this.displaySleepForm();
-    //   // Confirm sleep data
-    //   if (await this.confirmSleepData(sleepData)) break;
-    // }
-
-    // Display the Samn Perelli checklist
-    // Minus from 8 because the scale is inverted
-    const fatigueLevel = await this.displaySamnPerelliChecklist();
-
-    if (this.config.display_refresher_screens) {
-      // Display the ready demo screen with one screen
-      await this.displayReadyDemo(Infinity);
-    }
-
-    return {
-      fatigueLevel,
-    };
+    saveSleepData(sleepData)
+    return true;
   }
 }

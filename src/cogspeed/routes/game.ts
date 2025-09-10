@@ -8,6 +8,7 @@ import { SleepData } from "src/cogspeed/types/SleepData.ts";
 import { ProcessResultsPage } from "src/cogspeed/routes/results.ts";
 import { v4 as uuidv4 } from "uuid";
 import { Client } from "src/types/client.ts";
+import { loadLatestSleepData as loadLatestSleepData, saveSleepData } from "@/src/stores/localstorage.store.ts";
 
 /**
  * CogSpeed game that handles button clicks,
@@ -65,7 +66,6 @@ export class CogSpeedGame {
     private config: Config,
     private app: Application | null = null,
     private ui: CogSpeedGraphicsHandler | null = null,
-    private sleepData: SleepData | null = null
   ) {
     this.isInPauseFromTimeout = null;
     this.currentRoundID = uuidv4();
@@ -590,6 +590,8 @@ export class CogSpeedGame {
 
     const date = new Date();
 
+    const latestSleepData = loadLatestSleepData();
+      
     const data = {
       statusCode,
       status,
@@ -601,7 +603,7 @@ export class CogSpeedGame {
       cognitiveProcessingIndex,
       machinePacedBaseline: firstMachinePacedRound?.duration,
       version: this.config.version,
-      sleepData: this.sleepData,
+      sleepData: latestSleepData,
       numberOfRollMeanLimitExceedences: this.numberOfRollMeanLimitExceedences,
       finalRatio: this.previousAnswers[this.previousAnswers.length - 1]?.timeTaken / blockingRoundDuration,
       blocking: {

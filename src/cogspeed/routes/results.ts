@@ -4,17 +4,17 @@ import { Application, Assets, Container, Graphics, Point, Sprite, Text, Texture 
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { table } from "table";
 import { CogSpeedGraphicsHandler } from "src/cogspeed/ui/handler.ts";
-import { startUp } from "src/cogspeed/main.ts";
 
 import { Config } from "src/cogspeed/types/Config.ts";
 import { Client } from "src/types/client.ts";
 
+// @ts-ignore
 import resultsGraph from "src/assets/results_graph.png";
 
 export class ProcessResultsPage {
   public resultsGraphTexture: Texture | undefined;
 
-  constructor(private client: Client, private app: Application, private ui: CogSpeedGraphicsHandler) { }
+  constructor(private client: Client | null, private app: Application, private ui: CogSpeedGraphicsHandler) { }
 
   private formatKey(key: string, capitalise: boolean = false): string {
     let result = capitalise ? key[0].toUpperCase() : key[0];
@@ -352,6 +352,8 @@ Final block difference: ${finalBlockDiffText}`,
   }
 
   private async saveTestResult(data: { [key: string]: any }) {
+    if (!this.client) return;
+
     let url = `${import.meta.env.VITE_API_URL}/clients/cogspeed/tests`;
     // Full copy data
     const copyData = JSON.parse(JSON.stringify(data));
@@ -442,9 +444,7 @@ Final block difference: ${finalBlockDiffText}`,
       this.app.screen.height * 0.2
     );
     restartTestButtonContainer.on("pointerdown", () => {
-      // TODO: Implement restart functionality
-      // this.app.destroy();
-      // startUp(config, data.sleepData);
+      window.location.href = "/?startNow=true";
     });
 
     const homeButton = this.ui.createButton(
@@ -455,9 +455,7 @@ Final block difference: ${finalBlockDiffText}`,
       this.app.screen.height * 0.2
     );
     homeButton.on("pointerdown", () => {
-      // TODO: Send back to home page
-      // this.app.destroy();
-      // startUp(config, false);
+      window.location.href = "/"
     });
 
     if (args.shouldLoad) {
